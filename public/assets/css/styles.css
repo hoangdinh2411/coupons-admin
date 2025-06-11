@@ -37443,7 +37443,7 @@ body :focus-visible {
   width: auto !important;
 }
 
-.swiper-slide [data-nimg=fill], .trendy-card [data-nimg=fill], .mountains-card [data-nimg=fill], .carousel-item [data-nimg=fill] {
+.swiper-slide [data-nimg=fill], .trendy-card [data-nimg=fill], .mountains-card [data-nimg=fill], .carousel-item [data-nimg=fill], .grid-cards [data-nimg=fill], .streched-card [data-nimg=fill] {
   width: 100% !important;
 }
 

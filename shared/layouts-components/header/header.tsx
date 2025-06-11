@@ -658,7 +658,7 @@ const Header = () => {
                                                     </span>
                                                 </div>
                                                 <div className="flex-fill">
-                                                    <div className="fw-medium"><Link scroll={false} href="#!">{item.name}</Link></div>
+                                                    <div className="fw-medium"><Link scroll={false} href="/pages/ecommerce/cart/">{item.name}</Link></div>
                                                     <span className="text-muted fs-12 fw-normal">
                                                         {item.category}
                                                     </span>
@@ -675,7 +675,7 @@ const Header = () => {
 
                                 <div className={`p-3 empty-header-item border-top ${card.length === 0 && 'd-none'}`}>
                                     <div className="d-grid">
-                                        <Link scroll={false} href="#!" className="btn btn-primary">Proceed to checkout</Link>
+                                        <Link scroll={false} href="/pages/ecommerce/checkout/" className="btn btn-primary">Proceed to checkout</Link>
                                     </div>
                                 </div>
                                 {card.length === 0 &&
@@ -686,7 +686,7 @@ const Header = () => {
                                             </span>
                                             <h6 className="fw-semibold mb-1 mt-3">Your Cart is Empty</h6>
                                             <span className="mb-3 fw-normal fs-13 d-block">Add some items to make me happy </span>
-                                            <Link scroll={false} href="#!" className="btn btn-primary btn-wave btn-sm m-1" data-abc="true">continue shopping <i className="bi bi-arrow-right ms-1"></i></Link>
+                                            <Link scroll={false} href="/pages/ecommerce/products/" className="btn btn-primary btn-wave btn-sm m-1" data-abc="true">continue shopping <i className="bi bi-arrow-right ms-1"></i></Link>
                                         </div>
                                     </div>
                                 }
@@ -732,7 +732,7 @@ const Header = () => {
                                                 </div>
                                                 <div className="flex-grow-1 d-flex align-items-center justify-content-between">
                                                     <div>
-                                                        <p className="mb-0 fw-medium"><Link href="#!" scroll={false} >{item.name}</Link></p>
+                                                        <p className="mb-0 fw-medium"><Link href="/pages/chat/" scroll={false} >{item.name}</Link></p>
                                                         <div className="fw-normal header-notification-text text-muted">
                                                             <span className={`fw-medium fs-12 text-${item.textcolor}`}>{item.notificationType}</span> {item.description}
                                                         </div>
@@ -750,7 +750,7 @@ const Header = () => {
                                 </SimpleBar>
                                 <div className={`p-3 empty-header-item1 border-top ${note.length === 0 && 'd-none'} `}>
                                     <div className="d-grid">
-                                        <Link scroll={false} href="#!" className="btn btn-primary">View All</Link>
+                                        <Link scroll={false} href="/pages/chat/" className="btn btn-primary">View All</Link>
                                     </div>
                                 </div>
                                 {note.length === 0 && (
@@ -866,12 +866,12 @@ const Header = () => {
                                         <span className="badge bg-pink align-self-end mb-1">Pro</span>
                                     </div>
                                 </Link>
-                                <Link href='#!' className="dropdown-item d-flex align-items-center border-bottom-0" ><i className="ti ti-user-circle fs-18 me-2 text-gray fw-normal"></i>My Profile
+                                <Link href='/pages/profile/' className="dropdown-item d-flex align-items-center border-bottom-0" ><i className="ti ti-user-circle fs-18 me-2 text-gray fw-normal"></i>My Profile
                                 </Link>
-                                <Link href='#!' className="dropdown-item d-flex align-items-center border-bottom-0" ><i className="ti ti-inbox fs-18 me-2 text-gray fw-normal"></i>Mail Inbox<span className="badge bg-success ms-auto">06</span>
+                                <Link href='/pages/email/mail-app/' className="dropdown-item d-flex align-items-center border-bottom-0" ><i className="ti ti-inbox fs-18 me-2 text-gray fw-normal"></i>Mail Inbox<span className="badge bg-success ms-auto">06</span>
                                 </Link>
-                                <Link href='#!' className="dropdown-item d-flex align-items-center border-bottom-0" ><i className="ti ti-adjustments-horizontal fs-18 me-2 text-gray fw-normal"></i>Account Settings </Link>
-                                <Link href='#!' className="dropdown-item d-flex align-items-center border-bottom-0" ><i className="ti ti-logout fs-18 me-2 text-gray fw-normal"></i>Sign Out
+                                <Link href='/pages/email/mail-settings/' className="dropdown-item d-flex align-items-center border-bottom-0" ><i className="ti ti-adjustments-horizontal fs-18 me-2 text-gray fw-normal"></i>Account Settings </Link>
+                                <Link href='/authentication/sign-in/cover/' className="dropdown-item d-flex align-items-center border-bottom-0" ><i className="ti ti-logout fs-18 me-2 text-gray fw-normal"></i>Sign Out
                                 </Link>
                             </DropdownMenu>
                         </Dropdown>
