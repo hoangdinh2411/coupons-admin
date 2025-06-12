@@ -2,7 +2,7 @@
 import React, { Fragment } from 'react';
 import { Table } from 'react-bootstrap';
 
-interface HeaderItem {
+export interface HeaderItem {
     title: string | React.ReactNode;
     headerClassname?: string;
 }
