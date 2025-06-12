@@ -60,8 +60,6 @@ const Layout = ({ children }: any) => {
                     <title>Rixzo NextJs App-Router Typescript React Bootstrap Admin & Dashboard Template</title>
                     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
                     <meta name="keywords" content="admin dashboard template, bootstrap dashboard, bootstrap next js, next js, next js typescript, next js with react, nextjs admin, nextjs app router, nextjs dashboard template, nextjs firebase, nextjs framework, nextjs react bootstrap, nextjs with bootstrap, react next js, typescript with react"/>
-                    {/* <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
-                    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" /> */}
                 </head>
                 <body className={`${localVariable.body ? localVariable.body : ''}`}>
                 {theme.pageloading && children}
