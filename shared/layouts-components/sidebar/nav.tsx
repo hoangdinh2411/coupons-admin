@@ -80,19 +80,10 @@ export const MENUITEMS: any = [
   {
     title: "Dashboard",
     icon: Dashboardicon,
-    type: "sub",
     active: false,
+    type: "link",
     dirchange: false,
-    children: [
-      {
-        title: "Sale",
-        icon: StoreIcon,
-        type: "link",
-        active: false,
-        dirchange: false,
-        path: "/dashboards/sales",
-      },
-    ],
+    path: "/dashboard",
   },
   {
     title: "Store",

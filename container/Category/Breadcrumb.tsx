@@ -6,7 +6,7 @@ function Breadcrumb() {
   return (
     <SpkBreadcrumb Customclass="mb-3">
       <BreadcrumbItem href="/">Dashboard</BreadcrumbItem>
-      <BreadcrumbItem active>Category</BreadcrumbItem>
+      <BreadcrumbItem href="/categories">Category</BreadcrumbItem>
     </SpkBreadcrumb>
   );
 }
