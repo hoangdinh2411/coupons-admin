@@ -18,9 +18,9 @@ import Seo from "@/shared/layouts-components/seo/seo";
 import SpkButton from "@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons";
 import SpkDropdown from "@/shared/@spk-reusable-components/reusable-uiElements/spk-dropdown";
 import SpkTables from "@/shared/@spk-reusable-components/reusable-tables/spk-tables";
-import CreateCategoryModal from "@/container/Category/CreateCategoryModal";
-import UpdateCategoryModal from "@/container/Category/UpdateCategoryModal";
-import { ImageByte } from "@/helper";
+import CreateCategoryModal from "@/app/(components)/(content-layout)/categories/CreateCategoryModal";
+import UpdateCategoryModal from "@/app/(components)/(content-layout)/categories/UpdateCategoryModal";
+import { ImageByte } from "@/helper/image";
 
 const FAKE_CATEGORIES = Array.from({ length: 30 }, (_, i) => ({
   id: i + 1,
@@ -28,6 +28,11 @@ const FAKE_CATEGORIES = Array.from({ length: 30 }, (_, i) => ({
   image: `https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTmqr9md-E5f51zftunUbkQVrqgnHbb-hjwrw&s`,
 }));
 
+export interface Category {
+  id?: number;
+  name: string;
+  image: string;
+}
 const HEADER = [
   { title: "Category ID" },
   { title: "Name" },
@@ -39,13 +44,12 @@ const CategoryTemplate: React.FC = () => {
   const [categories, setCategories] = useState(FAKE_CATEGORIES);
   const [search, setSearch] = useState("");
   const [openCreateCategory, setOpenCreateCategory] = useState(false);
-  const [updateCategory, setUpdateCategory] = useState({
+  const [updateCategory, setUpdateCategory] = useState<{
+    isOpen: boolean;
+    item: Category | null;
+  }>({
     isOpen: false,
-    defaultValues: {
-      name: "",
-      image: "",
-      id: "",
-    },
+    item: null,
   });
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
@@ -75,22 +79,15 @@ const CategoryTemplate: React.FC = () => {
   };
 
   //TODO: handle modal
-  const handleOpenUpdateCategory = (defaultValues: {
-    name: string;
-    image: string;
-    id: string | number;
-  }) => {
+  const handleOpenUpdateCategory = (category: Category) => {
     setUpdateCategory({
-      defaultValues: {
-        ...defaultValues,
-        id: String(defaultValues.id),
-      },
+      item: category,
       isOpen: true,
     });
   };
   const handleCloseUpdateCategory = () => {
     setUpdateCategory((pre) => ({
-      ...pre,
+      item: null,
       isOpen: false,
     }));
   };
@@ -101,7 +98,7 @@ const CategoryTemplate: React.FC = () => {
       <Card className="custom-card">
         <Card.Header className="justify-content-between">
           <Card.Title>All Categories List</Card.Title>
-          <SpkDropdown
+          {/* <SpkDropdown
             Togglevariant="primary"
             Toggletext="Sort By"
             Customclass="mb-2"
@@ -112,7 +109,7 @@ const CategoryTemplate: React.FC = () => {
             <Dropdown.Item>Name</Dropdown.Item>
             <Dropdown.Item>Newest</Dropdown.Item>
             <Dropdown.Item>Oldest</Dropdown.Item>
-          </SpkDropdown>
+          </SpkDropdown> */}
         </Card.Header>
 
         <Card.Body>
@@ -135,7 +132,7 @@ const CategoryTemplate: React.FC = () => {
 
                 <SpkButton
                   onClickfunc={() => setOpenCreateCategory(true)}
-                  Buttonvariant="primary-light"
+                  Buttonvariant="primary"
                   Customclass="w-auto"
                 >
                   Add Category
@@ -160,9 +157,9 @@ const CategoryTemplate: React.FC = () => {
                       className="rounded"
                     />
                   </td>
-                  <td>
+                  <td className="">
                     <Button
-                      variant="danger-primary"
+                      variant="success-light"
                       size="sm"
                       className="btn-icon"
                       onClick={() => handleOpenUpdateCategory(cat)}
@@ -172,7 +169,7 @@ const CategoryTemplate: React.FC = () => {
                     <Button
                       variant="danger-light"
                       size="sm"
-                      className="btn-icon"
+                      className="btn-icon mx-2"
                       onClick={() => handleRemove(cat.id)}
                     >
                       <i className="ri-delete-bin-line"></i>
@@ -224,8 +221,7 @@ const CategoryTemplate: React.FC = () => {
         onClose={() => setOpenCreateCategory(false)}
       />
       <UpdateCategoryModal
-        key={updateCategory.defaultValues.id}
-        defaultValues={updateCategory.defaultValues}
+        item={updateCategory.item}
         open={updateCategory.isOpen}
         onClose={handleCloseUpdateCategory}
       />
