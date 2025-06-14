@@ -1,6 +1,6 @@
 "use client";
 
-import { APP_ROUTE } from "@/app/constants/route";
+import { APP_ROUTE } from "@/constants/route";
 import { registerSchema } from "@/helper/validation/auth.validation"; // Cập nhật đường dẫn nếu cần
 import SpkButton from "@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons";
 import { zodResolver } from "@hookform/resolvers/zod";

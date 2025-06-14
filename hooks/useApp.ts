@@ -1,4 +1,4 @@
-import { APP_ROUTE } from "@/app/constants/route";
+import { APP_ROUTE } from "@/constants/route";
 import { getCookie } from "@/helper/cookie.storage";
 import useAppStore from "@/store/useAppStore"
 import { redirect } from "next/navigation";

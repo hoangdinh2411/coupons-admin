@@ -1,22 +1,23 @@
-class AuthService {
-    private endpoint
-    // constructor() {
-    //     endpoint = APP_ROUTE.AUTH
-    // }
-
-    // async login() {
-    //     return await 
-    // }
-
-    // async logout() {
-    //     return await 
-    // }
-
-    // async getMe() {
-    //     return await
-    // }
-    // async verifyOTP() {
-    //     return await
-    // }
+import request from "./fetch";
+interface LoginPayload {
+    email: string;
+    password: string;
 }
-export default new AuthService()
+
+interface User {
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+}
+class AuthService {
+    static async login(payload: LoginPayload) {
+        return await request(`/categories`, {
+            method: "GET",
+            body: JSON.stringify(payload),
+        });
+    }
+        
+}
+
+export default AuthService;

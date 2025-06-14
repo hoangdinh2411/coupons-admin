@@ -23,6 +23,7 @@ import { basePath } from "@/next.config";
 import { removeCart } from "@/shared/redux/action";
 import SpkButton from "@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons";
 import Image from "next/image";
+import { APP_ROUTE } from "@/constants/route";
 
 const Header = () => {
   let [variable, setVariable] = useState(getState());
@@ -1464,7 +1465,7 @@ const Header = () => {
                   Account Settings{" "}
                 </Link>
                 <Link
-                  href="#!"
+                  href={APP_ROUTE.SIGN_IN}
                   className="dropdown-item d-flex align-items-center border-bottom-0"
                 >
                   <i className="ti ti-logout fs-18 me-2 text-gray fw-normal"></i>

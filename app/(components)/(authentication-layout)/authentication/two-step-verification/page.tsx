@@ -83,14 +83,6 @@ function VerifyTemplate() {
                           Please enter the code sent to your Email or phone.
                         </p>
                       </div>
-                      <Link href="/dashboards/sales">
-                        <Image
-                          fill
-                          alt="logo"
-                          className="toggle-logo mb-2 pb-2"
-                          src="../../../assets/images/brand-logos/toggle-logo.png"
-                        />
-                      </Link>
                     </div>
                   </Col>
                 </Row>
