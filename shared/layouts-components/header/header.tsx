@@ -24,6 +24,7 @@ import { removeCart } from "@/shared/redux/action";
 import SpkButton from "@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons";
 import Image from "next/image";
 import { APP_ROUTE } from "@/constants/route";
+import useAuth from "@/hooks/useAuth";
 
 const Header = () => {
   let [variable, setVariable] = useState(getState());
@@ -561,6 +562,7 @@ const Header = () => {
   const handleClose1 = () => setShow1(false);
   const handleShow1 = () => setShow1(true);
 
+  const { handleLogout } = useAuth();
   return (
     <Fragment>
       <header className="app-header sticky" id="header">
@@ -1464,13 +1466,13 @@ const Header = () => {
                   <i className="ti ti-adjustments-horizontal fs-18 me-2 text-gray fw-normal"></i>
                   Account Settings{" "}
                 </Link>
-                <Link
-                  href={APP_ROUTE.SIGN_IN}
-                  className="dropdown-item d-flex align-items-center border-bottom-0"
+                <SpkButton
+                  onClickfunc={handleLogout}
+                  Customclass="dropdown-item d-flex align-items-center border-bottom-0"
                 >
                   <i className="ti ti-logout fs-18 me-2 text-gray fw-normal"></i>
                   Sign Out
-                </Link>
+                </SpkButton>
               </DropdownMenu>
             </Dropdown>
 

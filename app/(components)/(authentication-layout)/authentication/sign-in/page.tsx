@@ -22,7 +22,6 @@ function SignInTemplate() {
   const [passwordShow, setPasswordShow] = useState(false);
 
   const { handleLogin, showToast, onCloseToast } = useAuth();
-  console.log("💲💲💲 ~ SignInTemplate ~ showToast:", showToast);
   const {
     register,
     handleSubmit,

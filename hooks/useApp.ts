@@ -16,7 +16,6 @@ function useApp() {
 
     return {
         showToast,
-        handleLogin,
         checkedLoginSession
     }
 }

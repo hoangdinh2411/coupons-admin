@@ -1,8 +1,6 @@
+import { LoginRequestPayload, RegisterRequestPayLoad } from "@/types/auth.type";
 import request from "./fetch";
-interface LoginPayload {
-    email: string;
-    password: string;
-}
+
 
 interface User {
     id: string;
@@ -11,13 +9,19 @@ interface User {
     role: string;
 }
 class AuthService {
-    static async login(payload: LoginPayload) {
-        return await request(`/categories`, {
-            method: "GET",
+    static async login(payload: LoginRequestPayload) {
+        return await request(`/auth/sign-in`, {
+            method: "POST",
             body: JSON.stringify(payload),
         });
     }
-        
+    static async register(payload: RegisterRequestPayLoad) {
+        return await request(`/auth/sign-up`, {
+            method: "POST",
+            body: JSON.stringify(payload),
+        });
+    }
+
 }
 
 export default AuthService;
