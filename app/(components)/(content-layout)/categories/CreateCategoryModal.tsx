@@ -7,6 +7,7 @@ import { z } from "zod";
 import { Box, Paper } from "@mui/material";
 import { Modal, Form } from "react-bootstrap";
 import SpkButton from "@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons";
+
 import UploadFile, {
   ImageByte,
 } from "@/shared/layouts-components/uploadFile/UploadFile";
@@ -15,6 +16,7 @@ interface CreateCategoryModalPropsType {
   open: boolean;
   onClose: () => void;
 }
+
 export const schema = z.object({
   name: z.string().min(1, "Category name is required"),
   image: z.object({
