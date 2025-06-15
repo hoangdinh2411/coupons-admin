@@ -1,0 +1,9 @@
+{
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "always",
+    "source.fixAll.eslint": "always"
+  },
+  "eslint.validate": ["javascript", "typescript", "typescriptreact"],
+  "prettier.requireConfig": true
+}
