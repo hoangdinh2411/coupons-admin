@@ -1,19 +1,10 @@
-export const BASE_URL = 'https://coupons-trov.onrender.com/api/v1'
-
-// /api/v1/auth/sign-in
-
-export interface IResponse<T> {
-  success: boolean
-  data?: T
-  message?: string
-  status?: number
-}
+import { BASE_URL } from '@/constants';
+import { IResponse } from '@/types/api.type';
 
 export default function request<T>(
   url: string,
   config: RequestInit = {},
 ): Promise<IResponse<T>> {
-
   const controller = new AbortController()
   const id = setTimeout(() => controller.abort(), 60000)
 

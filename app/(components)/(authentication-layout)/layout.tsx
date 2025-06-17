@@ -6,9 +6,7 @@ import React, { Fragment } from "react";
 const Layout = ({ children }: any) => {
   return (
     <Fragment>
-      <html>
-        <body>{children}</body>
-      </html>
+          {children}
     </Fragment>
   );
 };

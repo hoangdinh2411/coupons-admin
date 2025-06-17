@@ -1,5 +1,7 @@
 "use client";
 
+import useAuth from "@/hooks/useAuth";
+import SpkButton from "@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
@@ -8,12 +10,17 @@ import { Col, Row } from "react-bootstrap";
 interface VerifyTemplate {}
 
 function VerifyTemplate() {
-  const [verificationCode, setVerificationCode] = useState("");
+  const [verificationCode, setVerificationCode] = useState();
+  const {handleVerify}  = useAuth()
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     setVerificationCode(value);
   };
+
+  const onSubmit = ()=>{
+    await handleVerify(verificationCode)
+  }
 
   return (
     <div className="authentication-background">
@@ -56,12 +63,13 @@ function VerifyTemplate() {
                           </div>
                         </Col>
                         <Col xl={12} className="d-grid mt-3">
-                          <Link
-                            href="/dashboards/sales"
-                            className="btn btn-primary"
+                          <SpkButton
+  
+  onClickfunc={onSubmit}
+Customclass="btn btn-primary"
                           >
                             Verify
-                          </Link>
+                          </SpkButton>
                         </Col>
                       </Row>
                     </div>

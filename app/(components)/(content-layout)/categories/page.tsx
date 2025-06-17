@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -16,11 +16,10 @@ import {
 
 import Seo from "@/shared/layouts-components/seo/seo";
 import SpkButton from "@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons";
-import SpkDropdown from "@/shared/@spk-reusable-components/reusable-uiElements/spk-dropdown";
 import SpkTables from "@/shared/@spk-reusable-components/reusable-tables/spk-tables";
 import CreateCategoryModal from "@/app/(components)/(content-layout)/categories/CreateCategoryModal";
 import UpdateCategoryModal from "@/app/(components)/(content-layout)/categories/UpdateCategoryModal";
-import { ImageByte } from "@/helper/image";
+import CategoryService from "@/lib/category.service";
 
 const FAKE_CATEGORIES = Array.from({ length: 30 }, (_, i) => ({
   id: i + 1,
@@ -41,6 +40,12 @@ const HEADER = [
 ];
 
 const CategoryTemplate: React.FC = () => {
+    //TODO: API 
+  useEffect(()=>{
+    CategoryService.getCategories().then(data=>data).then(data=>{
+      console.log("💲💲💲 ~ getCategories ~ data:", data)
+    })
+  },[])
   const [categories, setCategories] = useState(FAKE_CATEGORIES);
   const [search, setSearch] = useState("");
   const [openCreateCategory, setOpenCreateCategory] = useState(false);
@@ -98,18 +103,6 @@ const CategoryTemplate: React.FC = () => {
       <Card className="custom-card">
         <Card.Header className="justify-content-between">
           <Card.Title>All Categories List</Card.Title>
-          {/* <SpkDropdown
-            Togglevariant="primary"
-            Toggletext="Sort By"
-            Customclass="mb-2"
-            Id="navbarScrollingDropdown"
-            Customtoggleclass="nav-link dropdown-toggle"
-            Menulabel="navbarScrollingDropdown"
-          >
-            <Dropdown.Item>Name</Dropdown.Item>
-            <Dropdown.Item>Newest</Dropdown.Item>
-            <Dropdown.Item>Oldest</Dropdown.Item>
-          </SpkDropdown> */}
         </Card.Header>
 
         <Card.Body>

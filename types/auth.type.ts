@@ -10,3 +10,11 @@ export interface RegisterRequestPayLoad {
     first_name: string,
     last_name: string
 }
+
+export interface AuthResponse {
+    email_verified: string
+}
+export interface VerifyRequestPayload {
+    email: string;
+    code: string;
+}
