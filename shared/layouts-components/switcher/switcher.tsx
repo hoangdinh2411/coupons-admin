@@ -43,7 +43,7 @@ import {
   updateTheme,
 } from '@/shared/data/switcherdata/switcherdata';
 
-const Switcher = ({ show, handleClose }: { show: boolean; handleClose: () => void }) => {
+const Switcher = ({ show, handleClose }: { show?: boolean; handleClose?: () => void }) => {
   const [variable, setVariable] = useState(getState());
 
   useEffect(() => {

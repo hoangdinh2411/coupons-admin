@@ -39,7 +39,7 @@ export default function RootLayout({
               <Header />
               <Sidebar />
               <div className="main-content app-content">
-                <div className="container-fluid">{children}</div>
+                <div className="container-fluid px-10 ">{children}</div>
               </div>
               <Footer />
             </div>
