@@ -1,14 +1,10 @@
-export const APP_ROUTE = Object.freeze({
-    INDEX: '/',
-    DASHBOARD: '/dashboard',
+export const APP_ROUTE = {
+  DASHBOARD: '/',
+  CATEGORY: '/categories',
+  BLOG: '/blogs',
 
-    CATEGORY: '/categories',
-    BLOG: '/blogs',
-
-    AUTH: '/authentication',
-    SIGN_IN: '/authentication/sign-in',
-    SIGN_UP: '/authentication/sign-up',
-    FORGOT: '/autentication/forgot-password',
-    VERIFY: '/authentication/two-step-verification',
-
-})
+  SIGN_IN: '/auth/sign-in',
+  SIGN_UP: '/auth/sign-up',
+  FORGOT: '/auth/forgot-password',
+  VERIFY: '/auth/verify-email',
+};

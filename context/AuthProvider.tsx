@@ -1,4 +1,4 @@
-import { createContext } from "react";
+'use client';
+import { createContext } from 'react';
 
-const AuthProvider =createContext({})
-
+const AuthProvider = createContext({});
