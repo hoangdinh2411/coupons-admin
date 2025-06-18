@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import React, { Fragment, useEffect, useRef, useState } from "react";
+import Link from 'next/link';
+import React, { Fragment, useEffect, useRef, useState } from 'react';
 import {
   Col,
   Dropdown,
@@ -12,25 +12,28 @@ import {
   ListGroup,
   Modal,
   Row,
-} from "react-bootstrap";
-import { useDispatch, useSelector } from "react-redux";
-import SimpleBar from "simplebar-react";
-import Switcher from "../switcher/switcher";
-import { getState, setState } from "../services/switcherServices";
-import { MENUITEMS } from "../sidebar/nav";
-import SpkBadge from "@/shared/@spk-reusable-components/reusable-uiElements/spk-badge";
-import { basePath } from "@/next.config";
-import { removeCart } from "@/shared/redux/action";
-import SpkButton from "@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons";
-import Image from "next/image";
-import { APP_ROUTE } from "@/constants/route";
-import useAuth from "@/hooks/useAuth";
+} from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
+import SimpleBar from 'simplebar-react';
+import Switcher from '../switcher/switcher';
+import { getState, setState } from '../services/switcherServices';
+import { MENUITEMS } from '../sidebar/nav';
+import SpkBadge from '@/shared/@spk-reusable-components/reusable-uiElements/spk-badge';
+import { basePath } from '@/next.config';
+import { removeCart } from '@/shared/redux/action';
+import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
+import Image from 'next/image';
+import AuthService from '@/services/auth.service';
 
 const Header = () => {
-  let [variable, setVariable] = useState(getState());
+  const [variable, setVariable] = useState(getState());
 
   // Fullscreen Function
 
+  const handleSignOut = async () => {
+    setVariable(variable);
+    await AuthService.signOut();
+  };
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   const toggleFullscreen = () => {
@@ -44,9 +47,9 @@ const Header = () => {
     const fullscreenChangeHandler = () => {
       setIsFullscreen(!!document.fullscreenElement);
     };
-    document.addEventListener("fullscreenchange", fullscreenChangeHandler);
+    document.addEventListener('fullscreenchange', fullscreenChangeHandler);
     return () => {
-      document.removeEventListener("fullscreenchange", fullscreenChangeHandler);
+      document.removeEventListener('fullscreenchange', fullscreenChangeHandler);
     };
   }, []);
 
@@ -57,16 +60,14 @@ const Header = () => {
 
     if (window.innerWidth <= 992) {
       const newState = {
-        toggled: "close",
+        toggled: 'close',
       };
       setState(newState);
     }
 
     if (window.innerWidth >= 992) {
       const local_varaiable = theme;
-      const newToggledValue = local_varaiable.toggled
-        ? local_varaiable.toggled
-        : "";
+      const newToggledValue = local_varaiable.toggled ? local_varaiable.toggled : '';
 
       setState({ toggled: newToggledValue });
     }
@@ -75,152 +76,129 @@ const Header = () => {
   // Sidebar Toggle Function
 
   const overlayRef = useRef<HTMLDivElement | null>(null);
-  const Query = (selector: any) => document.querySelector(selector);
+  const Query = (selector) => document.querySelector(selector);
 
   const toggleSidebar = () => {
     const theme = getState();
     const sidemenuType = theme.dataNavLayout;
     if (window.innerWidth >= 992) {
-      if (sidemenuType === "vertical") {
+      if (sidemenuType === 'vertical') {
         const verticalStyle = theme.dataVerticalStyle;
         const navStyle = theme.dataNavStyle;
         switch (verticalStyle) {
-          case "closed":
+          case 'closed':
             // Toggle between open/close state for "closed" vertical style
             setState({
-              dataNavStyle: "",
-              toggled:
-                theme.toggled === "close-menu-close" ? "" : "close-menu-close",
+              dataNavStyle: '',
+              toggled: theme.toggled === 'close-menu-close' ? '' : 'close-menu-close',
             });
             break;
-          case "overlay":
+          case 'overlay':
             // Handle icon-overlay state with window width check
             setState({
-              dataNavStyle: "",
-              toggled:
-                theme.toggled === "icon-overlay-close"
-                  ? ""
-                  : "icon-overlay-close",
-              iconOverlay: "",
+              dataNavStyle: '',
+              toggled: theme.toggled === 'icon-overlay-close' ? '' : 'icon-overlay-close',
+              iconOverlay: '',
             });
 
-            if (
-              theme.toggled !== "icon-overlay-close" &&
-              window.innerWidth >= 992
-            ) {
+            if (theme.toggled !== 'icon-overlay-close' && window.innerWidth >= 992) {
               setState({
-                toggled: "icon-overlay-close",
-                iconOverlay: "",
+                toggled: 'icon-overlay-close',
+                iconOverlay: '',
               });
             }
             break;
-          case "icontext":
+          case 'icontext':
             // Handle icon-text state
             setState({
-              dataNavStyle: "",
-              toggled:
-                theme.toggled === "icon-text-close" ? "" : "icon-text-close",
+              dataNavStyle: '',
+              toggled: theme.toggled === 'icon-text-close' ? '' : 'icon-text-close',
             });
             break;
-          case "doublemenu":
+          case 'doublemenu':
             // Handle double menu state
-            setState({ dataNavStyle: "" });
-            if (theme.toggled === "double-menu-open") {
-              setState({ toggled: "double-menu-close" });
+            setState({ dataNavStyle: '' });
+            if (theme.toggled === 'double-menu-open') {
+              setState({ toggled: 'double-menu-close' });
             } else {
               // Toggle the active double menu item
-              const sidemenu = Query(".side-menu__item.active");
+              const sidemenu = Query('.side-menu__item.active');
               if (sidemenu) {
-                setState({ toggled: "double-menu-open" });
+                setState({ toggled: 'double-menu-open' });
                 if (sidemenu.nextElementSibling) {
-                  sidemenu.nextElementSibling.classList.add(
-                    "double-menu-active"
-                  );
+                  sidemenu.nextElementSibling.classList.add('double-menu-active');
                 } else {
-                  setState({ toggled: "double-menu-close" });
+                  setState({ toggled: 'double-menu-close' });
                 }
               }
             }
             break;
-          case "detached":
+          case 'detached':
             // Handle detached menu state
             setState({
-              toggled:
-                theme.toggled === "detached-close" ? "" : "detached-close",
-              iconOverlay: "",
+              toggled: theme.toggled === 'detached-close' ? '' : 'detached-close',
+              iconOverlay: '',
             });
             break;
           default:
-            setState({ toggled: "" });
+            setState({ toggled: '' });
             break;
         }
 
         // Handle navStyle changes
         switch (navStyle) {
-          case "menu-click":
+          case 'menu-click':
             setState({
-              toggled:
-                theme.toggled === "menu-click-closed"
-                  ? ""
-                  : "menu-click-closed",
+              toggled: theme.toggled === 'menu-click-closed' ? '' : 'menu-click-closed',
             });
             break;
-          case "menu-hover":
+          case 'menu-hover':
             setState({
-              toggled:
-                theme.toggled === "menu-hover-closed"
-                  ? ""
-                  : "menu-hover-closed",
+              toggled: theme.toggled === 'menu-hover-closed' ? '' : 'menu-hover-closed',
             });
             break;
-          case "icon-click":
+          case 'icon-click':
             setState({
-              toggled:
-                theme.toggled === "icon-click-closed"
-                  ? ""
-                  : "icon-click-closed",
+              toggled: theme.toggled === 'icon-click-closed' ? '' : 'icon-click-closed',
             });
             break;
-          case "icon-hover":
+          case 'icon-hover':
             setState({
-              toggled:
-                theme.toggled === "icon-hover-closed"
-                  ? ""
-                  : "icon-hover-closed",
+              toggled: theme.toggled === 'icon-hover-closed' ? '' : 'icon-hover-closed',
             });
             break;
         }
       }
     } else {
       // For mobile view (screen width < 992px)
-      if (theme.toggled === "close") {
-        setState({ toggled: "open" });
+      if (theme.toggled === 'close') {
+        setState({ toggled: 'open' });
 
         setTimeout(() => {
-          if (theme.toggled === "open") {
+          if (theme.toggled === 'open') {
             const overlay = overlayRef.current;
             if (overlay) {
-              overlay.classList.add("active");
-              overlay.addEventListener("click", () => {
+              overlay.classList.add('active');
+              overlay.addEventListener('click', () => {
                 const overlay = overlayRef.current;
                 if (overlay) {
-                  overlay.classList.remove("active");
+                  overlay.classList.remove('active');
                   menuClose();
                 }
               });
             }
           }
-          window.addEventListener("resize", () => {
+          window.addEventListener('resize', () => {
             if (window.innerWidth >= 992) {
-              const overlay = Query("#responsive-overlay");
+              const overlay = Query('#responsive-overlay');
               if (overlay) {
-                overlay.classList.remove("active");
+                overlay.classList.remove('active');
               }
             }
           });
         }, 100);
       } else {
-        setState({ toggled: "close" });
+        setState({ toggled: 'close' });
       }
     }
   };
@@ -230,40 +208,39 @@ const Header = () => {
   const toggleTheme = () => {
     const currentTheme = getState();
     const newState = {
-      dataThemeMode: currentTheme.dataThemeMode === "dark" ? "light" : "dark",
-      dataHeaderStyles:
-        currentTheme.dataThemeMode === "dark" ? "light" : "dark",
-      dataMenuStyles: currentTheme.dataThemeMode === "dark" ? "dark" : "dark",
+      dataThemeMode: currentTheme.dataThemeMode === 'dark' ? 'light' : 'dark',
+      dataHeaderStyles: currentTheme.dataThemeMode === 'dark' ? 'light' : 'dark',
+      dataMenuStyles: currentTheme.dataThemeMode === 'dark' ? 'dark' : 'dark',
     };
     setState(newState);
-    if (newState.dataThemeMode != "dark") {
+    if (newState.dataThemeMode != 'dark') {
       const newState = {
-        bodyBg: "",
-        lightRgb: "",
-        bodyBg2: "",
-        inputBorder: "",
-        formControlBg: "",
-        gray: "",
+        bodyBg: '',
+        lightRgb: '',
+        bodyBg2: '',
+        inputBorder: '',
+        formControlBg: '',
+        gray: '',
       };
       setState(newState);
-      localStorage.setItem("rixzolightTheme", "light");
-      localStorage.removeItem("rixzodarkTheme");
-      localStorage.removeItem("rixzomenu");
-      localStorage.removeItem("rixzoheader");
-      localStorage.removeItem("bodyBg");
-      localStorage.removeItem("bodyBg2");
-      localStorage.removeItem("bgImg");
+      localStorage.setItem('rixzolightTheme', 'light');
+      localStorage.removeItem('rixzodarkTheme');
+      localStorage.removeItem('rixzomenu');
+      localStorage.removeItem('rixzoheader');
+      localStorage.removeItem('bodyBg');
+      localStorage.removeItem('bodyBg2');
+      localStorage.removeItem('bgImg');
     } else {
-      localStorage.setItem("rixzodarkTheme", "dark");
-      localStorage.removeItem("rixzolightTheme");
-      localStorage.removeItem("rixzomenu");
-      localStorage.removeItem("rixzoheader");
-      localStorage.removeItem("bodyBg");
-      localStorage.removeItem("bodyBg2");
-      localStorage.removeItem("inputBorder");
-      localStorage.removeItem("lightRgb");
-      localStorage.removeItem("formControlBg");
-      localStorage.removeItem("gray");
+      localStorage.setItem('rixzodarkTheme', 'dark');
+      localStorage.removeItem('rixzolightTheme');
+      localStorage.removeItem('rixzomenu');
+      localStorage.removeItem('rixzoheader');
+      localStorage.removeItem('bodyBg');
+      localStorage.removeItem('bodyBg2');
+      localStorage.removeItem('inputBorder');
+      localStorage.removeItem('lightRgb');
+      localStorage.removeItem('formControlBg');
+      localStorage.removeItem('gray');
     }
   };
 
@@ -277,53 +254,54 @@ const Header = () => {
   const cartProduct = [
     {
       id: 1,
-      image: "/assets/images/media/media-92.jpg",
-      name: "EliteChair Pro",
-      category: "Furniture",
-      qty: " 01",
-      price: "1299.00",
+      image: '/assets/images/media/media-92.jpg',
+      name: 'EliteChair Pro',
+      category: 'Furniture',
+      qty: ' 01',
+      price: '1299.00',
     },
     {
       id: 2,
-      image: "/assets/images/media/media-95.jpg",
-      name: "Sunglasses",
-      category: "Accessories",
-      qty: "01",
-      price: "249.99",
+      image: '/assets/images/media/media-95.jpg',
+      name: 'Sunglasses',
+      category: 'Accessories',
+      qty: '01',
+      price: '249.99',
     },
     {
       id: 3,
-      image: "/assets/images/media/media-93.jpg",
-      name: "StellarPhone X",
-      category: "Smartphones",
-      qty: "01",
-      price: "1199.08",
+      image: '/assets/images/media/media-93.jpg',
+      name: 'StellarPhone X',
+      category: 'Smartphones',
+      qty: '01',
+      price: '1199.08',
     },
     {
       id: 4,
-      image: "/assets/images/media/media-96.jpg",
-      name: "PowerBeats Pro",
-      category: "Audio Accessories",
-      qty: "01",
-      price: "249.95",
+      image: '/assets/images/media/media-96.jpg',
+      name: 'PowerBeats Pro',
+      category: 'Audio Accessories',
+      qty: '01',
+      price: '249.95',
     },
   ];
 
   const maxDisplayItems = 5;
 
   const dispatch = useDispatch();
-  const cart = useSelector((state: any) => state.cart.items);
+  const cart = useSelector((state) => state.cart.items);
   const [localCart, setLocalCart] = useState(cartProduct);
   const [remainingCount2, setRemainingCount2] = useState(0);
 
   const card = [...localCart, ...cart];
 
   useEffect(() => {
+    console.log(remainingCount2);
     setRemainingCount2(card.length);
     setCartItemCount(localCart.length);
   }, [cart, localCart]);
 
-  const handleDelete = (id: number, event: any) => {
+  const handleDelete = (id: number, event) => {
     event.stopPropagation();
     // Remove item from local cart
     const updatedLocalCart = localCart.filter((item) => item.id !== id);
@@ -333,10 +311,10 @@ const Header = () => {
     // Remove item from redux cart
     dispatch(removeCart(id));
   };
-  const [cartItems, setCartItems] = useState([...cartProduct]);
   const [cartItemCount, setCartItemCount] = useState(cartProduct.length);
 
   useEffect(() => {
+    console.log(cartItemCount);
     setCartItemCount(localCart.length);
   }, [localCart]);
 
@@ -345,59 +323,59 @@ const Header = () => {
   const notificationNotes = [
     {
       id: 1,
-      image: "/assets/images/faces/1.jpg",
-      name: "Sonia Agarwal",
-      notificationType: "Approval",
-      description: "for the Insurance",
-      time: "7 mins ago",
-      status: "text-success",
-      textcolor: "success",
+      image: '/assets/images/faces/1.jpg',
+      name: 'Sonia Agarwal',
+      notificationType: 'Approval',
+      description: 'for the Insurance',
+      time: '7 mins ago',
+      status: 'text-success',
+      textcolor: 'success',
     },
     {
       id: 2,
-      image: "/assets/images/faces/12.jpg",
-      name: "Rajesh Kumar",
-      notificationType: "Urgent Request",
-      description: "for project",
-      time: "3 hours ago",
-      status: "text-warning",
-      textcolor: "warning",
+      image: '/assets/images/faces/12.jpg',
+      name: 'Rajesh Kumar',
+      notificationType: 'Urgent Request',
+      description: 'for project',
+      time: '3 hours ago',
+      status: 'text-warning',
+      textcolor: 'warning',
     },
     {
       id: 3,
-      image: "/assets/images/faces/3.jpg",
-      name: "Ayesha Malik",
-      notificationType: "Task Completed",
-      description: "for redesign",
-      time: "2 hours ago",
-      status: "text-info",
-      textcolor: "info",
+      image: '/assets/images/faces/3.jpg',
+      name: 'Ayesha Malik',
+      notificationType: 'Task Completed',
+      description: 'for redesign',
+      time: '2 hours ago',
+      status: 'text-info',
+      textcolor: 'info',
     },
     {
       id: 4,
-      image: "/assets/images/faces/14.jpg",
-      name: "Mohan Desai",
-      notificationType: "New Message",
-      description: "about client meeting",
-      time: "15 mins ago",
-      status: "text-danger",
-      textcolor: "danger",
+      image: '/assets/images/faces/14.jpg',
+      name: 'Mohan Desai',
+      notificationType: 'New Message',
+      description: 'about client meeting',
+      time: '15 mins ago',
+      status: 'text-danger',
+      textcolor: 'danger',
     },
     {
       id: 5,
-      image: "/assets/images/faces/5.jpg",
-      name: "Priya Sharma",
-      notificationType: "Meeting Reminder",
-      description: "scheduled for 3:00 PM",
-      time: "30 mins ago",
-      status: "text-warning",
-      textcolor: "warning",
+      image: '/assets/images/faces/5.jpg',
+      name: 'Priya Sharma',
+      notificationType: 'Meeting Reminder',
+      description: 'scheduled for 3:00 PM',
+      time: '30 mins ago',
+      status: 'text-warning',
+      textcolor: 'warning',
     },
   ];
 
   const [note, setNote] = useState(notificationNotes);
 
-  const handleNoteRemove = (id: any, e: React.MouseEvent) => {
+  const handleNoteRemove = (id, e: React.MouseEvent) => {
     e.stopPropagation();
     const deleteNoti = note.filter((item) => item.id !== id);
     setNote(deleteNoti);
@@ -405,40 +383,40 @@ const Header = () => {
 
   const appData = [
     {
-      name: "Figma",
-      image: "figma.png",
-      bgColorClass: "pink",
-      borderColorClass: "pink",
+      name: 'Figma',
+      image: 'figma.png',
+      bgColorClass: 'pink',
+      borderColorClass: 'pink',
     },
     {
-      name: "PowerPoint",
-      image: "microsoft-powerpoint.png",
-      bgColorClass: "success",
-      borderColorClass: "success",
+      name: 'PowerPoint',
+      image: 'microsoft-powerpoint.png',
+      bgColorClass: 'success',
+      borderColorClass: 'success',
     },
     {
-      name: "MS Word",
-      image: "microsoft-word.png",
-      bgColorClass: "primary",
-      borderColorClass: "primary",
+      name: 'MS Word',
+      image: 'microsoft-word.png',
+      bgColorClass: 'primary',
+      borderColorClass: 'primary',
     },
     {
-      name: "Calendar",
-      image: "calender.png",
-      bgColorClass: "info",
-      borderColorClass: "info",
+      name: 'Calendar',
+      image: 'calender.png',
+      bgColorClass: 'info',
+      borderColorClass: 'info',
     },
     {
-      name: "Sketch",
-      image: "sketch.png",
-      bgColorClass: "secondary",
-      borderColorClass: "secondary",
+      name: 'Sketch',
+      image: 'sketch.png',
+      bgColorClass: 'secondary',
+      borderColorClass: 'secondary',
     },
     {
-      name: "Google",
-      image: "google.png",
-      bgColorClass: "danger",
-      borderColorClass: "danger",
+      name: 'Google',
+      image: 'google.png',
+      bgColorClass: 'danger',
+      borderColorClass: 'danger',
     },
   ];
 
@@ -457,67 +435,63 @@ const Header = () => {
       !searchInput.contains(event.target as Node) &&
       !container.contains(event.target as Node)
     ) {
-      container.classList.remove("searchdrop");
+      container.classList.remove('searchdrop');
     } else if (
       searchInput &&
       container &&
-      (searchInput === event.target ||
-        searchInput.contains(event.target as Node))
+      (searchInput === event.target || searchInput.contains(event.target as Node))
     ) {
-      container.classList.add("searchdrop");
+      container.classList.add('searchdrop');
     }
   };
 
   useEffect(() => {
-    document.body.addEventListener("click", handleClick);
+    document.body.addEventListener('click', handleClick);
 
     return () => {
-      document.body.removeEventListener("click", handleClick);
+      document.body.removeEventListener('click', handleClick);
     };
   }, []);
 
   const searchResultRef = useRef<HTMLDivElement | null>(null);
   const [showa, setShowa] = useState(false);
-  const [InputValue, setInputValue] = useState("");
+  const [InputValue, setInputValue] = useState('');
   const [show2, setShow2] = useState(false);
-  const [searchcolor, setsearchcolor] = useState("text-dark");
-  const [searchval, setsearchval] = useState("Type something");
+  const [searchcolor, setsearchcolor] = useState('text-dark');
+  const [searchval, setsearchval] = useState('Type something');
   const [NavData, setNavData] = useState([]);
 
   useEffect(() => {
-    const clickHandler = (event: any) => {
-      if (
-        searchResultRef.current &&
-        !searchResultRef.current.contains(event.target)
-      ) {
-        searchResultRef.current.classList.add("d-none");
+    const clickHandler = (event) => {
+      if (searchResultRef.current && !searchResultRef.current.contains(event.target)) {
+        searchResultRef.current.classList.add('d-none');
       }
     };
 
-    document.addEventListener("click", clickHandler);
+    document.addEventListener('click', clickHandler);
 
     return () => {
-      document.removeEventListener("click", clickHandler);
+      document.removeEventListener('click', clickHandler);
     };
   }, []);
 
   const myfunction = (inputvalue: string) => {
     if (searchResultRef.current) {
-      searchResultRef.current.classList.remove("d-none");
+      searchResultRef.current.classList.remove('d-none');
     }
 
-    const i: any = [];
-    const allElement2: any = [];
-    MENUITEMS.forEach((mainLevel: any) => {
+    const i = [];
+    const allElement2 = [];
+    MENUITEMS.forEach((mainLevel) => {
       if (mainLevel.children) {
         setShowa(true);
-        mainLevel.children.forEach((subLevel: any) => {
+        mainLevel.children.forEach((subLevel) => {
           i.push(subLevel);
           if (subLevel.children) {
-            subLevel.children.forEach((subLevel1: any) => {
+            subLevel.children.forEach((subLevel1) => {
               i.push(subLevel1);
               if (subLevel1.children) {
-                subLevel1.children.forEach((subLevel2: any) => {
+                subLevel1.children.forEach((subLevel2) => {
                   i.push(subLevel2);
                 });
               }
@@ -528,30 +502,25 @@ const Header = () => {
     });
     for (const allElement of i) {
       if (allElement.title.toLowerCase().includes(inputvalue.toLowerCase())) {
-        if (
-          allElement.title.toLowerCase().startsWith(inputvalue.toLowerCase())
-        ) {
+        if (allElement.title.toLowerCase().startsWith(inputvalue.toLowerCase())) {
           setShow2(true);
-          if (
-            allElement.path &&
-            !allElement2.some((el: any) => el.title === allElement.title)
-          ) {
+          if (allElement.path && !allElement2.some((el) => el.title === allElement.title)) {
             allElement2.push(allElement);
           }
         }
       }
     }
 
-    if (!allElement2.length || inputvalue === "") {
-      if (inputvalue === "") {
+    if (!allElement2.length || inputvalue === '') {
+      if (inputvalue === '') {
         setShow2(false);
-        setsearchval("Type something");
-        setsearchcolor("text-dark");
+        setsearchval('Type something');
+        setsearchcolor('text-dark');
       }
       if (!allElement2.length) {
         setShow2(false);
-        setsearchcolor("text-danger");
-        setsearchval("There is no component with this name");
+        setsearchcolor('text-danger');
+        setsearchval('There is no component with this name');
       }
     }
     setNavData(allElement2);
@@ -562,16 +531,13 @@ const Header = () => {
   const handleClose1 = () => setShow1(false);
   const handleShow1 = () => setShow1(true);
 
-  const { handleLogout } = useAuth();
   return (
     <Fragment>
       <header className="app-header sticky" id="header">
         {/* <!-- Start::main-header-container --> */}
 
         <div className="main-header-container container-fluid">
-          {variable.toggled === "open" && (
-            <div ref={overlayRef} id="responsive-overlay"></div>
-          )}
+          {variable.toggled === 'open' && <div ref={overlayRef} id="responsive-overlay"></div>}
 
           {/* <!-- Start::header-content-left --> */}
 
@@ -584,7 +550,7 @@ const Header = () => {
                   <Image
                     fill
                     src={`${
-                      process.env.NODE_ENV === "production" ? basePath : ""
+                      process.env.NODE_ENV === 'production' ? basePath : ''
                     }/assets/images/brand-logos/desktop-logo.png`}
                     alt="logo"
                     className="desktop-logo"
@@ -592,7 +558,7 @@ const Header = () => {
                   <Image
                     fill
                     src={`${
-                      process.env.NODE_ENV === "production" ? basePath : ""
+                      process.env.NODE_ENV === 'production' ? basePath : ''
                     }/assets/images/brand-logos/toggle-logo.png`}
                     alt="logo"
                     className="toggle-logo"
@@ -600,7 +566,7 @@ const Header = () => {
                   <Image
                     fill
                     src={`${
-                      process.env.NODE_ENV === "production" ? basePath : ""
+                      process.env.NODE_ENV === 'production' ? basePath : ''
                     }/assets/images/brand-logos/desktop-white.png`}
                     alt="logo"
                     className="desktop-white"
@@ -608,7 +574,7 @@ const Header = () => {
                   <Image
                     fill
                     src={`${
-                      process.env.NODE_ENV === "production" ? basePath : ""
+                      process.env.NODE_ENV === 'production' ? basePath : ''
                     }/assets/images/brand-logos/toggle-white.png`}
                     alt="logo"
                     className="toggle-white"
@@ -660,10 +626,7 @@ const Header = () => {
                 autoComplete="off"
                 autoCapitalize="off"
               />
-              <a
-                href="javascript:void(0);"
-                className="header-search-icon border-0"
-              >
+              <a href="javascript:void(0);" className="header-search-icon border-0">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   height="24px"
@@ -681,20 +644,18 @@ const Header = () => {
                   ref={searchResultRef}
                 >
                   <div className="card-header">
-                    <div className="card-title mb-0 text-break">
-                      Search result of {InputValue}
-                    </div>
+                    <div className="card-title mb-0 text-break">Search result of {InputValue}</div>
                   </div>
                   <div className="card-body overflow-auto">
                     <ListGroup className="m-2">
                       {show2 ? (
-                        NavData.map((e: any) => (
+                        NavData.map((e) => (
                           <ListGroup.Item key={Math.random()} className="">
                             <Link
                               href={`${e.path}/`}
                               className="search-result-item"
                               onClick={() => {
-                                setShowa(false), setInputValue("");
+                                setShowa(false), setInputValue('');
                               }}
                             >
                               {e.title}
@@ -708,7 +669,7 @@ const Header = () => {
                   </div>
                 </div>
               ) : (
-                ""
+                ''
               )}
               {/* <!-- End::header-link --> */}
             </div>
@@ -765,7 +726,7 @@ const Header = () => {
                     width={20}
                     height={20}
                     src={`${
-                      process.env.NODE_ENV === "production" ? basePath : ""
+                      process.env.NODE_ENV === 'production' ? basePath : ''
                     }/assets/images/flags/us_flag.jpg`}
                     alt="img"
                   />
@@ -791,9 +752,7 @@ const Header = () => {
                           width={20}
                           height={20}
                           src={`${
-                            process.env.NODE_ENV === "production"
-                              ? basePath
-                              : ""
+                            process.env.NODE_ENV === 'production' ? basePath : ''
                           }/assets/images/flags/us_flag.jpg`}
                           alt="img"
                         />
@@ -814,9 +773,7 @@ const Header = () => {
                           width={20}
                           height={20}
                           src={`${
-                            process.env.NODE_ENV === "production"
-                              ? basePath
-                              : ""
+                            process.env.NODE_ENV === 'production' ? basePath : ''
                           }/assets/images/flags/spain_flag.jpg`}
                           alt="img"
                         />
@@ -837,9 +794,7 @@ const Header = () => {
                           width={20}
                           height={20}
                           src={`${
-                            process.env.NODE_ENV === "production"
-                              ? basePath
-                              : ""
+                            process.env.NODE_ENV === 'production' ? basePath : ''
                           }/assets/images/flags/french_flag.jpg`}
                           alt="img"
                         />
@@ -860,9 +815,7 @@ const Header = () => {
                           width={20}
                           height={20}
                           src={`${
-                            process.env.NODE_ENV === "production"
-                              ? basePath
-                              : ""
+                            process.env.NODE_ENV === 'production' ? basePath : ''
                           }/assets/images/flags/uae_flag.jpg`}
                           alt="img"
                         />
@@ -883,9 +836,7 @@ const Header = () => {
                           width={20}
                           height={20}
                           src={`${
-                            process.env.NODE_ENV === "production"
-                              ? basePath
-                              : ""
+                            process.env.NODE_ENV === 'production' ? basePath : ''
                           }/assets/images/flags/italy_flag.jpg`}
                           alt="img"
                         />
@@ -906,9 +857,7 @@ const Header = () => {
                           width={20}
                           height={20}
                           src={`${
-                            process.env.NODE_ENV === "production"
-                              ? basePath
-                              : ""
+                            process.env.NODE_ENV === 'production' ? basePath : ''
                           }/assets/images/flags/russia_flag.jpg`}
                           alt="img"
                         />
@@ -977,19 +926,10 @@ const Header = () => {
 
             {/* <!-- Start::header-element --> */}
 
-            <Dropdown
-              className="header-element cart-dropdown"
-              align={"end"}
-              autoClose="outside"
-            >
+            <Dropdown className="header-element cart-dropdown" align={'end'} autoClose="outside">
               {/* <!-- Start::header-link|dropdown-toggle --> */}
 
-              <DropdownToggle
-                href="#!"
-                className="header-link"
-                variant=""
-                as="a"
-              >
+              <DropdownToggle href="#!" className="header-link" variant="" as="a">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="header-link-icon"
@@ -1021,21 +961,14 @@ const Header = () => {
                 <div className="p-3 bg-light bg-opacity-75">
                   <div className="d-flex align-items-center justify-content-between">
                     <p className="mb-0 fw-semibold">Cart Items</p>
-                    <SpkBadge
-                      variant="pink"
-                      Customclass="ms-1 fs-12"
-                      Id="cart-data"
-                    >
-                      {" "}
+                    <SpkBadge variant="pink" Customclass="ms-1 fs-12" Id="cart-data">
+                      {' '}
                       {card.length} Items
                     </SpkBadge>
                   </div>
                 </div>
                 <div className="dropdown-divider"></div>
-                <SimpleBar
-                  className="list-unstyled mb-0"
-                  id="header-cart-items-scroll"
-                >
+                <SimpleBar className="list-unstyled mb-0" id="header-cart-items-scroll">
                   {card.slice(0, maxDisplayItems).map((item, index) => (
                     <Dropdown.Item as="li" key={index}>
                       <div className="d-flex align-items-center gap-3">
@@ -1045,9 +978,7 @@ const Header = () => {
                               width={48}
                               height={48}
                               src={`${
-                                process.env.NODE_ENV === "production"
-                                  ? basePath
-                                  : ""
+                                process.env.NODE_ENV === 'production' ? basePath : ''
                               }${item.image}`}
                               alt="img"
                             />
@@ -1059,9 +990,7 @@ const Header = () => {
                               {item.name}
                             </Link>
                           </div>
-                          <span className="text-muted fs-12 fw-normal">
-                            {item.category}
-                          </span>
+                          <span className="text-muted fs-12 fw-normal">{item.category}</span>
                           <div className="fs-11 fw-medium text-default">
                             <span className="text-muted">Qty:</span> {item.qty}
                           </div>
@@ -1075,9 +1004,7 @@ const Header = () => {
                           >
                             <i className="ti ti-trash"></i>
                           </Link>
-                          <div className="fw-semibold fs-14 text-default">
-                            ${item.price}
-                          </div>
+                          <div className="fw-semibold fs-14 text-default">${item.price}</div>
                         </div>
                       </div>
                     </Dropdown.Item>
@@ -1085,9 +1012,7 @@ const Header = () => {
                 </SimpleBar>
 
                 <div
-                  className={`p-3 empty-header-item border-top ${
-                    card.length === 0 && "d-none"
-                  }`}
+                  className={`p-3 empty-header-item border-top ${card.length === 0 && 'd-none'}`}
                 >
                   <div className="d-grid">
                     <Link scroll={false} href="#!" className="btn btn-primary">
@@ -1101,11 +1026,9 @@ const Header = () => {
                       <span className="avatar avatar-xl avatar-rounded bg-warning-transparent">
                         <i className="ri-shopping-cart-2-line fs-2"></i>
                       </span>
-                      <h6 className="fw-semibold mb-1 mt-3">
-                        Your Cart is Empty
-                      </h6>
+                      <h6 className="fw-semibold mb-1 mt-3">Your Cart is Empty</h6>
                       <span className="mb-3 fw-normal fs-13 d-block">
-                        Add some items to make me happy{" "}
+                        Add some items to make me happy{' '}
                       </span>
                       <Link
                         scroll={false}
@@ -1113,8 +1036,7 @@ const Header = () => {
                         className="btn btn-primary btn-wave btn-sm m-1"
                         data-abc="true"
                       >
-                        continue shopping{" "}
-                        <i className="bi bi-arrow-right ms-1"></i>
+                        continue shopping <i className="bi bi-arrow-right ms-1"></i>
                       </Link>
                     </div>
                   </div>
@@ -1130,7 +1052,7 @@ const Header = () => {
 
             <Dropdown
               className="header-element notifications-dropdown d-xl-inline-flex dropdown"
-              align={"end"}
+              align={'end'}
               autoClose="outside"
             >
               {/* <!-- Start::header-link|dropdown-toggle --> */}
@@ -1175,11 +1097,8 @@ const Header = () => {
                   </div>
                 </div>
                 <div className="dropdown-divider"></div>
-                <SimpleBar
-                  className="list-unstyled mb-0"
-                  id="header-notification-scroll"
-                >
-                  {note.map((item: any, index: any) => (
+                <SimpleBar className="list-unstyled mb-0" id="header-notification-scroll">
+                  {note.map((item, index) => (
                     <DropdownItem as="li" className="dropdown-item" key={index}>
                       <div className="d-flex align-items-start">
                         <div className="pe-2">
@@ -1187,9 +1106,7 @@ const Header = () => {
                             <Image
                               fill
                               src={`${
-                                process.env.NODE_ENV === "production"
-                                  ? basePath
-                                  : ""
+                                process.env.NODE_ENV === 'production' ? basePath : ''
                               }${item.image}`}
                               alt="img"
                             />
@@ -1203,11 +1120,9 @@ const Header = () => {
                               </Link>
                             </p>
                             <div className="fw-normal header-notification-text text-muted">
-                              <span
-                                className={`fw-medium fs-12 text-${item.textcolor}`}
-                              >
+                              <span className={`fw-medium fs-12 text-${item.textcolor}`}>
                                 {item.notificationType}
-                              </span>{" "}
+                              </span>{' '}
                               {item.description}
                             </div>
                             <span className="text-muted header-notification-text fs-11">
@@ -1230,9 +1145,7 @@ const Header = () => {
                   ))}
                 </SimpleBar>
                 <div
-                  className={`p-3 empty-header-item1 border-top ${
-                    note.length === 0 && "d-none"
-                  } `}
+                  className={`p-3 empty-header-item1 border-top ${note.length === 0 && 'd-none'} `}
                 >
                   <div className="d-grid">
                     <Link scroll={false} href="#!" className="btn btn-primary">
@@ -1259,10 +1172,7 @@ const Header = () => {
 
             {/* <!-- Start::header-element --> */}
 
-            <Dropdown
-              className="header-element header-shortcuts-dropdown"
-              align={"end"}
-            >
+            <Dropdown className="header-element header-shortcuts-dropdown" align={'end'}>
               {/* <!-- Start::header-link|dropdown-toggle --> */}
 
               <DropdownToggle
@@ -1310,10 +1220,7 @@ const Header = () => {
                   </div>
                 </div>
                 <div className="dropdown-divider mb-0"></div>
-                <div
-                  className="main-header-shortcuts p-3"
-                  id="header-shortcut-scroll"
-                >
+                <div className="main-header-shortcuts p-3" id="header-shortcut-scroll">
                   <Row className="g-2">
                     {appData.map((app, index) => (
                       <Col className="col-4" key={index}>
@@ -1327,9 +1234,7 @@ const Header = () => {
                               <Image
                                 fill
                                 src={`${
-                                  process.env.NODE_ENV === "production"
-                                    ? basePath
-                                    : ""
+                                  process.env.NODE_ENV === 'production' ? basePath : ''
                                 }/assets/images/apps/${app.image}`}
                                 alt={app.name}
                               />
@@ -1360,11 +1265,7 @@ const Header = () => {
             <div className="header-element header-fullscreen">
               {/* <!-- Start::header-link --> */}
 
-              <Link
-                href="#!"
-                className="header-link"
-                onClick={toggleFullscreen}
-              >
+              <Link href="#!" className="header-link" onClick={toggleFullscreen}>
                 {isFullscreen ? (
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -1399,7 +1300,7 @@ const Header = () => {
 
             {/* <!-- Start::header-element --> */}
 
-            <Dropdown className="header-element dropdown" align={"end"}>
+            <Dropdown className="header-element dropdown" align={'end'}>
               {/* <!-- Start::header-link|dropdown-toggle --> */}
 
               <DropdownToggle
@@ -1415,7 +1316,7 @@ const Header = () => {
                     height={28}
                     width={28}
                     src={`${
-                      process.env.NODE_ENV === "production" ? basePath : ""
+                      process.env.NODE_ENV === 'production' ? basePath : ''
                     }/assets/images/faces/14.jpg`}
                     alt="img"
                     className="img-fluid"
@@ -1429,45 +1330,29 @@ const Header = () => {
                 className="main-header-dropdown dropdown-menu pt-0 overflow-hidden header-profile-dropdown dropdown-menu-end"
                 aria-labelledby="mainHeaderProfile"
               >
-                <Link
-                  href="#!"
-                  className="p-3 bg-light bg-opacity-75 border-bottom d-block"
-                >
+                <Link href="#!" className="p-3 bg-light bg-opacity-75 border-bottom d-block">
                   <div className="d-flex align-items-center justify-content-between gap-2">
                     <div>
                       <p className="mb-0 fw-semibold lh-1">Ashwin Seth</p>
-                      <span className="fs-11 text-muted">
-                        ashwinseth@mail.com
-                      </span>
+                      <span className="fs-11 text-muted">ashwinseth@mail.com</span>
                     </div>
-                    <span className="badge bg-pink align-self-end mb-1">
-                      Pro
-                    </span>
+                    <span className="badge bg-pink align-self-end mb-1">Pro</span>
                   </div>
                 </Link>
-                <Link
-                  href="#!"
-                  className="dropdown-item d-flex align-items-center border-bottom-0"
-                >
+                <Link href="#!" className="dropdown-item d-flex align-items-center border-bottom-0">
                   <i className="ti ti-user-circle fs-18 me-2 text-gray fw-normal"></i>
                   My Profile
                 </Link>
-                <Link
-                  href="#!"
-                  className="dropdown-item d-flex align-items-center border-bottom-0"
-                >
+                <Link href="#!" className="dropdown-item d-flex align-items-center border-bottom-0">
                   <i className="ti ti-inbox fs-18 me-2 text-gray fw-normal"></i>
                   Mail Inbox<span className="badge bg-success ms-auto">06</span>
                 </Link>
-                <Link
-                  href="#!"
-                  className="dropdown-item d-flex align-items-center border-bottom-0"
-                >
+                <Link href="#!" className="dropdown-item d-flex align-items-center border-bottom-0">
                   <i className="ti ti-adjustments-horizontal fs-18 me-2 text-gray fw-normal"></i>
-                  Account Settings{" "}
+                  Account Settings{' '}
                 </Link>
                 <SpkButton
-                  onClickfunc={handleLogout}
+                  onClickfunc={handleSignOut}
                   Customclass="dropdown-item d-flex align-items-center border-bottom-0"
                 >
                   <i className="ti ti-logout fs-18 me-2 text-gray fw-normal"></i>
@@ -1530,11 +1415,7 @@ const Header = () => {
                 aria-label="Search Anything ..."
                 aria-describedby="button-addon2"
               />
-              <SpkButton
-                Buttonvariant="primary"
-                Buttontype="button"
-                Id="button-addon2"
-              >
+              <SpkButton Buttonvariant="primary" Buttontype="button" Id="button-addon2">
                 <i className="bi bi-search"></i>
               </SpkButton>
             </div>

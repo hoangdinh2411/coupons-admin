@@ -1,51 +1,26 @@
-import  { createContext, useContext, useState, ReactNode } from "react";
-import CustomToast from "@/components/Toast";
+'use client';
+import React, { useEffect } from 'react';
+import toast, { Toaster, useToasterStore } from 'react-hot-toast';
 
-export type ToastType = "success" | "error" | "warning" | "info";
+export default function ToastProvider() {
+  const { toasts } = useToasterStore();
 
-interface ToastContextType {
-    onOpenToast: (message: string, type?: ToastType) => void;
-}
-
-const ToastContext = createContext<ToastContextType | undefined>(undefined);
-
-export const ToastProvider = ({ children }: { children: ReactNode }) => {
-    const [showToast, setShowToast] = useState<{
-        open: boolean;
-        type: ToastType;
-        message: string;
-    }>({
-        open: false,
-        type: "success",
-        message: "",
-    });
-
-    const onOpenToast = (message: string, type: ToastType = "success") => {
-        setShowToast({ open: true, message, type });
-    };
-
-    const onCloseToast = () => {
-        setShowToast((prev) => ({ ...prev, open: false }));
-    };
-
-    return (
-        <ToastContext.Provider value= {{ onOpenToast }
-}>
-    { children }
-    < CustomToast
-show = { showToast.open }
-message = { showToast.message }
-type = { showToast.type }
-onClose = { onCloseToast }
-    />
-    </ToastContext.Provider>
-  );
-};
-
-export const useToast = () => {
-    const context = useContext(ToastContext);
-    if (!context) {
-        throw new Error("useToast must be used inside ToastProvider");
+  useEffect(() => {
+    const visible = toasts.filter((t) => t.visible);
+    if (visible.length > 1) {
+      const oldest = visible[0];
+      if (oldest?.id) {
+        toast.dismiss(oldest?.id);
+      }
     }
-    return context;
-};
+  }, [toasts]);
+  return (
+    <Toaster
+      position="top-center"
+      toastOptions={{
+        duration: 5000,
+        removeDelay: 500,
+      }}
+    />
+  );
+}
