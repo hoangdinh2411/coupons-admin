@@ -6,12 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "postcss": "sass ./public/assets/scss/style.scss ./public/assets/css/style.css && postcss ./public/assets/css/style.css -o ./public/assets/css/style.css",
     "sass": "sass ./public/assets/scss/:./public/assets/css/",
-    "sass-min": "sass ./public/assets/scss/:./public/assets/css/ --style compressed",
-    "prepare": "husky"
+    "sass-min": "sass ./public/assets/scss/:./public/assets/css/ --style compressed"
   },
   "dependencies": {
     "@emotion/styled": "^11.14.0",
@@ -27,6 +24,7 @@
     "react-datepicker": "^8.2.1",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.57.0",
+    "react-hot-toast": "^2.5.2",
     "react-range": "^1.10.0",
     "react-redux": "^9.2.0",
     "redux": "^5.0.1",
@@ -34,7 +32,8 @@
     "sass": "^1.86.0",
     "simplebar-react": "^3.3.0",
     "sweetalert2": "^11.17.2",
-    "zod": "^3.25.63"
+    "zod": "^3.25.63",
+    "zustand": "^5.0.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -43,15 +42,7 @@
     "@types/react-dom": "^19",
     "@typescript-eslint/eslint-plugin": "^8.34.0",
     "@typescript-eslint/parser": "^8.34.0",
-    "eslint": "^9.29.0",
-    "eslint-config-next": "^15.2.3",
     "eslint-config-prettier": "^10.1.5",
-    "eslint-plugin-prettier": "^5.4.1",
-    "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^5.2.0",
-    "husky": "^9.1.7",
-    "lint-staged": "^16.1.2",
-    "prettier": "^3.5.3",
     "typescript": "^5"
   },
   "lint-staged": {
