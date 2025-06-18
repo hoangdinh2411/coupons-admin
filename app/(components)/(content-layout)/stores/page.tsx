@@ -14,18 +14,17 @@ import {
 import Seo from "@/shared/layouts-components/seo/seo";
 import SpkButton from "@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons";
 import SpkTables from "@/shared/@spk-reusable-components/reusable-tables/spk-tables";
-import CreateStoreModal from "./CreateStoreModal";
 import UpdateStoreModal from "./UpdateStoreModal";
 import { DUMMY_STORES_TABLE } from "@/constants/dummy.table";
 import { IStore } from "@/types/store.type";
+import { redirect } from "next/navigation";
 
 const HEADER = [
   { title: "Store ID" },
   { title: "Name" },
-  { title: "Description" },
   { title: "Image" },
   { title: "keywords" },
-  {title: "Category ID"},
+  { title: "Category ID" },
   { title: "Actions" },
 ];
 
@@ -83,11 +82,10 @@ const StoreTemplate: React.FC = () => {
   return (
     <>
       <Seo title="Ecommerce - STORE" />
-
       <Card className="custom-card">
         <Card.Header className="justify-content-between">
           <Card.Title>All Stores</Card.Title>
-        
+
         </Card.Header>
 
         <Card.Body>
@@ -109,7 +107,7 @@ const StoreTemplate: React.FC = () => {
                 </InputGroup>
 
                 <SpkButton
-                  onClickfunc={() => setOpenCreateStore(true)}
+                  onClickfunc={() => redirect("/stores/create")}
                   Buttonvariant="primary"
                   Customclass="w-auto"
                 >
@@ -121,51 +119,50 @@ const StoreTemplate: React.FC = () => {
 
           {/* Table */}
           <div className="table-responsive mt-3">
-  <SpkTables tableClass="table-hover text-nowrap" header={HEADER}>
-    {paginatedSTORE.map((store: any) => (
-      <tr key={store.id}>
-        <td>{store.id}</td>
-        <td>{store.name}</td>
-        <td>{store.description}</td>
-        <td>
-          <Image
-            src={store.meta_data?.image || '/default-image.png'} 
-            alt={store.name}
-            width={40}
-            height={40}
-            className="rounded"
-          />
-        </td>
-        <td>
-          {store.keywords?.map((k: string, index: number) => (
-            <span key={index} className="badge bg-primary me-1">
-              {k}
-            </span>
-          ))}
-        </td>
-        <td>{store.category || 'N/A'}</td>
-        <td>
-          <Button
-            variant="success-light"
-            size="sm"
-            className="btn-icon"
-            onClick={() => handleOpenUpdateStore(store)}
-          >
-            <i className="ri-edit-line"></i>
-          </Button>
-          <Button
-            variant="danger-light"
-            size="sm"
-            className="btn-icon mx-2"
-            onClick={() => handleRemove(store.id)}
-          >
-            <i className="ri-delete-bin-line"></i>
-          </Button>
-        </td>
-      </tr>
-    ))}
-  </SpkTables>
-</div>
+            <SpkTables tableClass="table-hover text-nowrap" header={HEADER}>
+              {paginatedSTORE.map((store: any) => (
+                <tr key={store.id}>
+                  <td>{store.id}</td>
+                  <td>{store.name}</td>
+                  <td>
+                    <Image
+                      src={store.meta_data?.image || '/default-image.png'}
+                      alt={store.name}
+                      width={40}
+                      height={40}
+                      className="rounded"
+                    />
+                  </td>
+                  <td>
+                    {store.keywords?.map((k: string, index: number) => (
+                      <span key={index} className="badge bg-primary me-1">
+                        {k}
+                      </span>
+                    ))}
+                  </td>
+                  <td>{store.category || 'N/A'}</td>
+                  <td>
+                    <Button
+                      variant="success-light"
+                      size="sm"
+                      className="btn-icon"
+                      onClick={() => handleOpenUpdateStore(store)}
+                    >
+                      <i className="ri-edit-line"></i>
+                    </Button>
+                    <Button
+                      variant="danger-light"
+                      size="sm"
+                      className="btn-icon mx-2"
+                      onClick={() => handleRemove(store.id)}
+                    >
+                      <i className="ri-delete-bin-line"></i>
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </SpkTables>
+          </div>
 
         </Card.Body>
 
@@ -204,10 +201,6 @@ const StoreTemplate: React.FC = () => {
         </Card.Footer>
       </Card>
 
-      <CreateStoreModal
-        open={openCreateStore}
-        onClose={() => setOpenCreateStore(false)}
-      />
       <UpdateStoreModal
         item={updateStore.item}
         open={updateStore.isOpen}
