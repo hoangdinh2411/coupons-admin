@@ -5,12 +5,14 @@ import { data$, getState } from '@/shared/layouts-components/services/switcherSe
 import useAppStore from '@/store/useAppStore';
 import { LinearProgress } from '@mui/material';
 import { createContext } from 'react';
+import { usePathname } from 'next/navigation';
 const Initialload = createContext<any>(null);
 
 const InitialLoadProvider = ({ children }: { children: React.ReactNode }) => {
   const [localVariable, setLocalVariable] = useState(getState());
   const [pageloading, setpageloading] = useState(false);
-  const { appLoading } = useAppStore.getState();
+  const { appLoading , toggleAppLoading} = useAppStore();
+  const pathname = usePathname()
   const customstyles: any = {
     ...(localVariable.colorPrimaryRgb !== '' && { '--primary-rgb': localVariable.colorPrimaryRgb }),
     ...(localVariable.bodyBg !== '' && { '--body-bg-rgb': localVariable.bodyBg }),
@@ -20,20 +22,17 @@ const InitialLoadProvider = ({ children }: { children: React.ReactNode }) => {
     ...(localVariable.gray !== '' && { '--gray-3': localVariable.gray }),
     ...(localVariable.inputBorder !== '' && { '--input-border': localVariable.inputBorder }),
   };
-
+ useEffect(() => {
+  
+  }, []);
   const theme: any = useContext(Initialload);
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && !theme?.pageloading && theme?.setpageloading) {
-      LocalStorageBackup(theme?.setpageloading);
+    if(appLoading){
+      toggleAppLoading(false)
     }
-
-    const subscription = data$.subscribe((e) => {
-      setLocalVariable(e);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
+  
+  }, [appLoading,pathname]);
   useEffect(() => {
     const htmlEl = document.documentElement;
 
@@ -41,6 +40,7 @@ const InitialLoadProvider = ({ children }: { children: React.ReactNode }) => {
 
     htmlEl.lang = localVariable.lang || '';
     htmlEl.dir = localVariable.dir || '';
+    htmlEl.style =customstyles
     // htmlEl.style = customstyles;
     const attributes = {
       'data-theme-mode': localVariable.dataThemeMode,

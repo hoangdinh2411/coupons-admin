@@ -1,33 +1,34 @@
 'use client';
+import { UserData } from '@/types/auth.type';
+import { CategoryData } from '@/types/category.type';
 import { createStore } from 'zustand';
-
-export enum ROLES {
-  ADMIN = 'ADMIN',
-  OWNER = 'OWNER',
-  USER = 'USER',
-}
 
 export type StateAppStoredType = {
   appLoading: boolean;
-  isLoginSession: boolean;
-  role: ROLES;
+  profile: UserData | null;
+  categories: CategoryData[];
 };
 
 export type ActionAppStoredType = {
   toggleAppLoading: (loading: boolean) => void;
-  switchLoginSession: (loginAction: boolean) => void;
+  setProfile: (profile: UserData | null) => void;
+  setCategory: (categories: CategoryData[]) => void;
 };
 
 const initStore: StateAppStoredType = Object.seal({
   appLoading: false,
-  isLoginSession: false,
-  role: ROLES.ADMIN,
+  profile: null,
+  categories: [],
 });
 
-const useAppStore = createStore<StateAppStoredType & ActionAppStoredType>()((set) => ({
-  ...initStore,
-  toggleAppLoading: (loading: boolean) => set({ appLoading: loading }),
-  switchLoginSession: (loginAction: boolean) => set({ isLoginSession: loginAction }),
-}));
+const AppStore = createStore<StateAppStoredType & ActionAppStoredType>()(
+  (set) => ({
+    ...initStore,
+    toggleAppLoading: (loading: boolean) => set({ appLoading: loading }),
+    setProfile: (profile: UserData | null) => set({ profile }),
+    setCategory: (categories: CategoryData[]) => set({ categories }),
+  }),
+);
 
-export default useAppStore;
+const UseAppStore = () => AppStore.getState();
+export default UseAppStore;

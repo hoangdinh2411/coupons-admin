@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, memo } from 'react';
+import React, { useEffect, memo, useTransition } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Modal, Form, CloseButton } from 'react-bootstrap';
@@ -8,17 +8,25 @@ import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk
 import { generateImageBytesObjectFromBase64 } from '@/helper/image';
 import { ImageByte } from '@/helper/image';
 import { CategoryFormData, defaultValue, schema } from './CreateCategoryModal';
-import { Category } from './page';
 import { Box, Paper } from '@mui/material';
 import UploadFile from '@/shared/layouts-components/uploadFile/UploadFile';
+import { CategoryData } from '@/types/category.type';
+import UseAppStore from '@/store/useAppStore';
+import toast from 'react-hot-toast';
+import { updateCategory } from '@/app/actions/category.service';
 
 interface UpdateCategoryModalProps {
-  item: Category | null;
+  item: CategoryData | null;
   open: boolean;
   onClose: () => void;
 }
 
-function UpdateCategoryModal({ item, open, onClose }: UpdateCategoryModalProps) {
+function UpdateCategoryModal({
+  item,
+  open,
+  onClose,
+}: UpdateCategoryModalProps) {
+  const { setCategory, categories } = UseAppStore();
   const {
     register,
     handleSubmit,
@@ -29,23 +37,40 @@ function UpdateCategoryModal({ item, open, onClose }: UpdateCategoryModalProps) 
   } = useForm<CategoryFormData>({
     resolver: zodResolver(schema),
   });
-  useEffect(() => {
-    if (isSubmitSuccessful || !open) {
-      reset(defaultValue);
-    }
-  }, [isSubmitSuccessful, open]);
+  const [isPending, startTransition] = useTransition();
+
   useEffect(() => {
     if (item) {
       setValue('name', item.name);
-      if (item.image) {
-        setValue('image', generateImageBytesObjectFromBase64(item.image, item.name));
+      if (item.image_bytes) {
+        setValue(
+          'image',
+          generateImageBytesObjectFromBase64(item.image_bytes, item.name),
+        );
       }
     }
   }, [item]);
-  const onSubmit = async (_data: CategoryFormData) => {};
+  const onSubmit = async (data: CategoryFormData) => {
+    if (item) {
+      const payload = {
+        ...data,
+        image_bytes: data.image.data,
+      };
+      startTransition(async () => {
+        const res = await updateCategory(item?.id, payload);
+        if (res.success && res.data) {
+          setCategory([...categories, res.data]);
+          toast.success('Updated success');
+        } else {
+          toast.error(res.message || 'Try again later');
+        }
+      });
+    }
+  };
   const handleUploadFile = (data: ImageByte) => {
     setValue('image', data);
   };
+
   return (
     <Modal
       show={open}
@@ -62,13 +87,17 @@ function UpdateCategoryModal({ item, open, onClose }: UpdateCategoryModalProps) 
         <Paper>
           <Form onSubmit={handleSubmit(onSubmit)}>
             <Box className="mb-3">
-              <Form.Label className="fw-bold text-default">Category Name</Form.Label>
+              <Form.Label className="fw-bold text-default">
+                Category Name
+              </Form.Label>
               <Form.Control
                 type="text"
                 placeholder="Enter your category name"
                 {...register('name')}
               />
-              {errors.name && <small className="text-danger">{errors.name.message}</small>}
+              {errors.name && (
+                <small className="text-danger">{errors.name.message}</small>
+              )}
             </Box>
 
             <Box mb={2}>
@@ -91,10 +120,19 @@ function UpdateCategoryModal({ item, open, onClose }: UpdateCategoryModalProps) 
             </Box>
 
             <Box display="flex" justifyContent="end" mt={4} gap={1}>
-              <SpkButton Buttonvariant="primary" Buttontype="submit">
+              <SpkButton
+                Buttonvariant="primary"
+                Buttontype="submit"
+                Disabled={isPending}
+              >
                 Update
               </SpkButton>
-              <SpkButton Buttonvariant="primary-light" Buttontype="button" onClickfunc={onClose}>
+              <SpkButton
+                Buttonvariant="primary-light"
+                Buttontype="button"
+                onClickfunc={onClose}
+                Disabled={isPending}
+              >
                 Cancel
               </SpkButton>
             </Box>

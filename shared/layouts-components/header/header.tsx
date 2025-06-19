@@ -3,36 +3,41 @@
 import Link from 'next/link';
 import React, { Fragment, useEffect, useRef, useState } from 'react';
 import {
-  Col,
   Dropdown,
-  DropdownItem,
   DropdownMenu,
   DropdownToggle,
   Form,
-  ListGroup,
   Modal,
-  Row,
 } from 'react-bootstrap';
-import { useDispatch, useSelector } from 'react-redux';
-import SimpleBar from 'simplebar-react';
+
 import Switcher from '../switcher/switcher';
 import { getState, setState } from '../services/switcherServices';
-import { MENUITEMS } from '../sidebar/nav';
-import SpkBadge from '@/shared/@spk-reusable-components/reusable-uiElements/spk-badge';
 import { basePath } from '@/next.config';
-import { removeCart } from '@/shared/redux/action';
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
 import Image from 'next/image';
-import AuthService from '@/services/auth.service';
+import AuthService from '@/app/actions/auth.service';
+import UseAppStore from '@/store/useAppStore';
+import { useRouter } from 'next/navigation';
+import { APP_ROUTE } from '@/constants/route';
+import toast from 'react-hot-toast';
+import Notification from './Notification';
+import SearchBar from './SearchBar';
 
 const Header = () => {
   const [variable, setVariable] = useState(getState());
-
+  const { setProfile, toggleAppLoading, profile } = UseAppStore();
+  const router = useRouter();
   // Fullscreen Function
 
   const handleSignOut = async () => {
-    setVariable(variable);
-    await AuthService.signOut();
+    toggleAppLoading(true);
+    const res = await AuthService.signOut();
+    if (res.success) {
+      toast.success('See you again');
+      router.push(APP_ROUTE.SIGN_IN);
+      setProfile(null);
+      toggleAppLoading(false);
+    }
   };
   const [isFullscreen, setIsFullscreen] = useState(false);
 
@@ -53,6 +58,19 @@ const Header = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const handleFetchProfile = async () => {
+      const res = await AuthService.getProfile();
+      if (res.success && res.data) {
+        setProfile(res.data);
+      } else {
+        await AuthService.signOut();
+        setProfile(null);
+      }
+    };
+    handleFetchProfile();
+  }, [profile]);
+
   // MenuClose Function
 
   function menuClose() {
@@ -67,7 +85,9 @@ const Header = () => {
 
     if (window.innerWidth >= 992) {
       const local_varaiable = theme;
-      const newToggledValue = local_varaiable.toggled ? local_varaiable.toggled : '';
+      const newToggledValue = local_varaiable.toggled
+        ? local_varaiable.toggled
+        : '';
 
       setState({ toggled: newToggledValue });
     }
@@ -90,18 +110,25 @@ const Header = () => {
             // Toggle between open/close state for "closed" vertical style
             setState({
               dataNavStyle: '',
-              toggled: theme.toggled === 'close-menu-close' ? '' : 'close-menu-close',
+              toggled:
+                theme.toggled === 'close-menu-close' ? '' : 'close-menu-close',
             });
             break;
           case 'overlay':
             // Handle icon-overlay state with window width check
             setState({
               dataNavStyle: '',
-              toggled: theme.toggled === 'icon-overlay-close' ? '' : 'icon-overlay-close',
+              toggled:
+                theme.toggled === 'icon-overlay-close'
+                  ? ''
+                  : 'icon-overlay-close',
               iconOverlay: '',
             });
 
-            if (theme.toggled !== 'icon-overlay-close' && window.innerWidth >= 992) {
+            if (
+              theme.toggled !== 'icon-overlay-close' &&
+              window.innerWidth >= 992
+            ) {
               setState({
                 toggled: 'icon-overlay-close',
                 iconOverlay: '',
@@ -112,7 +139,8 @@ const Header = () => {
             // Handle icon-text state
             setState({
               dataNavStyle: '',
-              toggled: theme.toggled === 'icon-text-close' ? '' : 'icon-text-close',
+              toggled:
+                theme.toggled === 'icon-text-close' ? '' : 'icon-text-close',
             });
             break;
           case 'doublemenu':
@@ -126,7 +154,9 @@ const Header = () => {
               if (sidemenu) {
                 setState({ toggled: 'double-menu-open' });
                 if (sidemenu.nextElementSibling) {
-                  sidemenu.nextElementSibling.classList.add('double-menu-active');
+                  sidemenu.nextElementSibling.classList.add(
+                    'double-menu-active',
+                  );
                 } else {
                   setState({ toggled: 'double-menu-close' });
                 }
@@ -136,7 +166,8 @@ const Header = () => {
           case 'detached':
             // Handle detached menu state
             setState({
-              toggled: theme.toggled === 'detached-close' ? '' : 'detached-close',
+              toggled:
+                theme.toggled === 'detached-close' ? '' : 'detached-close',
               iconOverlay: '',
             });
             break;
@@ -149,22 +180,34 @@ const Header = () => {
         switch (navStyle) {
           case 'menu-click':
             setState({
-              toggled: theme.toggled === 'menu-click-closed' ? '' : 'menu-click-closed',
+              toggled:
+                theme.toggled === 'menu-click-closed'
+                  ? ''
+                  : 'menu-click-closed',
             });
             break;
           case 'menu-hover':
             setState({
-              toggled: theme.toggled === 'menu-hover-closed' ? '' : 'menu-hover-closed',
+              toggled:
+                theme.toggled === 'menu-hover-closed'
+                  ? ''
+                  : 'menu-hover-closed',
             });
             break;
           case 'icon-click':
             setState({
-              toggled: theme.toggled === 'icon-click-closed' ? '' : 'icon-click-closed',
+              toggled:
+                theme.toggled === 'icon-click-closed'
+                  ? ''
+                  : 'icon-click-closed',
             });
             break;
           case 'icon-hover':
             setState({
-              toggled: theme.toggled === 'icon-hover-closed' ? '' : 'icon-hover-closed',
+              toggled:
+                theme.toggled === 'icon-hover-closed'
+                  ? ''
+                  : 'icon-hover-closed',
             });
             break;
         }
@@ -209,7 +252,8 @@ const Header = () => {
     const currentTheme = getState();
     const newState = {
       dataThemeMode: currentTheme.dataThemeMode === 'dark' ? 'light' : 'dark',
-      dataHeaderStyles: currentTheme.dataThemeMode === 'dark' ? 'light' : 'dark',
+      dataHeaderStyles:
+        currentTheme.dataThemeMode === 'dark' ? 'light' : 'dark',
       dataMenuStyles: currentTheme.dataThemeMode === 'dark' ? 'dark' : 'dark',
     };
     setState(newState);
@@ -250,281 +294,16 @@ const Header = () => {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
-  //Cart function
-  const cartProduct = [
-    {
-      id: 1,
-      image: '/assets/images/media/media-92.jpg',
-      name: 'EliteChair Pro',
-      category: 'Furniture',
-      qty: ' 01',
-      price: '1299.00',
-    },
-    {
-      id: 2,
-      image: '/assets/images/media/media-95.jpg',
-      name: 'Sunglasses',
-      category: 'Accessories',
-      qty: '01',
-      price: '249.99',
-    },
-    {
-      id: 3,
-      image: '/assets/images/media/media-93.jpg',
-      name: 'StellarPhone X',
-      category: 'Smartphones',
-      qty: '01',
-      price: '1199.08',
-    },
-    {
-      id: 4,
-      image: '/assets/images/media/media-96.jpg',
-      name: 'PowerBeats Pro',
-      category: 'Audio Accessories',
-      qty: '01',
-      price: '249.95',
-    },
-  ];
-
-  const maxDisplayItems = 5;
-
-  const dispatch = useDispatch();
-  const cart = useSelector((state) => state.cart.items);
-  const [localCart, setLocalCart] = useState(cartProduct);
-  const [remainingCount2, setRemainingCount2] = useState(0);
-
-  const card = [...localCart, ...cart];
-
-  useEffect(() => {
-    console.log(remainingCount2);
-    setRemainingCount2(card.length);
-    setCartItemCount(localCart.length);
-  }, [cart, localCart]);
-
-  const handleDelete = (id: number, event) => {
-    event.stopPropagation();
-    // Remove item from local cart
-    const updatedLocalCart = localCart.filter((item) => item.id !== id);
-    setLocalCart(updatedLocalCart);
-    // Update cart item count
-    setCartItemCount(updatedLocalCart.length);
-    // Remove item from redux cart
-    dispatch(removeCart(id));
-  };
-  const [cartItemCount, setCartItemCount] = useState(cartProduct.length);
-
-  useEffect(() => {
-    console.log(cartItemCount);
-    setCartItemCount(localCart.length);
-  }, [localCart]);
-
-  //  Notifications
-
-  const notificationNotes = [
-    {
-      id: 1,
-      image: '/assets/images/faces/1.jpg',
-      name: 'Sonia Agarwal',
-      notificationType: 'Approval',
-      description: 'for the Insurance',
-      time: '7 mins ago',
-      status: 'text-success',
-      textcolor: 'success',
-    },
-    {
-      id: 2,
-      image: '/assets/images/faces/12.jpg',
-      name: 'Rajesh Kumar',
-      notificationType: 'Urgent Request',
-      description: 'for project',
-      time: '3 hours ago',
-      status: 'text-warning',
-      textcolor: 'warning',
-    },
-    {
-      id: 3,
-      image: '/assets/images/faces/3.jpg',
-      name: 'Ayesha Malik',
-      notificationType: 'Task Completed',
-      description: 'for redesign',
-      time: '2 hours ago',
-      status: 'text-info',
-      textcolor: 'info',
-    },
-    {
-      id: 4,
-      image: '/assets/images/faces/14.jpg',
-      name: 'Mohan Desai',
-      notificationType: 'New Message',
-      description: 'about client meeting',
-      time: '15 mins ago',
-      status: 'text-danger',
-      textcolor: 'danger',
-    },
-    {
-      id: 5,
-      image: '/assets/images/faces/5.jpg',
-      name: 'Priya Sharma',
-      notificationType: 'Meeting Reminder',
-      description: 'scheduled for 3:00 PM',
-      time: '30 mins ago',
-      status: 'text-warning',
-      textcolor: 'warning',
-    },
-  ];
-
-  const [note, setNote] = useState(notificationNotes);
-
-  const handleNoteRemove = (id, e: React.MouseEvent) => {
-    e.stopPropagation();
-    const deleteNoti = note.filter((item) => item.id !== id);
-    setNote(deleteNoti);
-  };
-
-  const appData = [
-    {
-      name: 'Figma',
-      image: 'figma.png',
-      bgColorClass: 'pink',
-      borderColorClass: 'pink',
-    },
-    {
-      name: 'PowerPoint',
-      image: 'microsoft-powerpoint.png',
-      bgColorClass: 'success',
-      borderColorClass: 'success',
-    },
-    {
-      name: 'MS Word',
-      image: 'microsoft-word.png',
-      bgColorClass: 'primary',
-      borderColorClass: 'primary',
-    },
-    {
-      name: 'Calendar',
-      image: 'calender.png',
-      bgColorClass: 'info',
-      borderColorClass: 'info',
-    },
-    {
-      name: 'Sketch',
-      image: 'sketch.png',
-      bgColorClass: 'secondary',
-      borderColorClass: 'secondary',
-    },
-    {
-      name: 'Google',
-      image: 'google.png',
-      bgColorClass: 'danger',
-      borderColorClass: 'danger',
-    },
-  ];
-
   //Search Functionality
 
-  const searchRef = useRef<HTMLInputElement | null>(null);
-  const containerRef = useRef<HTMLDivElement | null>(null);
-
-  const handleClick = (event: MouseEvent) => {
-    const searchInput = searchRef.current;
-    const container = containerRef.current;
-
-    if (
-      searchInput &&
-      container &&
-      !searchInput.contains(event.target as Node) &&
-      !container.contains(event.target as Node)
-    ) {
-      container.classList.remove('searchdrop');
-    } else if (
-      searchInput &&
-      container &&
-      (searchInput === event.target || searchInput.contains(event.target as Node))
-    ) {
-      container.classList.add('searchdrop');
+  function formatName() {
+    if (!profile) return;
+    if (profile?.first_name && profile.last_name) {
+      return profile.first_name + profile.last_name;
+    } else {
+      return profile.email;
     }
-  };
-
-  useEffect(() => {
-    document.body.addEventListener('click', handleClick);
-
-    return () => {
-      document.body.removeEventListener('click', handleClick);
-    };
-  }, []);
-
-  const searchResultRef = useRef<HTMLDivElement | null>(null);
-  const [showa, setShowa] = useState(false);
-  const [InputValue, setInputValue] = useState('');
-  const [show2, setShow2] = useState(false);
-  const [searchcolor, setsearchcolor] = useState('text-dark');
-  const [searchval, setsearchval] = useState('Type something');
-  const [NavData, setNavData] = useState([]);
-
-  useEffect(() => {
-    const clickHandler = (event) => {
-      if (searchResultRef.current && !searchResultRef.current.contains(event.target)) {
-        searchResultRef.current.classList.add('d-none');
-      }
-    };
-
-    document.addEventListener('click', clickHandler);
-
-    return () => {
-      document.removeEventListener('click', clickHandler);
-    };
-  }, []);
-
-  const myfunction = (inputvalue: string) => {
-    if (searchResultRef.current) {
-      searchResultRef.current.classList.remove('d-none');
-    }
-
-    const i = [];
-    const allElement2 = [];
-    MENUITEMS.forEach((mainLevel) => {
-      if (mainLevel.children) {
-        setShowa(true);
-        mainLevel.children.forEach((subLevel) => {
-          i.push(subLevel);
-          if (subLevel.children) {
-            subLevel.children.forEach((subLevel1) => {
-              i.push(subLevel1);
-              if (subLevel1.children) {
-                subLevel1.children.forEach((subLevel2) => {
-                  i.push(subLevel2);
-                });
-              }
-            });
-          }
-        });
-      }
-    });
-    for (const allElement of i) {
-      if (allElement.title.toLowerCase().includes(inputvalue.toLowerCase())) {
-        if (allElement.title.toLowerCase().startsWith(inputvalue.toLowerCase())) {
-          setShow2(true);
-          if (allElement.path && !allElement2.some((el) => el.title === allElement.title)) {
-            allElement2.push(allElement);
-          }
-        }
-      }
-    }
-
-    if (!allElement2.length || inputvalue === '') {
-      if (inputvalue === '') {
-        setShow2(false);
-        setsearchval('Type something');
-        setsearchcolor('text-dark');
-      }
-      if (!allElement2.length) {
-        setShow2(false);
-        setsearchcolor('text-danger');
-        setsearchval('There is no component with this name');
-      }
-    }
-    setNavData(allElement2);
-  };
+  }
 
   //Responsive Search
   const [show1, setShow1] = useState(false);
@@ -537,7 +316,9 @@ const Header = () => {
         {/* <!-- Start::main-header-container --> */}
 
         <div className="main-header-container container-fluid">
-          {variable.toggled === 'open' && <div ref={overlayRef} id="responsive-overlay"></div>}
+          {/* {variable.toggled === 'open' && (
+            <div ref={overlayRef} id="responsive-overlay"></div>
+          )} */}
 
           {/* <!-- Start::header-content-left --> */}
 
@@ -588,91 +369,20 @@ const Header = () => {
             {/* <!-- Start::header-element --> */}
 
             <div className="header-element mx-lg-0 mx-2">
-              <Link
-                scroll={false}
+              <span
                 aria-label="Hide Sidebar"
                 className="sidemenu-toggle header-link animated-arrow hor-toggle horizontal-navtoggle"
                 data-bs-toggle="sidebar"
-                href="#!"
                 onClick={toggleSidebar}
               >
                 <span></span>
-              </Link>
+              </span>
             </div>
 
+            <SearchBar />
             {/* <!-- End::header-element --> */}
 
             {/* <!-- Start::header-element --> */}
-
-            <div
-              ref={containerRef}
-              className="header-element header-search d-lg-block d-none my-auto auto-complete-search"
-            >
-              {/* <!-- Start::header-link --> */}
-
-              <input
-                type="text"
-                className="header-search-bar form-control rounded-pill"
-                onClick={() => {}}
-                ref={searchRef}
-                defaultValue={InputValue}
-                onChange={(ele) => {
-                  myfunction(ele.target.value);
-                  setInputValue(ele.target.value);
-                }}
-                id="header-search"
-                placeholder="Search for Results..."
-                spellCheck={false}
-                autoComplete="off"
-                autoCapitalize="off"
-              />
-              <a href="javascript:void(0);" className="header-search-icon border-0">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  height="24px"
-                  viewBox="0 0 24 24"
-                  width="24px"
-                  fill="#5f6368"
-                >
-                  <path d="M0 0h24v24H0V0z" fill="none" />
-                  <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
-                </svg>
-              </a>
-              {showa ? (
-                <div
-                  className="card search-result position-absolute z-index-9 search-fix  border mt-1"
-                  ref={searchResultRef}
-                >
-                  <div className="card-header">
-                    <div className="card-title mb-0 text-break">Search result of {InputValue}</div>
-                  </div>
-                  <div className="card-body overflow-auto">
-                    <ListGroup className="m-2">
-                      {show2 ? (
-                        NavData.map((e) => (
-                          <ListGroup.Item key={Math.random()} className="">
-                            <Link
-                              href={`${e.path}/`}
-                              className="search-result-item"
-                              onClick={() => {
-                                setShowa(false), setInputValue('');
-                              }}
-                            >
-                              {e.title}
-                            </Link>
-                          </ListGroup.Item>
-                        ))
-                      ) : (
-                        <b className={`${searchcolor} `}>{searchval}</b>
-                      )}
-                    </ListGroup>
-                  </div>
-                </div>
-              ) : (
-                ''
-              )}
-              {/* <!-- End::header-link --> */}
-            </div>
 
             {/* <!-- End::header-element --> */}
           </div>
@@ -709,169 +419,6 @@ const Header = () => {
                 {/* <!-- End::header-link-icon --> */}
               </Link>
             </div>
-
-            {/* <!-- End::header-element --> */}
-
-            <Dropdown className="header-element country-selector">
-              {/* <!-- Start::header-link|dropdown-toggle --> */}
-
-              <DropdownToggle
-                variant=""
-                className="header-link dropdown-toggle"
-                data-bs-auto-close="outside"
-                data-bs-toggle="dropdown"
-              >
-                <span className="avatar avatar-xs avatar-rounded">
-                  <Image
-                    width={20}
-                    height={20}
-                    src={`${
-                      process.env.NODE_ENV === 'production' ? basePath : ''
-                    }/assets/images/flags/us_flag.jpg`}
-                    alt="img"
-                  />
-                </span>
-              </DropdownToggle>
-
-              {/* <!-- End::header-link|dropdown-toggle --> */}
-
-              <DropdownMenu
-                className="main-header-dropdown dropdown-menu"
-                data-popper-placement="none"
-                align="end"
-              >
-                <li>
-                  <Link
-                    scroll={false}
-                    className="dropdown-item d-flex align-items-center justify-content-between"
-                    href="#!"
-                  >
-                    <div className="d-flex align-items-center">
-                      <span className="avatar avatar-rounded avatar-xs lh-1 me-2">
-                        <Image
-                          width={20}
-                          height={20}
-                          src={`${
-                            process.env.NODE_ENV === 'production' ? basePath : ''
-                          }/assets/images/flags/us_flag.jpg`}
-                          alt="img"
-                        />
-                      </span>
-                      English
-                    </div>
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    scroll={false}
-                    className="dropdown-item d-flex align-items-center justify-content-between"
-                    href="#!"
-                  >
-                    <div className="d-flex align-items-center">
-                      <span className="avatar avatar-rounded avatar-xs lh-1 me-2">
-                        <Image
-                          width={20}
-                          height={20}
-                          src={`${
-                            process.env.NODE_ENV === 'production' ? basePath : ''
-                          }/assets/images/flags/spain_flag.jpg`}
-                          alt="img"
-                        />
-                      </span>
-                      Spanish
-                    </div>
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    scroll={false}
-                    className="dropdown-item d-flex align-items-center justify-content-between"
-                    href="#!"
-                  >
-                    <div className="d-flex align-items-center">
-                      <span className="avatar avatar-rounded avatar-xs lh-1 me-2">
-                        <Image
-                          width={20}
-                          height={20}
-                          src={`${
-                            process.env.NODE_ENV === 'production' ? basePath : ''
-                          }/assets/images/flags/french_flag.jpg`}
-                          alt="img"
-                        />
-                      </span>
-                      French
-                    </div>
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    scroll={false}
-                    className="dropdown-item d-flex align-items-center justify-content-between"
-                    href="#!"
-                  >
-                    <div className="d-flex align-items-center">
-                      <span className="avatar avatar-rounded avatar-xs lh-1 me-2">
-                        <Image
-                          width={20}
-                          height={20}
-                          src={`${
-                            process.env.NODE_ENV === 'production' ? basePath : ''
-                          }/assets/images/flags/uae_flag.jpg`}
-                          alt="img"
-                        />
-                      </span>
-                      German
-                    </div>
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    scroll={false}
-                    className="dropdown-item d-flex align-items-center justify-content-between"
-                    href="#!"
-                  >
-                    <div className="d-flex align-items-center">
-                      <span className="avatar avatar-rounded avatar-xs lh-1 me-2">
-                        <Image
-                          width={20}
-                          height={20}
-                          src={`${
-                            process.env.NODE_ENV === 'production' ? basePath : ''
-                          }/assets/images/flags/italy_flag.jpg`}
-                          alt="img"
-                        />
-                      </span>
-                      Italian
-                    </div>
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    scroll={false}
-                    className="dropdown-item d-flex align-items-center justify-content-between"
-                    href="#!"
-                  >
-                    <div className="d-flex align-items-center">
-                      <span className="avatar avatar-rounded avatar-xs lh-1 me-2">
-                        <Image
-                          width={20}
-                          height={20}
-                          src={`${
-                            process.env.NODE_ENV === 'production' ? basePath : ''
-                          }/assets/images/flags/russia_flag.jpg`}
-                          alt="img"
-                        />
-                      </span>
-                      Russian
-                    </div>
-                  </Link>
-                </li>
-              </DropdownMenu>
-            </Dropdown>
-
-            {/* <!-- End::header-element --> */}
-
-            {/* <!-- Start::header-element --> */}
 
             <li className="header-element header-theme-mode">
               {/* <!-- Start::header-link|layout-setting --> */}
@@ -921,342 +468,10 @@ const Header = () => {
 
               {/* <!-- End::header-link|layout-setting --> */}
             </li>
-
+            <Notification />
             {/* <!-- End::header-element --> */}
 
             {/* <!-- Start::header-element --> */}
-
-            <Dropdown className="header-element cart-dropdown" align={'end'} autoClose="outside">
-              {/* <!-- Start::header-link|dropdown-toggle --> */}
-
-              <DropdownToggle href="#!" className="header-link" variant="" as="a">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="header-link-icon"
-                  height="24px"
-                  viewBox="0 0 24 24"
-                  width="24px"
-                  fill="#5f6368"
-                >
-                  <path d="M0 0h24v24H0V0z" fill="none" />
-                  <path d="M15.55 13c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.37-.66-.11-1.48-.87-1.48H5.21l-.94-2H1v2h2l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h12v-2H7l1.1-2h7.45zM6.16 6h12.15l-2.76 5H8.53L6.16 6zM7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z" />
-                </svg>
-                <SpkBadge
-                  variant="primary"
-                  Customclass="rounded-pill header-icon-badge"
-                  Id="cart-icon-badge"
-                >
-                  {card.length}
-                </SpkBadge>
-              </DropdownToggle>
-
-              {/* <!-- End::header-link|dropdown-toggle --> */}
-
-              {/* <!-- Start::main-header-dropdown --> */}
-
-              <DropdownMenu
-                className="main-header-dropdown dropdown-menu dropdown-menu-end"
-                data-popper-placement="none"
-              >
-                <div className="p-3 bg-light bg-opacity-75">
-                  <div className="d-flex align-items-center justify-content-between">
-                    <p className="mb-0 fw-semibold">Cart Items</p>
-                    <SpkBadge variant="pink" Customclass="ms-1 fs-12" Id="cart-data">
-                      {' '}
-                      {card.length} Items
-                    </SpkBadge>
-                  </div>
-                </div>
-                <div className="dropdown-divider"></div>
-                <SimpleBar className="list-unstyled mb-0" id="header-cart-items-scroll">
-                  {card.slice(0, maxDisplayItems).map((item, index) => (
-                    <Dropdown.Item as="li" key={index}>
-                      <div className="d-flex align-items-center gap-3">
-                        <div className="lh-1">
-                          <span className="avatar avatar-lg bg-light">
-                            <Image
-                              width={48}
-                              height={48}
-                              src={`${
-                                process.env.NODE_ENV === 'production' ? basePath : ''
-                              }${item.image}`}
-                              alt="img"
-                            />
-                          </span>
-                        </div>
-                        <div className="flex-fill">
-                          <div className="fw-medium">
-                            <Link scroll={false} href="#!">
-                              {item.name}
-                            </Link>
-                          </div>
-                          <span className="text-muted fs-12 fw-normal">{item.category}</span>
-                          <div className="fs-11 fw-medium text-default">
-                            <span className="text-muted">Qty:</span> {item.qty}
-                          </div>
-                        </div>
-                        <div className="text-end">
-                          <Link
-                            scroll={false}
-                            href="#!"
-                            className="header-cart-remove float-end dropdown-item-close"
-                            onClick={(event) => handleDelete(item.id, event)}
-                          >
-                            <i className="ti ti-trash"></i>
-                          </Link>
-                          <div className="fw-semibold fs-14 text-default">${item.price}</div>
-                        </div>
-                      </div>
-                    </Dropdown.Item>
-                  ))}
-                </SimpleBar>
-
-                <div
-                  className={`p-3 empty-header-item border-top ${card.length === 0 && 'd-none'}`}
-                >
-                  <div className="d-grid">
-                    <Link scroll={false} href="#!" className="btn btn-primary">
-                      Proceed to checkout
-                    </Link>
-                  </div>
-                </div>
-                {card.length === 0 && (
-                  <div className="p-5 empty-item">
-                    <div className="text-center">
-                      <span className="avatar avatar-xl avatar-rounded bg-warning-transparent">
-                        <i className="ri-shopping-cart-2-line fs-2"></i>
-                      </span>
-                      <h6 className="fw-semibold mb-1 mt-3">Your Cart is Empty</h6>
-                      <span className="mb-3 fw-normal fs-13 d-block">
-                        Add some items to make me happy{' '}
-                      </span>
-                      <Link
-                        scroll={false}
-                        href="#!"
-                        className="btn btn-primary btn-wave btn-sm m-1"
-                        data-abc="true"
-                      >
-                        continue shopping <i className="bi bi-arrow-right ms-1"></i>
-                      </Link>
-                    </div>
-                  </div>
-                )}
-              </DropdownMenu>
-
-              {/* <!-- End::main-header-dropdown --> */}
-            </Dropdown>
-
-            {/* <!-- End::header-element --> */}
-
-            {/* <!-- Start::header-element --> */}
-
-            <Dropdown
-              className="header-element notifications-dropdown d-xl-inline-flex dropdown"
-              align={'end'}
-              autoClose="outside"
-            >
-              {/* <!-- Start::header-link|dropdown-toggle --> */}
-
-              <DropdownToggle
-                href="#!"
-                variant=""
-                className="header-link dropdown-toggle"
-                data-bs-toggle="dropdown"
-                data-bs-auto-close="outside"
-                id="messageDropdown"
-                aria-expanded="false"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="header-link-icon"
-                  height="24px"
-                  viewBox="0 0 24 24"
-                  width="24px"
-                  fill="#5f6368"
-                >
-                  <path d="M0 0h24v24H0V0z" fill="none" />
-                  <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z" />
-                </svg>
-                <span className="header-icon-pulse bg-secondary rounded pulse pulse-secondary"></span>
-              </DropdownToggle>
-
-              {/* <!-- End::header-link|dropdown-toggle --> */}
-
-              {/* <!-- Start::main-header-dropdown --> */}
-
-              <DropdownMenu
-                className="main-header-dropdown dropdown-menu-end"
-                data-popper-placement="none"
-              >
-                <div className="p-3 bg-light bg-opacity-75">
-                  <div className="d-flex align-items-center justify-content-between">
-                    <p className="mb-0 fw-semibold">Notifications</p>
-                    <span className="badge bg-pink" id="notifiation-data">
-                      {note.length} Unread
-                    </span>
-                  </div>
-                </div>
-                <div className="dropdown-divider"></div>
-                <SimpleBar className="list-unstyled mb-0" id="header-notification-scroll">
-                  {note.map((item, index) => (
-                    <DropdownItem as="li" className="dropdown-item" key={index}>
-                      <div className="d-flex align-items-start">
-                        <div className="pe-2">
-                          <span className="avatar avatar-md offline bg-primary-transparent avatar-rounded">
-                            <Image
-                              fill
-                              src={`${
-                                process.env.NODE_ENV === 'production' ? basePath : ''
-                              }${item.image}`}
-                              alt="img"
-                            />
-                          </span>
-                        </div>
-                        <div className="flex-grow-1 d-flex align-items-center justify-content-between">
-                          <div>
-                            <p className="mb-0 fw-medium">
-                              <Link href="#!" scroll={false}>
-                                {item.name}
-                              </Link>
-                            </p>
-                            <div className="fw-normal header-notification-text text-muted">
-                              <span className={`fw-medium fs-12 text-${item.textcolor}`}>
-                                {item.notificationType}
-                              </span>{' '}
-                              {item.description}
-                            </div>
-                            <span className="text-muted header-notification-text fs-11">
-                              {item.time}
-                            </span>
-                          </div>
-                          <div>
-                            <Link
-                              scroll={false}
-                              href="#!"
-                              className="text-muted me-1 dropdown-item-close1"
-                              onClick={(e) => handleNoteRemove(item.id, e)}
-                            >
-                              <i className="ti ti-trash fs-16"></i>
-                            </Link>
-                          </div>
-                        </div>
-                      </div>
-                    </DropdownItem>
-                  ))}
-                </SimpleBar>
-                <div
-                  className={`p-3 empty-header-item1 border-top ${note.length === 0 && 'd-none'} `}
-                >
-                  <div className="d-grid">
-                    <Link scroll={false} href="#!" className="btn btn-primary">
-                      View All
-                    </Link>
-                  </div>
-                </div>
-                {note.length === 0 && (
-                  <div className="p-5 empty-item1">
-                    <div className="text-center">
-                      <span className="avatar avatar-xl avatar-rounded bg-secondary-transparent">
-                        <i className="ri-notification-off-line fs-2"></i>
-                      </span>
-                      <h6 className="fw-semibold mt-3">No New Notifications</h6>
-                    </div>
-                  </div>
-                )}
-              </DropdownMenu>
-
-              {/* <!-- End::main-header-dropdown --> */}
-            </Dropdown>
-
-            {/* <!-- End::header-element --> */}
-
-            {/* <!-- Start::header-element --> */}
-
-            <Dropdown className="header-element header-shortcuts-dropdown" align={'end'}>
-              {/* <!-- Start::header-link|dropdown-toggle --> */}
-
-              <DropdownToggle
-                variant=""
-                className="header-link"
-                data-bs-toggle="dropdown"
-                data-bs-auto-close="outside"
-                id="notificationDropdown"
-                aria-expanded="false"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="header-link-icon"
-                  enableBackground="new 0 0 24 24"
-                  height="24px"
-                  viewBox="0 0 24 24"
-                  width="24px"
-                  fill="#5f6368"
-                >
-                  <g>
-                    <rect fill="none" height="24" width="24" />
-                  </g>
-                  <g>
-                    <g>
-                      <g>
-                        <path d="M3,3v8h8V3H3z M9,9H5V5h4V9z M3,13v8h8v-8H3z M9,19H5v-4h4V19z M13,3v8h8V3H13z M19,9h-4V5h4V9z M13,13v8h8v-8H13z M19,19h-4v-4h4V19z" />
-                      </g>
-                    </g>
-                  </g>
-                </svg>
-              </DropdownToggle>
-
-              {/* <!-- End::header-link|dropdown-toggle --> */}
-
-              {/* <!-- Start::main-header-dropdown --> */}
-
-              <DropdownMenu
-                className="main-header-dropdown header-shortcuts-dropdown dropdown-menu pb-0 dropdown-menu-end"
-                aria-labelledby="notificationDropdown"
-              >
-                <div className="p-3 bg-light bg-opacity-75">
-                  <div className="d-flex align-items-center justify-content-between">
-                    <p className="mb-0 fw-semibold">Related Apps</p>
-                    <span className="badge bg-pink">6 Apps</span>
-                  </div>
-                </div>
-                <div className="dropdown-divider mb-0"></div>
-                <div className="main-header-shortcuts p-3" id="header-shortcut-scroll">
-                  <Row className="g-2">
-                    {appData.map((app, index) => (
-                      <Col className="col-4" key={index}>
-                        <Link scroll={false} href="#!" className="related-apps">
-                          <div
-                            className={`text-center p-3 related-app ${app.bgColorClass} bg-${app.bgColorClass}-transparent border border-${app.borderColorClass} border-opacity-10`}
-                          >
-                            <span
-                              className={`avatar avatar-md avatar-rounded bg-${app.bgColorClass} bg-opacity-10 border border-${app.borderColorClass} border-opacity-10 p-2 mb-2`}
-                            >
-                              <Image
-                                fill
-                                src={`${
-                                  process.env.NODE_ENV === 'production' ? basePath : ''
-                                }/assets/images/apps/${app.image}`}
-                                alt={app.name}
-                              />
-                            </span>
-                            <span className="d-block fs-12">{app.name}</span>
-                          </div>
-                        </Link>
-                      </Col>
-                    ))}
-                  </Row>
-                </div>
-                <div className="p-3 border-top">
-                  <div className="d-grid">
-                    <Link scroll={false} href="#!" className="btn btn-primary">
-                      View All
-                    </Link>
-                  </div>
-                </div>
-              </DropdownMenu>
-
-              {/* <!-- End::main-header-dropdown --> */}
-            </Dropdown>
 
             {/* <!-- End::header-element --> */}
 
@@ -1265,7 +480,11 @@ const Header = () => {
             <div className="header-element header-fullscreen">
               {/* <!-- Start::header-link --> */}
 
-              <Link href="#!" className="header-link" onClick={toggleFullscreen}>
+              <Link
+                href="#!"
+                className="header-link"
+                onClick={toggleFullscreen}
+              >
                 {isFullscreen ? (
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -1330,26 +549,26 @@ const Header = () => {
                 className="main-header-dropdown dropdown-menu pt-0 overflow-hidden header-profile-dropdown dropdown-menu-end"
                 aria-labelledby="mainHeaderProfile"
               >
-                <Link href="#!" className="p-3 bg-light bg-opacity-75 border-bottom d-block">
+                <Link
+                  href="#!"
+                  className="p-3 bg-light bg-opacity-75 border-bottom d-block"
+                >
                   <div className="d-flex align-items-center justify-content-between gap-2">
                     <div>
-                      <p className="mb-0 fw-semibold lh-1">Ashwin Seth</p>
-                      <span className="fs-11 text-muted">ashwinseth@mail.com</span>
+                      <p className="mb-0 fw-semibold lh-1">{formatName()}</p>
+                      <span className="fs-11 text-muted">{profile?.email}</span>
                     </div>
-                    <span className="badge bg-pink align-self-end mb-1">Pro</span>
+                    <span className="badge bg-pink align-self-end mb-1">
+                      {profile?.role.toUpperCase()}
+                    </span>
                   </div>
                 </Link>
-                <Link href="#!" className="dropdown-item d-flex align-items-center border-bottom-0">
+                <Link
+                  href="#!"
+                  className="dropdown-item d-flex align-items-center border-bottom-0"
+                >
                   <i className="ti ti-user-circle fs-18 me-2 text-gray fw-normal"></i>
                   My Profile
-                </Link>
-                <Link href="#!" className="dropdown-item d-flex align-items-center border-bottom-0">
-                  <i className="ti ti-inbox fs-18 me-2 text-gray fw-normal"></i>
-                  Mail Inbox<span className="badge bg-success ms-auto">06</span>
-                </Link>
-                <Link href="#!" className="dropdown-item d-flex align-items-center border-bottom-0">
-                  <i className="ti ti-adjustments-horizontal fs-18 me-2 text-gray fw-normal"></i>
-                  Account Settings{' '}
                 </Link>
                 <SpkButton
                   onClickfunc={handleSignOut}
@@ -1415,7 +634,11 @@ const Header = () => {
                 aria-label="Search Anything ..."
                 aria-describedby="button-addon2"
               />
-              <SpkButton Buttonvariant="primary" Buttontype="button" Id="button-addon2">
+              <SpkButton
+                Buttonvariant="primary"
+                Buttontype="button"
+                Id="button-addon2"
+              >
                 <i className="bi bi-search"></i>
               </SpkButton>
             </div>

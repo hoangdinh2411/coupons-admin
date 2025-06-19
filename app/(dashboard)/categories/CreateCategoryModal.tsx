@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useTransition } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -8,7 +8,12 @@ import { Box, Paper } from '@mui/material';
 import { Modal, Form } from 'react-bootstrap';
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
 
-import UploadFile, { ImageByte } from '@/shared/layouts-components/uploadFile/UploadFile';
+import UploadFile, {
+  ImageByte,
+} from '@/shared/layouts-components/uploadFile/UploadFile';
+import toast from 'react-hot-toast';
+import { createCategory, updateCategory } from '@/app/actions/category.service';
+import UseAppStore from '@/store/useAppStore';
 
 interface CreateCategoryModalPropsType {
   open: boolean;
@@ -34,7 +39,10 @@ export const defaultValue = {
 };
 export type CategoryFormData = z.infer<typeof schema>;
 
-export default function CreateCategoryModal({ open, onClose }: CreateCategoryModalPropsType) {
+export default function CreateCategoryModal({
+  open,
+  onClose,
+}: CreateCategoryModalPropsType) {
   const {
     register,
     handleSubmit,
@@ -46,12 +54,29 @@ export default function CreateCategoryModal({ open, onClose }: CreateCategoryMod
     resolver: zodResolver(schema),
   });
 
+  const [isPending, startTransition] = useTransition();
+  const { setCategory, categories } = UseAppStore();
   useEffect(() => {
     if (isSubmitSuccessful || !open) {
       reset(defaultValue);
     }
   }, [isSubmitSuccessful, open]);
-  const onSubmit = async (_data: CategoryFormData) => {};
+  const onSubmit = (data: CategoryFormData) => {
+    const payload = {
+      ...data,
+      image_bytes: data.image.data,
+    };
+
+    startTransition(async () => {
+      const res = await createCategory(payload);
+      if (res.success && res.data) {
+        setCategory([...categories, res.data]);
+        toast.success('Created success');
+      } else {
+        toast.error(res.message || 'Try again later');
+      }
+    });
+  };
 
   const handleUploadFile = (data: ImageByte) => {
     setValue('image', data);
@@ -73,13 +98,17 @@ export default function CreateCategoryModal({ open, onClose }: CreateCategoryMod
         <Paper>
           <Form onSubmit={handleSubmit(onSubmit)}>
             <Box className="mb-3">
-              <Form.Label className="fw-bold text-default">Category Name</Form.Label>
+              <Form.Label className="fw-bold text-default">
+                Category Name
+              </Form.Label>
               <Form.Control
                 type="text"
                 placeholder="Enter your category name"
                 {...register('name')}
               />
-              {errors.name && <small className="text-danger">{errors.name.message}</small>}
+              {errors.name && (
+                <small className="text-danger">{errors.name.message}</small>
+              )}
             </Box>
 
             <Box mb={2}>
@@ -102,7 +131,11 @@ export default function CreateCategoryModal({ open, onClose }: CreateCategoryMod
             </Box>
 
             <Box display="flex" justifyContent="end" mt={4} gap={1}>
-              <SpkButton Buttonvariant="primary" Buttontype="submit">
+              <SpkButton
+                Buttonvariant="primary"
+                Buttontype="submit"
+                Disabled={isPending}
+              >
                 Create Category
               </SpkButton>
             </Box>

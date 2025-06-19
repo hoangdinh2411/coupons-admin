@@ -1,97 +1,78 @@
 'use client';
+import React, { Fragment, useRef, useState } from 'react';
+import {
+  Button,
+  Card,
+  Col,
+  Form,
+  InputGroup,
+  Pagination,
+  Row,
+} from 'react-bootstrap';
 
-import React, { useEffect, useState } from 'react';
-import { Button, Card, Col, Form, InputGroup, Pagination, Row } from 'react-bootstrap';
-
-import Seo from '@/shared/layouts-components/seo/seo';
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
 import SpkTables from '@/shared/@spk-reusable-components/reusable-tables/spk-tables';
 import CreateCategoryModal from './CreateCategoryModal';
+import { CategoryData } from '@/types/category.type';
 import UpdateCategoryModal from './UpdateCategoryModal';
-import CategoryService from '@/services/category.service';
-// import CategoryService from '@/lib/category.service';
-
-const FAKE_CATEGORIES = Array.from({ length: 30 }, (_, i) => ({
-  id: i + 1,
-  name: `Category ${i + 1}`,
-  image_bytes: `https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTmqr9md-E5f51zftunUbkQVrqgnHbb-hjwrw&s`,
-}));
-
-export interface Category {
-  id?: number;
-  name: string;
-  image_bytes: string;
-}
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+type Props = {
+  data: CategoryData[];
+  total: number;
+  currentPage: number;
+};
 const HEADER = [
   { title: 'Category ID' },
   { title: 'Name' },
   { title: 'Image' },
   { title: 'Actions' },
 ];
-
-const CategoryTemplate: React.FC = () => {
-  //TODO: API
-  useEffect(() => {
-    CategoryService.getCategories()
-      .then((data) => data)
-      .then((data) => {
-        console.log('💲💲💲 ~ getCategories ~ data:', data);
-      });
-  }, []);
-  const [categories, setCategories] = useState(FAKE_CATEGORIES);
-  const [search, setSearch] = useState('');
-  const [openCreateCategory, setOpenCreateCategory] = useState(false);
-  const [updateCategory, setUpdateCategory] = useState<{
+export default function CategoryList({
+  data = [],
+  total = 1,
+  currentPage = 1,
+}: Props) {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchRef = useRef<HTMLInputElement | null>(null);
+  const [categoryModal, setCategoryModal] = useState<{
     isOpen: boolean;
-    item: Category | null;
+    item: CategoryData | null;
   }>({
     isOpen: false,
     item: null,
   });
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 20;
-  const [letterFilter, setLetterFilter] = useState<string | null>(null);
-
-  const handleRemove = (id: number) => {
-    setLetterFilter(letterFilter);
-    setCategories(categories.filter((cat) => cat.id !== id));
-  };
-
-  const filteredCategories = categories.filter((cat) => {
-    const nameLower = cat.name.toLowerCase();
-    const matchesSearch = nameLower.includes(search.toLowerCase());
-    const matchesLetter = letterFilter ? nameLower.startsWith(letterFilter.toLowerCase()) : true;
-    return matchesSearch && matchesLetter;
-  });
-
-  const totalPages = Math.ceil(filteredCategories.length / itemsPerPage);
-  const paginatedCategories = filteredCategories.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
-
-  //TODO: handle modal
-  const handleOpenUpdateCategory = (category: Category) => {
-    setUpdateCategory({
+  const handleOpenUpdateCategory = (category: CategoryData) => {
+    setCategoryModal({
       item: category,
       isOpen: true,
     });
   };
-  const handleCloseUpdateCategory = () => {
-    setUpdateCategory((pre) => ({
+
+  const handelCloseModal = () => {
+    setCategoryModal((pre) => ({
       ...pre,
       item: null,
       isOpen: false,
     }));
   };
-  return (
-    <>
-      <Seo title="Ecommerce - Categories" />
+  const handleRemove = (id: number) => {};
 
+  const handleOpenCreateCategoryModal = () => {
+    setCategoryModal({
+      item: null,
+      isOpen: true,
+    });
+  };
+  const pagination = total ? [...Array(total)].map((_, i) => i + 1) : [1];
+  const handleChangePage = (selectedPage: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('page', selectedPage.toString());
+    router.push(`${pathname}?${params.toString()}`);
+  };
+  return (
+    <Fragment>
       <Card className="custom-card">
         <Card.Header className="justify-content-between">
           <Card.Title>All Categories List</Card.Title>
@@ -104,11 +85,7 @@ const CategoryTemplate: React.FC = () => {
                 <InputGroup style={{ flex: 1, minWidth: '240px' }}>
                   <Form.Control
                     placeholder="Search categories by name..."
-                    value={search}
-                    onChange={(e) => {
-                      setSearch(e.target.value);
-                      setCurrentPage(1);
-                    }}
+                    ref={searchRef}
                   />
                   <Button variant="primary" id="button-search">
                     <i className="ri-search-line"></i>
@@ -116,7 +93,7 @@ const CategoryTemplate: React.FC = () => {
                 </InputGroup>
 
                 <SpkButton
-                  onClickfunc={() => setOpenCreateCategory(true)}
+                  onClickfunc={handleOpenCreateCategoryModal}
                   Buttonvariant="primary"
                   Customclass="w-auto"
                 >
@@ -129,7 +106,7 @@ const CategoryTemplate: React.FC = () => {
           {/* Table */}
           <div className="table-responsive mt-3">
             <SpkTables tableClass="table-hover text-nowrap" header={HEADER}>
-              {paginatedCategories.map((cat) => (
+              {data.map((cat) => (
                 <tr key={cat.id}>
                   <td>{cat.id}</td>
                   <td>{cat.name}</td>
@@ -168,45 +145,43 @@ const CategoryTemplate: React.FC = () => {
 
         <Card.Footer className="border-top-0 d-flex justify-content-between flex-wrap">
           <div>
-            Showing <b>{(currentPage - 1) * itemsPerPage + 1}</b> to{' '}
-            <b>{Math.min(currentPage * itemsPerPage, filteredCategories.length)}</b> of{' '}
-            <b>{filteredCategories.length}</b> entries
+            Showing <b>{data.length}</b> of {total}
           </div>
 
           <Pagination className="mb-0">
             <Pagination.Item
               disabled={currentPage === 1}
-              onClick={() => handlePageChange(currentPage - 1)}
+              onClick={() => handleChangePage(currentPage - 1)}
             >
               Prev
             </Pagination.Item>
-            {Array.from({ length: totalPages }, (_, i) => (
+            {pagination.map((number) => (
               <Pagination.Item
-                key={i + 1}
-                active={i + 1 === currentPage}
-                onClick={() => handlePageChange(i + 1)}
+                key={number}
+                active={number === currentPage}
+                onClick={() => handleChangePage(number)}
               >
-                {i + 1}
+                {number}
               </Pagination.Item>
             ))}
             <Pagination.Item
-              disabled={currentPage === totalPages}
-              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === total}
+              onClick={() => handleChangePage(currentPage + 1)}
             >
               Next
             </Pagination.Item>
           </Pagination>
         </Card.Footer>
       </Card>
-
-      <CreateCategoryModal open={openCreateCategory} onClose={() => setOpenCreateCategory(false)} />
-      <UpdateCategoryModal
-        item={updateCategory.item}
-        open={updateCategory.isOpen}
-        onClose={handleCloseUpdateCategory}
+      <CreateCategoryModal
+        open={categoryModal.item === null && categoryModal.isOpen}
+        onClose={handelCloseModal}
       />
-    </>
+      <UpdateCategoryModal
+        item={categoryModal.item}
+        open={categoryModal.isOpen && categoryModal.item !== null}
+        onClose={handelCloseModal}
+      />
+    </Fragment>
   );
-};
-
-export default CategoryTemplate;
+}

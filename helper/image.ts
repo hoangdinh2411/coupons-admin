@@ -1,10 +1,10 @@
 export enum SuggestionRequestType {
-  CONTACT_FORM = "CONTACT_FORM",
-  CLIENT_TESTIMONIAL_FORM = "CLIENT_TESTIMONIAL_FORM",
-  TEAM_MEMBER_FORM = "TEAM_MEMBER_FORM",
-  PRICING_TABLE_FORM = "PRICING_TABLE_FORM",
+  CONTACT_FORM = 'CONTACT_FORM',
+  CLIENT_TESTIMONIAL_FORM = 'CLIENT_TESTIMONIAL_FORM',
+  TEAM_MEMBER_FORM = 'TEAM_MEMBER_FORM',
+  PRICING_TABLE_FORM = 'PRICING_TABLE_FORM',
 }
-export const NoImage = "https://via.placeholder.com/150?text=No+Image";
+export const NoImage = 'https://via.placeholder.com/150?text=No+Image';
 
 export interface ImageByte {
   filename: string;
@@ -15,27 +15,27 @@ export interface ImageByte {
 export const encodeFileToBase64 = (file: File): Promise<string> => {
   return new Promise((resolve, reject) => {
     if (!file) {
-      reject("No file found");
+      reject('No file found');
     }
     if (!isFileSizeValid(file.size)) {
-      reject("File is too large!");
+      reject('File is too large!');
     }
 
     if (!checkFileFormat(file)) {
-      reject("Invalid file format! Only JPEG, PNG, JPG, and SVG are allowed.");
+      reject('Invalid file format! Only JPEG, PNG, JPG, and SVG are allowed.');
     }
 
     const reader = new FileReader();
     reader.onload = function () {
       const result = reader.result as string;
-      if (typeof result === "string") {
-        const base64String = result.split(",")[1];
+      if (typeof result === 'string') {
+        const base64String = result.split(',')[1];
         resolve(base64String);
       }
     };
 
     reader.onerror = function (e) {
-      reject("Error reading file: " + e.target?.error);
+      reject('Error reading file: ' + e.target?.error);
     };
 
     reader.readAsDataURL(file);
@@ -50,10 +50,10 @@ export const isFileSizeValid = (fileSize: number): boolean => {
 
 function checkFileFormat(file: File): boolean {
   const allowedFormats = [
-    "image/jpeg",
-    "image/png",
-    "image/jpg",
-    "image/svg+xml",
+    'image/jpeg',
+    'image/png',
+    'image/jpg',
+    'image/svg+xml',
   ];
   return allowedFormats.includes(file.type);
 }
@@ -70,7 +70,7 @@ export const needsFormFill = (suggestion_types: string[]) => {
   return (
     suggestion_types &&
     suggestion_types.some((t) =>
-      formTypeList.includes(t as SuggestionRequestType)
+      formTypeList.includes(t as SuggestionRequestType),
     )
   );
 };
@@ -87,7 +87,7 @@ export function parseBase64Image(base64String: string) {
   const matches = base64String.match(/^data:(.+);base64,(.+)$/);
   if (!matches) {
     return {
-      type: "",
+      type: '',
       data: base64String,
     };
   }
@@ -99,18 +99,19 @@ export function parseBase64Image(base64String: string) {
 
 export function generateImageBytesObjectFromBase64(
   base64String: string | null,
-  text: string
+  text: string,
 ): ImageByte {
   if (base64String === null) {
     return {
-      filename: "",
-      data: "",
-      type: "",
+      filename: '',
+      data: '',
+      type: '',
     };
   }
   const { data, type } = parseBase64Image(base64String);
-  const extension = type.split("/")[1];
-  const filename = `${text.toLowerCase().split(" ").join("_")}.${extension}`;
+  const extension = type.split('/')[1];
+  console.log(type);
+  const filename = `${text.toLowerCase().split(' ').join('_')}.${extension}`;
   return {
     data,
     type,

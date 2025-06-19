@@ -7,9 +7,13 @@ export interface IResponse<T> {
   status?: number;
 }
 
+export interface IResponseWithTotal<T> {
+  results: T;
+  total: number;
+}
 export default function customFetch<T>(
   url: string,
-  config: RequestInit = {}
+  config: RequestInit = {},
 ): Promise<IResponse<T>> {
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), 60000);

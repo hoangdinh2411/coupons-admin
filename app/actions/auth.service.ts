@@ -1,5 +1,5 @@
 import {
-  AuthResponse,
+  UserData,
   LoginRequestPayload,
   RegisterRequestPayLoad,
   VerifyRequestPayload,
@@ -8,13 +8,13 @@ import customFetch from './api';
 
 class AuthService {
   static async login(payload: LoginRequestPayload) {
-    return await customFetch<AuthResponse>(`/auth/sign-in`, {
+    return await customFetch<UserData>(`/auth/sign-in`, {
       method: 'POST',
       body: JSON.stringify(payload),
     });
   }
   static async register(payload: RegisterRequestPayLoad) {
-    return await customFetch<AuthResponse>(`/auth/sign-up`, {
+    return await customFetch<UserData>(`/auth/sign-up`, {
       method: 'POST',
       body: JSON.stringify(payload),
     });
@@ -30,6 +30,10 @@ class AuthService {
       method: 'POST',
     });
   }
+  static async getProfile(){
+    return await customFetch<UserData>('/users/profile')
+  }
+
 }
 
 export default AuthService;

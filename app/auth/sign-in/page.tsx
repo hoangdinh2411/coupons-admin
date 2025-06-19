@@ -2,10 +2,11 @@
 
 import { APP_ROUTE } from '@/constants/route';
 import { authLoginSchema } from '@/helper/validation/auth.validation';
-import AuthService from '@/services/auth.service';
+import AuthService from '@/app/actions/auth.service';
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
-import { ROLES } from '@/store/useAppStore';
-import { AuthResponse } from '@/types/auth.type';
+import UseAppStore from '@/store/useAppStore';
+import { UserData } from '@/types/auth.type';
+import { ROLES } from '@/types/enum';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -20,6 +21,7 @@ export type AuthLoginSchemaType = z.infer<typeof authLoginSchema>;
 function SignInTemplate() {
   const [passwordShow, setPasswordShow] = useState(false);
   const router = useRouter();
+  const { toggleAppLoading, setProfile, appLoading } = UseAppStore();
   const {
     register,
     handleSubmit,
@@ -35,17 +37,19 @@ function SignInTemplate() {
     }
   }, [isSubmitSuccessful]);
 
+  console.log(appLoading);
   const onSubmit = async (data: AuthLoginSchemaType) => {
-    router.replace('/dashboard');
+    toggleAppLoading(true);
     const res = await AuthService.login(data);
     if (!res.success && res.message) {
       toast.error(res.message);
+      toggleAppLoading(false);
       return;
     }
     if (res.data) {
-      const result: AuthResponse = res.data;
-
-      if (result && result.role !== ROLES.ADMIN) {
+      const result: UserData = res.data;
+      console.log(result);
+      if (result && (result?.role as ROLES) !== ROLES.ADMIN) {
         toast.error('You do not have permission.');
         await AuthService.signOut();
         return;
@@ -54,7 +58,7 @@ function SignInTemplate() {
         router.push(APP_ROUTE.VERIFY);
         return;
       }
-
+      setProfile(result);
       toast.success('Welcome back!');
       router.push(APP_ROUTE.DASHBOARD);
     }
@@ -82,12 +86,17 @@ function SignInTemplate() {
                       aria-invalid={!!errors.email}
                     />
                     {errors.email && (
-                      <small className="text-danger mt-1">{errors.email.message}</small>
+                      <small className="text-danger mt-1">
+                        {errors.email.message}
+                      </small>
                     )}
 
                     {/* Password */}
                     <div className="mt-2"></div>
-                    <label htmlFor="signin-password " className="text-default px-0">
+                    <label
+                      htmlFor="signin-password "
+                      className="text-default px-0"
+                    >
                       Password <sup className="fs-12 text-danger">*</sup>
                     </label>
                     <div className="input-group p-0">
@@ -112,19 +121,30 @@ function SignInTemplate() {
                       </SpkButton>
                     </div>
                     {errors.password && (
-                      <small className="text-danger mt-1">{errors.password.message}</small>
+                      <small className="text-danger mt-1">
+                        {errors.password.message}
+                      </small>
                     )}
 
                     {/* Forgot Password */}
-                    <Col xl={12} className="d-flex p-0 mt-2 justify-content-end">
-                      <Link href={APP_ROUTE.FORGOT} className="text-success fw-medium fs-12">
+                    <Col
+                      xl={12}
+                      className="d-flex p-0 mt-2 justify-content-end"
+                    >
+                      <Link
+                        href={APP_ROUTE.FORGOT}
+                        className="text-success fw-medium fs-12"
+                      >
                         Forgot Password?
                       </Link>
                     </Col>
 
                     {/* Submit Button */}
                     <Col xl={12} className="d-grid mt-4 p-0">
-                      <SpkButton Buttontype="submit" Disabled={isSubmitSuccessful}>
+                      <SpkButton
+                        Buttontype="submit"
+                        Disabled={isSubmitSuccessful || appLoading}
+                      >
                         <i className="ri-login-circle-line lh-1 me-2 align-middle"></i>
                         Sign In
                       </SpkButton>
@@ -147,7 +167,10 @@ function SignInTemplate() {
               </Col>
 
               {/* Image + Welcome Text */}
-              <Col xl={6} className="border rounded border-secondary border-opacity-10">
+              <Col
+                xl={6}
+                className="border rounded border-secondary border-opacity-10"
+              >
                 <div className="d-flex align-items-center  position-relative justify-content-around flex-column gap-4 h-100">
                   <Image
                     fill

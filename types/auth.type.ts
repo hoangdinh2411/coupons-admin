@@ -1,4 +1,4 @@
-import { ROLES } from '@/store/useAppStore';
+import { ROLES } from "./enum";
 
 export interface LoginRequestPayload {
   email: string;
@@ -6,11 +6,11 @@ export interface LoginRequestPayload {
 }
 export interface RegisterRequestPayLoad extends LoginRequestPayload {
   confirm_password: string;
-  first_name: string;
-  last_name: string;
+  first_name?: string;
+  last_name?: string;
 }
 
-export interface AuthResponse extends LoginRequestPayload {
+export interface UserData extends RegisterRequestPayLoad {
   email_verified: string;
   role: ROLES;
 }
