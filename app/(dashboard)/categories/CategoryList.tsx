@@ -1,5 +1,5 @@
 'use client';
-import React, { Fragment, useRef, useState } from 'react';
+import React, { Fragment, useEffect, useRef, useState } from 'react';
 import {
   Button,
   Card,
@@ -9,13 +9,16 @@ import {
   Pagination,
   Row,
 } from 'react-bootstrap';
-
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
 import SpkTables from '@/shared/@spk-reusable-components/reusable-tables/spk-tables';
 import CreateCategoryModal from './CreateCategoryModal';
 import { CategoryData } from '@/types/category.type';
 import UpdateCategoryModal from './UpdateCategoryModal';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import toast from 'react-hot-toast';
+import { deleteById } from '@/app/actions/category.service';
+import UseAppStore from '@/store/useAppStore';
+import Image from 'next/image';
 type Props = {
   data: CategoryData[];
   total: number;
@@ -43,6 +46,8 @@ export default function CategoryList({
     isOpen: false,
     item: null,
   });
+  const { setCategory, categories } = UseAppStore((state) => state);
+
   const handleOpenUpdateCategory = (category: CategoryData) => {
     setCategoryModal({
       item: category,
@@ -57,7 +62,18 @@ export default function CategoryList({
       isOpen: false,
     }));
   };
-  const handleRemove = (id: number) => {};
+  const handleRemove = (id: number) => {
+    toast.promise(deleteById(id), {
+      loading: 'Deleting...!',
+      success: (res) => {
+        if (res.success) {
+          setCategory(categories.filter((cat) => cat.id === id));
+          return 'Deleted success';
+        }
+        throw res.message;
+      },
+    });
+  };
 
   const handleOpenCreateCategoryModal = () => {
     setCategoryModal({
@@ -71,6 +87,22 @@ export default function CategoryList({
     params.set('page', selectedPage.toString());
     router.push(`${pathname}?${params.toString()}`);
   };
+
+  const handleSearch = () => {
+    if (searchRef.current) {
+      const searchText = searchRef.current.value;
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('search_text', searchText.toString());
+      router.push(`${pathname}?${params.toString()}`);
+    }
+  };
+
+  useEffect(() => {
+    if (data) {
+      setCategory(data);
+    }
+  }, [data]);
+
   return (
     <Fragment>
       <Card className="custom-card">
@@ -87,7 +119,11 @@ export default function CategoryList({
                     placeholder="Search categories by name..."
                     ref={searchRef}
                   />
-                  <Button variant="primary" id="button-search">
+                  <Button
+                    variant="primary"
+                    id="button-search"
+                    onClick={handleSearch}
+                  >
                     <i className="ri-search-line"></i>
                   </Button>
                 </InputGroup>
@@ -106,18 +142,18 @@ export default function CategoryList({
           {/* Table */}
           <div className="table-responsive mt-3">
             <SpkTables tableClass="table-hover text-nowrap" header={HEADER}>
-              {data.map((cat) => (
+              {categories.map((cat) => (
                 <tr key={cat.id}>
                   <td>{cat.id}</td>
                   <td>{cat.name}</td>
                   <td>
-                    {/* <Image
-                      src={cat.image_bytes}
+                    <Image
+                      src={cat.image_bytes || '/assets/images/empty.png'}
                       alt={cat.name}
                       width={40}
                       height={40}
                       className="rounded"
-                    /> */}
+                    />
                   </td>
                   <td className="">
                     <Button

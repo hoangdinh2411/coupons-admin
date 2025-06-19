@@ -25,7 +25,9 @@ import SearchBar from './SearchBar';
 
 const Header = () => {
   const [variable, setVariable] = useState(getState());
-  const { setProfile, toggleAppLoading, profile } = UseAppStore();
+  const { setProfile, toggleAppLoading, profile } = UseAppStore(
+    (state) => state,
+  );
   const router = useRouter();
   // Fullscreen Function
 
@@ -69,7 +71,9 @@ const Header = () => {
       }
     };
     handleFetchProfile();
-  }, [profile]);
+  }, []);
+
+  console.log(profile);
 
   // MenuClose Function
 

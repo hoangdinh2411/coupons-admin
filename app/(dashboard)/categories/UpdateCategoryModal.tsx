@@ -7,7 +7,7 @@ import { Modal, Form, CloseButton } from 'react-bootstrap';
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
 import { generateImageBytesObjectFromBase64 } from '@/helper/image';
 import { ImageByte } from '@/helper/image';
-import { CategoryFormData, defaultValue, schema } from './CreateCategoryModal';
+import { CategoryFormData, schema } from './CreateCategoryModal';
 import { Box, Paper } from '@mui/material';
 import UploadFile from '@/shared/layouts-components/uploadFile/UploadFile';
 import { CategoryData } from '@/types/category.type';
@@ -26,7 +26,7 @@ function UpdateCategoryModal({
   open,
   onClose,
 }: UpdateCategoryModalProps) {
-  const { setCategory, categories } = UseAppStore();
+  const { setCategory, categories } = UseAppStore((state) => state);
   const {
     register,
     handleSubmit,
@@ -53,7 +53,7 @@ function UpdateCategoryModal({
   const onSubmit = async (data: CategoryFormData) => {
     if (item) {
       const payload = {
-        ...data,
+        name: data.name,
         image_bytes: data.image.data,
       };
       startTransition(async () => {

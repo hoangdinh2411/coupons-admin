@@ -6,12 +6,14 @@ export default async function CategoryPage(props: {
   searchParams?: Promise<{
     query?: string;
     page?: string;
+    search_text?: string;
   }>;
 }) {
   const searchParams = await props.searchParams;
   const limit = 20;
   const page = Number(searchParams?.page || 1);
-  const res = await getCategories(page, limit);
+  const search_text = searchParams?.search_text;
+  const res = await getCategories(page, limit, search_text);
   if (!res.success || (res.success && !res.data)) {
     return { message: res.message };
   }

@@ -1,7 +1,4 @@
 import React, { Fragment } from 'react';
-import './globals.scss';
-import ToastProvider from '@/context/ToastProvider';
-import InitialLoadProvider from '@/context/InitialLoadProvider';
 import { Metadata } from 'next';
 import Switcher from '@/shared/layouts-components/switcher/switcher';
 import Loader from '@/shared/layouts-components/loader/loader';

@@ -18,10 +18,10 @@ import toast from 'react-hot-toast';
 import { z } from 'zod';
 
 export type AuthLoginSchemaType = z.infer<typeof authLoginSchema>;
-function SignInTemplate() {
+function SignInPage() {
   const [passwordShow, setPasswordShow] = useState(false);
   const router = useRouter();
-  const { toggleAppLoading, setProfile, appLoading } = UseAppStore();
+  const { toggleAppLoading, appLoading } = UseAppStore((state) => state);
   const {
     register,
     handleSubmit,
@@ -48,7 +48,6 @@ function SignInTemplate() {
     }
     if (res.data) {
       const result: UserData = res.data;
-      console.log(result);
       if (result && (result?.role as ROLES) !== ROLES.ADMIN) {
         toast.error('You do not have permission.');
         await AuthService.signOut();
@@ -58,7 +57,6 @@ function SignInTemplate() {
         router.push(APP_ROUTE.VERIFY);
         return;
       }
-      setProfile(result);
       toast.success('Welcome back!');
       router.push(APP_ROUTE.DASHBOARD);
     }
@@ -195,4 +193,4 @@ function SignInTemplate() {
   );
 }
 
-export default SignInTemplate;
+export default SignInPage;

@@ -1,20 +1,20 @@
 'use server';
-import { CategoryData } from '@/types/category.type';
-import customFetch, { IResponseWithTotal } from './api';
-import { CategoryFormData } from '@/app/(dashboard)/categories/CreateCategoryModal';
+import { CategoryData, CategoryPayload } from '@/types/category.type';
+import customFetch from './api';
 import { revalidateTag } from 'next/cache';
+import { IResponseWithTotal } from '@/types/request.type';
 
-export async function getCategoryById(id: number) {
-  const param = `/${id}`;
-  return await customFetch<CategoryData>(`/categories${param}`, {
+export async function searchCategory(text: string) {
+  return await customFetch<CategoryData>(`/categories/search?name=${text}`, {
     method: 'GET',
-    next: {
-      tags: ['category-' + id],
-    },
   });
 }
-export async function getCategories(page: number = 1, limit: number = 20) {
-  const query = `?page=${page}&limit=${limit}`;
+export async function getCategories(
+  page: number = 1,
+  limit: number = 20,
+  search_text: string = '',
+) {
+  const query = `?page=${page}&limit=${limit}&search_text=${search_text}`;
   return await customFetch<IResponseWithTotal<CategoryData[]>>(
     `/categories${query}`,
     {
@@ -25,7 +25,7 @@ export async function getCategories(page: number = 1, limit: number = 20) {
     },
   );
 }
-export async function updateCategory(id: number, payload: CategoryFormData) {
+export async function updateCategory(id: number, payload: CategoryPayload) {
   const param = `/${id}`;
   const res = await customFetch<CategoryData>(`/categories${param}`, {
     method: 'PATCH',
@@ -48,7 +48,7 @@ export async function deleteById(id: number) {
   return res;
 }
 
-export async function createCategory(payload: CategoryFormData) {
+export async function createCategory(payload: CategoryPayload) {
   const res = await customFetch<CategoryData>(`/categories`, {
     method: 'POST',
     body: JSON.stringify(payload),

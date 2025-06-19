@@ -54,31 +54,32 @@ export default function CreateCategoryModal({
     resolver: zodResolver(schema),
   });
 
-  const [isPending, startTransition] = useTransition();
-  const { setCategory, categories } = UseAppStore();
+  const { setCategory, categories } = UseAppStore((state) => state);
   useEffect(() => {
     if (isSubmitSuccessful || !open) {
       reset(defaultValue);
     }
   }, [isSubmitSuccessful, open]);
-  const onSubmit = (data: CategoryFormData) => {
+  const onSubmit = async (data: CategoryFormData) => {
     const payload = {
-      ...data,
+      name: data.name,
       image_bytes: data.image.data,
     };
 
-    startTransition(async () => {
-      const res = await createCategory(payload);
-      if (res.success && res.data) {
-        setCategory([...categories, res.data]);
-        toast.success('Created success');
-      } else {
-        toast.error(res.message || 'Try again later');
-      }
+    toast.promise(createCategory(payload), {
+      loading: 'Creating...!',
+      success: (res) => {
+        if (res.success && res.data) {
+          setCategory([...categories, res.data]);
+          return 'Created success';
+        }
+        throw res.message;
+      },
     });
   };
 
   const handleUploadFile = (data: ImageByte) => {
+    console.log(data);
     setValue('image', data);
   };
   return (
@@ -131,11 +132,7 @@ export default function CreateCategoryModal({
             </Box>
 
             <Box display="flex" justifyContent="end" mt={4} gap={1}>
-              <SpkButton
-                Buttonvariant="primary"
-                Buttontype="submit"
-                Disabled={isPending}
-              >
+              <SpkButton Buttonvariant="primary" Buttontype="submit">
                 Create Category
               </SpkButton>
             </Box>

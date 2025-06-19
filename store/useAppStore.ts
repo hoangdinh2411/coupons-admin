@@ -1,7 +1,7 @@
 'use client';
 import { UserData } from '@/types/auth.type';
 import { CategoryData } from '@/types/category.type';
-import { createStore } from 'zustand';
+import { createStore, useStore } from 'zustand';
 
 export type StateAppStoredType = {
   appLoading: boolean;
@@ -30,5 +30,7 @@ const AppStore = createStore<StateAppStoredType & ActionAppStoredType>()(
   }),
 );
 
-const UseAppStore = () => AppStore.getState();
+const UseAppStore = <T>(
+  selector: (state: StateAppStoredType & ActionAppStoredType) => T,
+) => useStore(AppStore, selector);
 export default UseAppStore;

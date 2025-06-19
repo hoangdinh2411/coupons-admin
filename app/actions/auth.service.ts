@@ -30,10 +30,11 @@ class AuthService {
       method: 'POST',
     });
   }
-  static async getProfile(){
-    return await customFetch<UserData>('/users/profile')
+  static async getProfile() {
+    return await customFetch<UserData>('/users/profile', {
+      cache: 'no-cache',
+    });
   }
-
 }
 
 export default AuthService;
