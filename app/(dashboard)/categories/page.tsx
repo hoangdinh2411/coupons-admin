@@ -12,7 +12,7 @@ export default async function CategoryPage(props: {
   const searchParams = await props.searchParams;
   const limit = 20;
   const page = Number(searchParams?.page || 1);
-  const search_text = searchParams?.search_text;
+  const search_text = searchParams?.search_text || '';
   const res = await getCategories(page, limit, search_text);
   if (!res.success || (res.success && !res.data)) {
     return { message: res.message };

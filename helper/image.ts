@@ -93,7 +93,7 @@ export function parseBase64Image(base64String: string) {
   }
   return {
     type: matches[1],
-    data: matches[2],
+    data: base64String,
   };
 }
 
@@ -110,7 +110,6 @@ export function generateImageBytesObjectFromBase64(
   }
   const { data, type } = parseBase64Image(base64String);
   const extension = type.split('/')[1];
-  console.log(type);
   const filename = `${text.toLowerCase().split(' ').join('_')}.${extension}`;
   return {
     data,

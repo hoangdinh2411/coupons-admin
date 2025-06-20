@@ -1,44 +1,45 @@
-"use client";
+'use client';
 
-import React, { useEffect, memo } from "react";
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Modal, Form, CloseButton } from "react-bootstrap";
-import SpkButton from "@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons";
-import { generateImageBytesObjectFromBase64, ImageByte } from "@/helper/image";
-import { Box, Paper } from "@mui/material";
-import UploadFile from "@/shared/layouts-components/uploadFile/UploadFile";
-import { z } from "zod";
-import { IStore } from "@/types/store.type";
+import React, { useEffect, memo } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Modal, Form, CloseButton } from 'react-bootstrap';
+import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
+import { generateImageBytesObjectFromBase64, ImageByte } from '@/helper/image';
+import { Box, Paper } from '@mui/material';
+import UploadFile from '@/shared/layouts-components/uploadFile/UploadFile';
+import { z } from 'zod';
+import { IStore } from '@/types/store.type';
 
 const schema = z.object({
-  name: z.string().min(1, "Store name is required"),
-  description: z.string().min(1, "Description is required"),
+  name: z.string().min(1, 'Store name is required'),
+  description: z.string().min(1, 'Description is required'),
   image: z
     .object({
       filename: z.string().optional(),
       content: z.string().optional(),
     })
     .optional(),
-  max_discount_pct: z.number().min(0).max(100, "Discount must be between 0 and 100"),
-  keywords: z.array(z.string()).min(1, "At least one keyword is required"),
-  url: z.string().url("Invalid URL format"),
-  id: z.number().min(1, "Store ID is required"),
+  max_discount_pct: z
+    .number()
+    .min(0)
+    .max(100, 'Discount must be between 0 and 100'),
+  keywords: z.array(z.string()).min(1, 'At least one keyword is required'),
+  url: z.string().url('Invalid URL format'),
+  id: z.number().min(1, 'Store ID is required'),
 });
 
 type StoreFormData = z.infer<typeof schema>;
 
 const defaultValue: StoreFormData = {
-  name: "",
-  description: "",
+  name: '',
+  description: '',
   image: undefined,
   max_discount_pct: 0,
   keywords: [],
-  url: "",
+  url: '',
   id: 1,
 };
-
-
 
 interface UpdateStoreModalProps {
   item: IStore | null;
@@ -67,33 +68,36 @@ function UpdateStoreModal({ item, open, onClose }: UpdateStoreModalProps) {
 
   useEffect(() => {
     if (item) {
-      setValue("name", item.name);
-      setValue("description", item.description);
+      setValue('name', item.name);
+      setValue('description', item.description);
       if (item.image) {
-        setValue("image", generateImageBytesObjectFromBase64(item.image, item.name));
+        setValue(
+          'image',
+          generateImageBytesObjectFromBase64(item.image, item.name),
+        );
       }
-      setValue("max_discount_pct", item.max_discount_pct);
-      setValue("keywords", item.keywords);
-      setValue("url", item.url);
-      setValue("id", item.id);
+      setValue('max_discount_pct', item.max_discount_pct);
+      setValue('keywords', item.keywords);
+      setValue('url', item.url);
+      setValue('id', item.id);
     }
   }, [item, setValue]);
 
   const onSubmit = async (data: StoreFormData) => {
-    console.log("Form data submitted:", data);
+    console.log('Form data submitted:', data);
     onClose();
   };
 
   const handleUploadFile = (data: ImageByte) => {
-    setValue("image", data);
+    setValue('image', data);
   };
 
   const handleKeywordsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const keywords = e.target.value
-      .split(",")
+      .split(',')
       .map((keyword) => keyword.trim())
       .filter((keyword) => keyword.length > 0);
-    setValue("keywords", keywords);
+    setValue('keywords', keywords);
   };
 
   return (
@@ -113,11 +117,13 @@ function UpdateStoreModal({ item, open, onClose }: UpdateStoreModalProps) {
           <Form onSubmit={handleSubmit(onSubmit)}>
             {/* Store Name */}
             <Box className="mb-3">
-              <Form.Label className="fw-bold text-default">Store Name</Form.Label>
+              <Form.Label className="fw-bold text-default">
+                Store Name
+              </Form.Label>
               <Form.Control
                 type="text"
                 placeholder="Enter your Store name"
-                {...register("name")}
+                {...register('name')}
               />
               {errors.name && (
                 <small className="text-danger">{errors.name.message}</small>
@@ -126,14 +132,18 @@ function UpdateStoreModal({ item, open, onClose }: UpdateStoreModalProps) {
 
             {/* Description */}
             <Box className="mb-3">
-              <Form.Label className="fw-bold text-default">Description</Form.Label>
+              <Form.Label className="fw-bold text-default">
+                Description
+              </Form.Label>
               <Form.Control
                 as="textarea"
                 placeholder="Enter Store description"
-                {...register("description")}
+                {...register('description')}
               />
               {errors.description && (
-                <small className="text-danger">{errors.description.message}</small>
+                <small className="text-danger">
+                  {errors.description.message}
+                </small>
               )}
             </Box>
 
@@ -162,14 +172,18 @@ function UpdateStoreModal({ item, open, onClose }: UpdateStoreModalProps) {
 
             {/* Max Discount Percentage */}
             <Box className="mb-3">
-              <Form.Label className="fw-bold text-default">Max Discount (%)</Form.Label>
+              <Form.Label className="fw-bold text-default">
+                Max Discount (%)
+              </Form.Label>
               <Form.Control
                 type="number"
                 placeholder="Enter max discount percentage"
-                {...register("max_discount_pct", { valueAsNumber: true })}
+                {...register('max_discount_pct', { valueAsNumber: true })}
               />
               {errors.max_discount_pct && (
-                <small className="text-danger">{errors.max_discount_pct.message}</small>
+                <small className="text-danger">
+                  {errors.max_discount_pct.message}
+                </small>
               )}
             </Box>
 
@@ -180,7 +194,7 @@ function UpdateStoreModal({ item, open, onClose }: UpdateStoreModalProps) {
                 type="text"
                 placeholder="Enter keywords (comma-separated)"
                 onChange={handleKeywordsChange}
-                defaultValue={item?.keywords.join(", ")}
+                defaultValue={item?.keywords.join(', ')}
               />
               {errors.keywords && (
                 <small className="text-danger">{errors.keywords.message}</small>
@@ -189,11 +203,13 @@ function UpdateStoreModal({ item, open, onClose }: UpdateStoreModalProps) {
 
             {/* URL */}
             <Box className="mb-3">
-              <Form.Label className="fw-bold text-default">Website URL</Form.Label>
+              <Form.Label className="fw-bold text-default">
+                Website URL
+              </Form.Label>
               <Form.Control
                 type="text"
                 placeholder="Enter URL"
-                {...register("url")}
+                {...register('url')}
               />
               {errors.url && (
                 <small className="text-danger">{errors.url.message}</small>
@@ -207,7 +223,7 @@ function UpdateStoreModal({ item, open, onClose }: UpdateStoreModalProps) {
                 type="number"
                 placeholder="Enter Store ID"
                 disabled
-                {...register("id", { valueAsNumber: true })}
+                {...register('id', { valueAsNumber: true })}
               />
               {errors.id && (
                 <small className="text-danger">{errors.id.message}</small>

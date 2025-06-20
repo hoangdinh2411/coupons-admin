@@ -37,7 +37,6 @@ function SignInPage() {
     }
   }, [isSubmitSuccessful]);
 
-  console.log(appLoading);
   const onSubmit = async (data: AuthLoginSchemaType) => {
     toggleAppLoading(true);
     const res = await AuthService.login(data);

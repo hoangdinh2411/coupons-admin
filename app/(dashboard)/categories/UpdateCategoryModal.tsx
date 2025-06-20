@@ -31,7 +31,6 @@ function UpdateCategoryModal({
     register,
     handleSubmit,
     control,
-    reset,
     setValue,
     formState: { errors, isSubmitSuccessful },
   } = useForm<CategoryFormData>({
@@ -59,7 +58,11 @@ function UpdateCategoryModal({
       startTransition(async () => {
         const res = await updateCategory(item?.id, payload);
         if (res.success && res.data) {
-          setCategory([...categories, res.data]);
+          setCategory(
+            categories.map((cat) =>
+              cat.id === item?.id ? { ...cat, ...res.data } : cat,
+            ),
+          );
           toast.success('Updated success');
         } else {
           toast.error(res.message || 'Try again later');

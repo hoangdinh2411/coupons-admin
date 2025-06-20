@@ -22,23 +22,32 @@ import { APP_ROUTE } from '@/constants/route';
 import toast from 'react-hot-toast';
 import Notification from './Notification';
 import SearchBar from './SearchBar';
+import { getAllStores } from '@/app/actions/store.service';
+import { getCategories } from '@/app/actions/category.service';
 
 const Header = () => {
-  const [variable, setVariable] = useState(getState());
-  const { setProfile, toggleAppLoading, profile } = UseAppStore(
-    (state) => state,
-  );
+  const {
+    setProfile,
+    toggleAppLoading,
+    profile,
+    categories,
+    stores,
+    setCategory,
+    setStores,
+  } = UseAppStore((state) => state);
   const router = useRouter();
   // Fullscreen Function
+  console.log(stores);
 
   const handleSignOut = async () => {
     toggleAppLoading(true);
     const res = await AuthService.signOut();
     if (res.success) {
       toast.success('See you again');
-      router.push(APP_ROUTE.SIGN_IN);
       setProfile(null);
-      toggleAppLoading(false);
+      setStores([]);
+      setCategory([]);
+      router.push(APP_ROUTE.SIGN_IN);
     }
   };
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -50,6 +59,7 @@ const Header = () => {
       document.exitFullscreen();
     }
   };
+
   useEffect(() => {
     const fullscreenChangeHandler = () => {
       setIsFullscreen(!!document.fullscreenElement);
@@ -65,15 +75,20 @@ const Header = () => {
       const res = await AuthService.getProfile();
       if (res.success && res.data) {
         setProfile(res.data);
+        const storeRes = await getAllStores();
+        if (storeRes.success && storeRes.data) {
+          setStores(storeRes.data.results);
+        }
+        const categoryRes = await getCategories();
+        if (categoryRes.success && categoryRes.data) {
+          setCategory(categoryRes.data.results);
+        }
       } else {
-        await AuthService.signOut();
-        setProfile(null);
+        handleSignOut();
       }
     };
     handleFetchProfile();
   }, []);
-
-  console.log(profile);
 
   // MenuClose Function
 
@@ -100,7 +115,7 @@ const Header = () => {
   // Sidebar Toggle Function
 
   const overlayRef = useRef<HTMLDivElement | null>(null);
-  const Query = (selector) => document.querySelector(selector);
+  const Query = (selector: string) => document.querySelector(selector);
 
   const toggleSidebar = () => {
     const theme = getState();

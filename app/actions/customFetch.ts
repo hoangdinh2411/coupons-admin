@@ -1,4 +1,4 @@
-'use server';
+// 'use server';
 import { IResponse } from '@/types/request.type';
 import { cookies } from 'next/headers';
 
@@ -11,14 +11,18 @@ export default async function customFetch<T>(
 ): Promise<IResponse<T>> {
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), 60000);
-  const cookieStore = await cookies();
-  const token = cookieStore.get('token')?.value;
+  // const cookieStore = await cookies();
+  // const token = cookieStore.get('token')?.value;
+  // if (token) {
+  //   config.headers = {
+  //     ['Cookie']: `token=${token}`,
+  //   };
+  // }
   return fetch(`${BASE_URL + url}`, {
     ...config,
     signal: controller.signal,
     headers: {
       'Content-Type': 'application/json',
-      Cookie: `token=${token}`,
       ...config.headers,
     },
     credentials: 'include',
@@ -28,9 +32,12 @@ export default async function customFetch<T>(
       return response.json();
     })
     .then((data) => {
+      console.log('data', data);
+
       return data as T;
     })
     .catch((error) => {
+      console.log(error);
       if (error.name === 'AbortError') {
         return {
           success: false,

@@ -4,7 +4,8 @@ import {
   RegisterRequestPayLoad,
   VerifyRequestPayload,
 } from '@/types/auth.type';
-import customFetch from './api';
+import customFetch from './customFetch';
+import customFetchWithToken from './customFetchWithToken';
 
 class AuthService {
   static async login(payload: LoginRequestPayload) {
@@ -27,11 +28,11 @@ class AuthService {
   }
   static async signOut() {
     return await customFetch(`/auth/sign-out`, {
-      method: 'POST',
+      method: 'DELETE',
     });
   }
   static async getProfile() {
-    return await customFetch<UserData>('/users/profile', {
+    return await customFetchWithToken<UserData>('/users/profile', {
       cache: 'no-cache',
     });
   }

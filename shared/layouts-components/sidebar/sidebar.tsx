@@ -741,7 +741,6 @@ const Sidebar = () => {
     }
   }
 
-  console.log('💲💲💲 ~ Sidebar ~ openMenu:', openMenu);
   return (
     <Fragment>
       <div id="responsive-overlay" onClick={menuClose}></div>

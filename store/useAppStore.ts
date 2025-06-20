@@ -1,24 +1,28 @@
 'use client';
 import { UserData } from '@/types/auth.type';
 import { CategoryData } from '@/types/category.type';
+import { StoreData } from '@/types/store.type';
 import { createStore, useStore } from 'zustand';
 
 export type StateAppStoredType = {
   appLoading: boolean;
   profile: UserData | null;
   categories: CategoryData[];
+  stores: StoreData[];
 };
 
 export type ActionAppStoredType = {
   toggleAppLoading: (loading: boolean) => void;
   setProfile: (profile: UserData | null) => void;
   setCategory: (categories: CategoryData[]) => void;
+  setStores: (stores: StoreData[]) => void;
 };
 
 const initStore: StateAppStoredType = Object.seal({
   appLoading: false,
   profile: null,
   categories: [],
+  stores: [],
 });
 
 const AppStore = createStore<StateAppStoredType & ActionAppStoredType>()(
@@ -27,6 +31,7 @@ const AppStore = createStore<StateAppStoredType & ActionAppStoredType>()(
     toggleAppLoading: (loading: boolean) => set({ appLoading: loading }),
     setProfile: (profile: UserData | null) => set({ profile }),
     setCategory: (categories: CategoryData[]) => set({ categories }),
+    setStores: (stores: StoreData[]) => set({ stores }),
   }),
 );
 

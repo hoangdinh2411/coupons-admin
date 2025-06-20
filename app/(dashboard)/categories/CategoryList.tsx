@@ -1,14 +1,6 @@
 'use client';
-import React, { Fragment, useEffect, useRef, useState } from 'react';
-import {
-  Button,
-  Card,
-  Col,
-  Form,
-  InputGroup,
-  Pagination,
-  Row,
-} from 'react-bootstrap';
+import React, { Fragment, useState } from 'react';
+import { Button, Card, Col, Pagination, Row } from 'react-bootstrap';
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
 import SpkTables from '@/shared/@spk-reusable-components/reusable-tables/spk-tables';
 import CreateCategoryModal from './CreateCategoryModal';
@@ -17,8 +9,8 @@ import UpdateCategoryModal from './UpdateCategoryModal';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { deleteById } from '@/app/actions/category.service';
-import UseAppStore from '@/store/useAppStore';
 import Image from 'next/image';
+import SearchBar from '@/shared/layouts-components/searchbar/SearchBar';
 type Props = {
   data: CategoryData[];
   total: number;
@@ -38,7 +30,6 @@ export default function CategoryList({
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-  const searchRef = useRef<HTMLInputElement | null>(null);
   const [categoryModal, setCategoryModal] = useState<{
     isOpen: boolean;
     item: CategoryData | null;
@@ -46,7 +37,6 @@ export default function CategoryList({
     isOpen: false,
     item: null,
   });
-  const { setCategory, categories } = UseAppStore((state) => state);
 
   const handleOpenUpdateCategory = (category: CategoryData) => {
     setCategoryModal({
@@ -67,7 +57,6 @@ export default function CategoryList({
       loading: 'Deleting...!',
       success: (res) => {
         if (res.success) {
-          setCategory(categories.filter((cat) => cat.id === id));
           return 'Deleted success';
         }
         throw res.message;
@@ -88,21 +77,7 @@ export default function CategoryList({
     router.push(`${pathname}?${params.toString()}`);
   };
 
-  const handleSearch = () => {
-    if (searchRef.current) {
-      const searchText = searchRef.current.value;
-      const params = new URLSearchParams(searchParams.toString());
-      params.set('search_text', searchText.toString());
-      router.push(`${pathname}?${params.toString()}`);
-    }
-  };
-
-  useEffect(() => {
-    if (data) {
-      setCategory(data);
-    }
-  }, [data]);
-
+  console.log(data);
   return (
     <Fragment>
       <Card className="custom-card">
@@ -114,20 +89,7 @@ export default function CategoryList({
           <Row className="align-items-center g-2 flex-wrap">
             <Col xs="12" md>
               <div className="d-flex justify-content-between align-items-center gap-2 flex-wrap">
-                <InputGroup style={{ flex: 1, minWidth: '240px' }}>
-                  <Form.Control
-                    placeholder="Search categories by name..."
-                    ref={searchRef}
-                  />
-                  <Button
-                    variant="primary"
-                    id="button-search"
-                    onClick={handleSearch}
-                  >
-                    <i className="ri-search-line"></i>
-                  </Button>
-                </InputGroup>
-
+                <SearchBar />
                 <SpkButton
                   onClickfunc={handleOpenCreateCategoryModal}
                   Buttonvariant="primary"
@@ -142,13 +104,13 @@ export default function CategoryList({
           {/* Table */}
           <div className="table-responsive mt-3">
             <SpkTables tableClass="table-hover text-nowrap" header={HEADER}>
-              {categories.map((cat) => (
+              {data.map((cat) => (
                 <tr key={cat.id}>
                   <td>{cat.id}</td>
                   <td>{cat.name}</td>
                   <td>
                     <Image
-                      src={cat.image_bytes || '/assets/images/empty.png'}
+                      src={cat?.image_bytes ?? '/assets/images/empty.png'}
                       alt={cat.name}
                       width={40}
                       height={40}
