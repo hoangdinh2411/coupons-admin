@@ -12,7 +12,7 @@ import {
 
 import Switcher from '../switcher/switcher';
 import { getState, setState } from '../services/switcherServices';
-import { basePath } from '@/next.config';
+
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
 import Image from 'next/image';
 import AuthService from '@/app/actions/auth.service';
@@ -350,33 +350,25 @@ const Header = () => {
                 <Link scroll={false} href="/dashboard/" className="header-logo">
                   <Image
                     fill
-                    src={`${
-                      process.env.NODE_ENV === 'production' ? basePath : ''
-                    }/assets/images/brand-logos/desktop-logo.png`}
+                    src={`/assets/images/brand-logos/desktop-logo.png`}
                     alt="logo"
                     className="desktop-logo"
                   />
                   <Image
                     fill
-                    src={`${
-                      process.env.NODE_ENV === 'production' ? basePath : ''
-                    }/assets/images/brand-logos/toggle-logo.png`}
+                    src={`/assets/images/brand-logos/toggle-logo.png`}
                     alt="logo"
                     className="toggle-logo"
                   />
                   <Image
                     fill
-                    src={`${
-                      process.env.NODE_ENV === 'production' ? basePath : ''
-                    }/assets/images/brand-logos/desktop-white.png`}
+                    src={`/assets/images/brand-logos/desktop-white.png`}
                     alt="logo"
                     className="desktop-white"
                   />
                   <Image
                     fill
-                    src={`${
-                      process.env.NODE_ENV === 'production' ? basePath : ''
-                    }/assets/images/brand-logos/toggle-white.png`}
+                    src={`/assets/images/brand-logos/toggle-white.png`}
                     alt="logo"
                     className="toggle-white"
                   />
@@ -554,9 +546,7 @@ const Header = () => {
                   <Image
                     height={28}
                     width={28}
-                    src={`${
-                      process.env.NODE_ENV === 'production' ? basePath : ''
-                    }/assets/images/faces/14.jpg`}
+                    src={`/assets/images/faces/14.jpg`}
                     alt="img"
                     className="img-fluid"
                   />

@@ -8,7 +8,7 @@ import Menuloop from './menuloop';
 import { data$, getState, setState } from '../services/switcherServices';
 import { usePathname } from 'next/navigation';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
-import { basePath } from '@/next.config';
+
 import Image from 'next/image';
 
 const Sidebar = () => {
@@ -730,8 +730,8 @@ const Sidebar = () => {
         const newValue = mutation.target.getAttribute('data-nav-layout');
         if (newValue == 'vertical') {
           let currentPath = location.endsWith('/')
-            ? location.slice(0, -1).replace(basePath, '')
-            : location.replace(basePath, '');
+            ? location.slice(0, -1).replace('', '')
+            : location.replace('', '');
           currentPath = !currentPath ? '/dashboard/ecommerce' : currentPath;
           setMenuUsingUrl(currentPath);
         } else {

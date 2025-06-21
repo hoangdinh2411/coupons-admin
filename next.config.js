@@ -3,7 +3,6 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-
   reactStrictMode: false, // Disable Strict Mode if necessary
 };
 

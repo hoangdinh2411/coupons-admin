@@ -17,10 +17,7 @@ export default function RootLayout({
   return (
     <html>
       <head>
-        <title>
-          Rixzo NextJs App-Router Typescript React Bootstrap Admin & Dashboard
-          Template
-        </title>
+        <title>Coupon Admin Dashboard</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta
           name="keywords"
