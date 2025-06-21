@@ -6,11 +6,10 @@ const AUTH_URLS = [APP_ROUTE.SIGN_UP, APP_ROUTE.SIGN_IN];
 export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const token = request.cookies.get('token');
-  console.log(pathname, token);
+  // console.log(pathname, token);
   if (AUTH_URLS.includes(pathname) && token) {
     return NextResponse.redirect(new URL(APP_ROUTE.DASHBOARD, request.nextUrl));
   }
-
   if (!AUTH_URLS.includes(pathname) && !token) {
     return NextResponse.redirect(new URL(APP_ROUTE.SIGN_IN, request.nextUrl));
   }

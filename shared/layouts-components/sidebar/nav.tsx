@@ -1,3 +1,5 @@
+import { APP_ROUTE } from '@/constants/route';
+
 const Dashboardicon = (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -87,18 +89,62 @@ export const MENUITEMS: any = [
   {
     title: 'Store',
     icon: StoreIcon,
-    type: 'link',
+    type: 'sub',
     active: false,
     dirchange: false,
-    path: '/stores',
+    // path: '/stores',
+    children: [
+      {
+        title: 'List',
+        type: 'link',
+        active: false,
+        dirchange: false,
+        children: [],
+        path: APP_ROUTE.STORES,
+      },
+      {
+        title: 'Add New',
+        type: 'link',
+        active: false,
+        dirchange: false,
+        children: [],
+        path: APP_ROUTE.ADD_STORE,
+      },
+    ],
   },
   {
-    title: 'Coupon',
+    title: 'Coupons',
     icon: CouponIcon,
-    type: 'link',
+    type: 'sub',
     active: false,
     dirchange: false,
-    path: '/coupons',
+    // path: '/coupons',
+    children: [
+      {
+        title: 'List',
+        type: 'link',
+        active: false,
+        dirchange: false,
+        children: [],
+        path: APP_ROUTE.COUPONS,
+      },
+      {
+        title: 'Submit',
+        type: 'link',
+        active: false,
+        dirchange: false,
+        children: [],
+        path: APP_ROUTE.SUBMIT_COUPON,
+      },
+      {
+        title: 'Add new',
+        type: 'link',
+        active: false,
+        dirchange: false,
+        children: [],
+        path: APP_ROUTE.ADD_COUPON,
+      },
+    ],
   },
   {
     title: 'Post',
@@ -116,24 +162,4 @@ export const MENUITEMS: any = [
     type: 'link',
     path: '/categories',
   },
-  // {
-  //     icon: Erroricon, title: "Error", type: "sub", active: false, selected: false, dirchange: false, children: [
-
-  //         { path: "/authentication/error/404-error", type: "link", active: false, selected: false, dirchange: false, title: "404-Error" },
-  //     ]
-  // },
-
-  // {
-  //     icon: NestedmenuIcon, title: "Nested Menu", selected: false, active: false, dirchange: false, type: "sub", children: [
-  //         { path: "", title: "Nested-1", type: "empty", active: false, selected: false, dirchange: false },
-
-  //         {
-  //             title: "Nested-2", type: "sub", active: false, selected: false, dirchange: false, children: [
-  //                 { path: "", type: "empty", active: false, selected: false, dirchange: false, title: "Nested-2-1" },
-  //                 { path: "", type: "empty", ctive: false, selected: false, dirchange: false, title: "Nested-2-2" },
-  //                 { path: "", type: "empty", active: false, selected: false, dirchange: false, title: "Nested-2-3" },
-  //             ],
-  //         },
-  //     ],
-  // },
 ];

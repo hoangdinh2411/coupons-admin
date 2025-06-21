@@ -1,10 +1,12 @@
 import Seo from '@/shared/layouts-components/seo/seo';
 import React from 'react';
-import StoreList from './StoreList';
-import { getAllStores } from '@/app/actions/store.service';
-import Breadcrumb from './Breadcrumb';
+import {
+  getAllCoupons,
+  getUnverifiedCoupons,
+} from '@/app/actions/coupon.service';
+import CouponSubmitList from './CouponSubmitList';
 
-export default async function StorePage(props: {
+export default async function CouponPage(props: {
   searchParams?: Promise<{
     query?: string;
     page?: string;
@@ -15,15 +17,15 @@ export default async function StorePage(props: {
   const limit = 20;
   const page = Number(searchParams?.page || 1);
   const search_text = searchParams?.search_text || '';
-  const res = await getAllStores(page, limit, search_text);
+  const res = await getUnverifiedCoupons(page, limit, search_text);
   if (!res.success || (res.success && !res.data)) {
     return res.message;
   }
   return (
     <>
-      <Seo title="Store management" />
+      <Seo title="Coupon management" />
       {res.data && (
-        <StoreList
+        <CouponSubmitList
           data={res.data?.results}
           total={res.data?.total}
           currentPage={page}

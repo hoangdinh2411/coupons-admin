@@ -1,4 +1,4 @@
-import { ROLES } from "./enum";
+import { ROLES } from './enum';
 
 export interface LoginRequestPayload {
   email: string;
@@ -11,7 +11,7 @@ export interface RegisterRequestPayLoad extends LoginRequestPayload {
 }
 
 export interface UserData extends RegisterRequestPayLoad {
-  email_verified: string;
+  email_verified: boolean;
   role: ROLES;
 }
 export interface VerifyRequestPayload {

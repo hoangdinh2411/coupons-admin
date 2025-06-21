@@ -9,3 +9,17 @@ export interface IResponseWithTotal<T> {
   results: T;
   total: number;
 }
+
+export interface TimestampedEntity {
+  created_at?: string;
+  updated_at?: string;
+  deleted_at?: string;
+}
+
+export interface MetaData {
+  image: string;
+  keywords: string[];
+  description: string;
+  slug: string;
+  title: string;
+}

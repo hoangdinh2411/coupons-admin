@@ -42,7 +42,6 @@ function SignInPage() {
     const res = await AuthService.login(data);
     if (!res.success && res.message) {
       toast.error(res.message);
-      toggleAppLoading(false);
       return;
     }
     if (res.data) {

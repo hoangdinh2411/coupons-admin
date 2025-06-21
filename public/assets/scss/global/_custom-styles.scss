@@ -908,10 +908,11 @@ select {
 .rangeslider-thumb {
   direction: ltr;
 }
+
 .input-group > .react-datepicker-wrapper {
   position: relative;
   flex: 1 1 auto;
-  width: 1%;
+  width: 100%;
   min-width: 0;
 }
 [dir='rtl'] .form-select {

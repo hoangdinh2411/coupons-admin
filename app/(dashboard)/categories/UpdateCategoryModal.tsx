@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, memo, useTransition } from 'react';
+import React, { useEffect, memo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Modal, Form, CloseButton } from 'react-bootstrap';
@@ -32,11 +32,10 @@ function UpdateCategoryModal({
     handleSubmit,
     control,
     setValue,
-    formState: { errors, isSubmitSuccessful },
+    formState: { errors },
   } = useForm<CategoryFormData>({
     resolver: zodResolver(schema),
   });
-  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
     if (item) {
@@ -55,18 +54,20 @@ function UpdateCategoryModal({
         name: data.name,
         image_bytes: data.image.data,
       };
-      startTransition(async () => {
-        const res = await updateCategory(item?.id, payload);
-        if (res.success && res.data) {
-          setCategory(
-            categories.map((cat) =>
-              cat.id === item?.id ? { ...cat, ...res.data } : cat,
-            ),
-          );
-          toast.success('Updated success');
-        } else {
-          toast.error(res.message || 'Try again later');
-        }
+      toast.promise(updateCategory(item?.id, payload), {
+        loading: 'Updating...!',
+        success: (res) => {
+          if (res.success && res.data) {
+            setCategory(
+              categories.map((cat) =>
+                cat.id === item?.id ? { ...cat, ...res.data } : cat,
+              ),
+            );
+            return 'Updated success';
+          }
+          throw res.message;
+        },
+        error: (err) => err || 'Something wrong',
       });
     }
   };
@@ -123,18 +124,13 @@ function UpdateCategoryModal({
             </Box>
 
             <Box display="flex" justifyContent="end" mt={4} gap={1}>
-              <SpkButton
-                Buttonvariant="primary"
-                Buttontype="submit"
-                Disabled={isPending}
-              >
+              <SpkButton Buttonvariant="primary" Buttontype="submit">
                 Update
               </SpkButton>
               <SpkButton
                 Buttonvariant="primary-light"
                 Buttontype="button"
                 onClickfunc={onClose}
-                Disabled={isPending}
               >
                 Cancel
               </SpkButton>

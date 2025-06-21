@@ -1,7 +1,7 @@
 'use server';
 import customFetch from './customFetch';
 import { revalidateTag } from 'next/cache';
-import { IResponseWithTotal } from '@/types/request.type';
+import { IResponse, IResponseWithTotal } from '@/types/request.type';
 import { StoreData, StorePayload } from '@/types/store.type';
 import customFetchWithToken from './customFetchWithToken';
 
@@ -13,13 +13,21 @@ export async function searchStore(text: string) {
 export async function getAllStores(
   page?: number,
   limit?: number,
-  search_text?: string,
+  search_text: string = '',
 ) {
   const query = `?page=${page ?? ''}&limit=${limit ?? ''}&search_text=${search_text ?? ''}`;
   return await customFetch<IResponseWithTotal<StoreData[]>>(`/stores${query}`, {
     method: 'GET',
     next: {
       tags: ['stores-data'],
+    },
+  });
+}
+export async function getStoreBySlug(slug: string) {
+  return await customFetch<StoreData>(`/stores/${slug}`, {
+    method: 'GET',
+    next: {
+      tags: [`store-${slug}`],
     },
   });
 }
@@ -31,7 +39,7 @@ export async function updateStore(id: number, payload: StorePayload) {
   });
   if (res.success) {
     revalidateTag('stores-data');
-    revalidateTag('category-' + id);
+    revalidateTag('category-' + res.data?.slug);
   }
   return res;
 }

@@ -37,7 +37,6 @@ const Header = () => {
   } = UseAppStore((state) => state);
   const router = useRouter();
   // Fullscreen Function
-  console.log(stores);
 
   const handleSignOut = async () => {
     toggleAppLoading(true);
@@ -76,10 +75,12 @@ const Header = () => {
       if (res.success && res.data) {
         setProfile(res.data);
         const storeRes = await getAllStores();
+        console.log('storeRes', storeRes.data);
         if (storeRes.success && storeRes.data) {
           setStores(storeRes.data.results);
         }
         const categoryRes = await getCategories();
+        console.log('categoryRes', categoryRes.data);
         if (categoryRes.success && categoryRes.data) {
           setCategory(categoryRes.data.results);
         }

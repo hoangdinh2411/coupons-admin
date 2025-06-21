@@ -1,7 +1,7 @@
 'use client';
 import React, { useContext, useEffect, useState } from 'react';
 import { LocalStorageBackup } from '@/shared/data/switcherdata/switcherdata';
-import { data$, getState } from '@/shared/layouts-components/services/switcherServices';
+import { getState } from '@/shared/layouts-components/services/switcherServices';
 import useAppStore from '@/store/useAppStore';
 import { LinearProgress } from '@mui/material';
 import { createContext } from 'react';
@@ -11,28 +11,37 @@ const Initialload = createContext<any>(null);
 const InitialLoadProvider = ({ children }: { children: React.ReactNode }) => {
   const [localVariable, setLocalVariable] = useState(getState());
   const [pageloading, setpageloading] = useState(false);
-  const { appLoading , toggleAppLoading} = useAppStore();
-  const pathname = usePathname()
+  const { appLoading, toggleAppLoading } = useAppStore((state) => state);
+  const pathname = usePathname();
   const customstyles: any = {
-    ...(localVariable.colorPrimaryRgb !== '' && { '--primary-rgb': localVariable.colorPrimaryRgb }),
-    ...(localVariable.bodyBg !== '' && { '--body-bg-rgb': localVariable.bodyBg }),
-    ...(localVariable.bodyBg2 !== '' && { '--body-bg-rgb2': localVariable.bodyBg2 }),
-    ...(localVariable.lightRgb !== '' && { '--light-rgb': localVariable.lightRgb }),
-    ...(localVariable.formControlBg !== '' && { '--form-control-bg': localVariable.formControlBg }),
+    ...(localVariable.colorPrimaryRgb !== '' && {
+      '--primary-rgb': localVariable.colorPrimaryRgb,
+    }),
+    ...(localVariable.bodyBg !== '' && {
+      '--body-bg-rgb': localVariable.bodyBg,
+    }),
+    ...(localVariable.bodyBg2 !== '' && {
+      '--body-bg-rgb2': localVariable.bodyBg2,
+    }),
+    ...(localVariable.lightRgb !== '' && {
+      '--light-rgb': localVariable.lightRgb,
+    }),
+    ...(localVariable.formControlBg !== '' && {
+      '--form-control-bg': localVariable.formControlBg,
+    }),
     ...(localVariable.gray !== '' && { '--gray-3': localVariable.gray }),
-    ...(localVariable.inputBorder !== '' && { '--input-border': localVariable.inputBorder }),
+    ...(localVariable.inputBorder !== '' && {
+      '--input-border': localVariable.inputBorder,
+    }),
   };
- useEffect(() => {
-  
-  }, []);
+  useEffect(() => {}, []);
   const theme: any = useContext(Initialload);
 
   useEffect(() => {
-    if(appLoading){
-      toggleAppLoading(false)
+    if (appLoading) {
+      toggleAppLoading(false);
     }
-  
-  }, [appLoading,pathname]);
+  }, [pathname]);
   useEffect(() => {
     const htmlEl = document.documentElement;
 
@@ -40,7 +49,7 @@ const InitialLoadProvider = ({ children }: { children: React.ReactNode }) => {
 
     htmlEl.lang = localVariable.lang || '';
     htmlEl.dir = localVariable.dir || '';
-    htmlEl.style =customstyles
+    htmlEl.style = customstyles;
     // htmlEl.style = customstyles;
     const attributes = {
       'data-theme-mode': localVariable.dataThemeMode,

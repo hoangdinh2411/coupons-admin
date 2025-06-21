@@ -1,3 +1,6 @@
+import { CategoryData } from './category.type';
+import { MetaData, TimestampedEntity } from './request.type';
+
 export interface StorePayload {
   name: string;
   description: string;
@@ -5,8 +8,16 @@ export interface StorePayload {
   max_discount_pct: number;
   keywords: string[];
   url: string;
-  category: number;
+  category_id: number;
 }
-export interface StoreData extends StorePayload {
+export interface StoreData
+  extends Omit<StorePayload, 'category'>,
+    TimestampedEntity {
   id: number;
+  slug: string;
+  category_id: number;
+  category?: CategoryData;
+  coupons: [];
+  meta_data?: MetaData;
+  rating: number;
 }

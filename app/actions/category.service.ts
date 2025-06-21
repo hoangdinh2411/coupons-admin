@@ -13,7 +13,7 @@ export async function searchCategory(text: string) {
 export async function getCategories(
   page?: number,
   limit?: number,
-  search_text?: string,
+  search_text: string = '',
 ) {
   const query = `?page=${page}&limit=${limit}&search_text=${search_text}`;
   return await customFetch<IResponseWithTotal<CategoryData[]>>(

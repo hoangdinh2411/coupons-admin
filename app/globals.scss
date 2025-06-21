@@ -1,6 +1,15 @@
-
 @forward '../public/assets/css/styles.css';
 @forward '../public/assets/css/icons.css';
 
 //*** PLUGINS CSS IMPORTS ***//
 
+.custom-date-picker {
+  width: 100%;
+  > .react-datepicker-wrapper {
+    width: 100% !important;
+  }
+}
+
+textarea {
+  resize: none;
+}

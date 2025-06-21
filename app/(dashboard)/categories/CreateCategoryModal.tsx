@@ -75,6 +75,7 @@ export default function CreateCategoryModal({
         }
         throw res.message;
       },
+      error: (err) => err || 'Something wrong',
     });
   };
 

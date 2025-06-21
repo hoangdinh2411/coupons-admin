@@ -1,5 +1,5 @@
 export const APP_ROUTE = {
-  DASHBOARD: '/',
+  DASHBOARD: '/dashboard',
   CATEGORY: '/categories',
   BLOG: '/blogs',
   SIGN_IN: '/auth/sign-in',
@@ -8,4 +8,7 @@ export const APP_ROUTE = {
   VERIFY: '/auth/verify-email',
   STORES: '/stores',
   ADD_STORE: '/stores/create',
+  COUPONS: '/coupons',
+  ADD_COUPON: '/coupons/create',
+  SUBMIT_COUPON: '/coupons/submit',
 };

@@ -756,36 +756,32 @@ const Sidebar = () => {
         {/* <!-- Start::main-sidebar-header --> */}
 
         <div className="main-sidebar-header">
-          <Link scroll={false} href="/dashboard/" className="header-logo">
+          <Link
+            scroll={false}
+            href="/dashboards/sales/"
+            className="header-logo"
+          >
             <Image
               fill
-              src={`${
-                process.env.NODE_ENV === 'production' ? basePath : ''
-              }/assets/images/brand-logos/desktop-logo.png`}
+              src={`${process.env.NODE_ENV === 'production' ? basePath : ''}/assets/images/brand-logos/desktop-logo.png`}
               alt="logo"
               className="desktop-logo"
             />
             <Image
               fill
-              src={`${
-                process.env.NODE_ENV === 'production' ? basePath : ''
-              }/assets/images/brand-logos/toggle-logo.png`}
+              src={`${process.env.NODE_ENV === 'production' ? basePath : ''}/assets/images/brand-logos/toggle-logo.png`}
               alt="logo"
               className="toggle-logo"
             />
             <Image
               fill
-              src={`${
-                process.env.NODE_ENV === 'production' ? basePath : ''
-              }/assets/images/brand-logos/desktop-white.png`}
+              src={`${process.env.NODE_ENV === 'production' ? basePath : ''}/assets/images/brand-logos/desktop-white.png`}
               alt="logo"
               className="desktop-white"
             />
             <Image
               fill
-              src={`${
-                process.env.NODE_ENV === 'production' ? basePath : ''
-              }/assets/images/brand-logos/toggle-white.png`}
+              src={`${process.env.NODE_ENV === 'production' ? basePath : ''}/assets/images/brand-logos/toggle-white.png`}
               alt="logo"
               className="toggle-white"
             />
@@ -795,132 +791,120 @@ const Sidebar = () => {
 
         {/* <!-- Start::main-sidebar --> */}
 
-        {/* <!-- Start::nav --> */}
-        <nav className="main-menu-container nav nav-pills flex-column sub-open">
-          <div className="slide-left" id="slide-left" onClick={slideLeft}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="#7b8191"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-            >
-              {' '}
-              <path d="M13.293 6.293 7.586 12l5.707 5.707 1.414-1.414L10.414 12l4.293-4.293z"></path>{' '}
-            </svg>
-          </div>
-          <ul
-            className="main-menu"
-            style={{
-              padding: '60px 0',
-            }}
-          >
-            {/* <!-- Start::slide --> */}
-            {openMenu.map((list: any, index: any) => (
-              <Fragment key={index}>
-                <li
-                  className={` ${list.menutitle ? 'slide__category' : ''} ${
-                    list.type === 'link' ? 'slide' : ''
-                  } ${list.type === 'sub' ? 'slide has-sub' : ''} ${
-                    list.active ? 'open' : ''
-                  }  ${list?.selected ? 'active' : ''}  `}
-                >
-                  {list.menutitle ? (
-                    <span className="category-name">{list.menutitle}</span>
-                  ) : (
-                    ''
-                  )}
-                  {list.type === 'link' ? (
-                    <Link
-                      href={list.path}
-                      className={`side-menu__item  ${
-                        list.selected ? 'active' : ''
-                      }`}
-                    >
-                      <OverlayTrigger
-                        placement="right"
-                        overlay={
-                          <Tooltip
-                            id="button-tooltip"
-                            className="double-menu-tooltip"
-                          >
-                            {list.title}
-                          </Tooltip>
-                        }
+        <div className="main-sidebar" id="sidebar-scroll">
+          {/* <!-- Start::nav --> */}
+          <nav className="main-menu-container nav nav-pills flex-column sub-open">
+            <div className="slide-left" id="slide-left" onClick={slideLeft}>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="#7b8191"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+              >
+                {' '}
+                <path d="M13.293 6.293 7.586 12l5.707 5.707 1.414-1.414L10.414 12l4.293-4.293z"></path>{' '}
+              </svg>
+            </div>
+            <ul className="main-menu">
+              {/* <!-- Start::slide --> */}
+
+              {openMenu.map((list: any, index: any) => (
+                <Fragment key={index}>
+                  <li
+                    className={` ${list.menutitle ? 'slide__category' : ''} ${list.type === 'link' ? 'slide' : ''} ${list.type === 'sub' ? 'slide has-sub' : ''} ${list.active ? 'open' : ''}  ${list?.selected ? 'active' : ''}  `}
+                  >
+                    {list.menutitle ? (
+                      <span className="category-name">{list.menutitle}</span>
+                    ) : (
+                      ''
+                    )}
+                    {list.type === 'link' ? (
+                      <Link
+                        href={list.path}
+                        className={`side-menu__item  ${list.selected ? 'active' : ''}`}
                       >
-                        <div
-                          className={`${
-                            local_varaiable?.dataVerticalStyle == 'doublemenu'
-                              ? ''
-                              : 'd-none'
-                          }`}
+                        <OverlayTrigger
+                          placement="right"
+                          overlay={
+                            <Tooltip
+                              id="button-tooltip"
+                              className="double-menu-tooltip"
+                            >
+                              {list.title}
+                            </Tooltip>
+                          }
                         >
-                          {list.icon}
-                        </div>
-                      </OverlayTrigger>
-                      {local_varaiable.dataVerticalStyle != 'doublemenu'
-                        ? list.icon
-                        : ''}
-                      <span className="side-menu__label">
-                        {list.title}{' '}
-                        {list.badgetxt ? (
-                          <span className={list.class}> {list.badgetxt}</span>
-                        ) : (
-                          ''
-                        )}
-                      </span>
-                    </Link>
-                  ) : (
-                    ''
-                  )}
-                  {list.type === 'empty' ? (
-                    <Link
-                      href="#!"
-                      className="side-menu__item"
-                      onClick={handleClick}
-                    >
-                      {list.icon}
-                      <span className="">
-                        {' '}
-                        {list.title}{' '}
-                        {list.badgetxt ? (
-                          <span className={list.class}>{list.badgetxt} </span>
-                        ) : (
-                          ''
-                        )}
-                      </span>
-                    </Link>
-                  ) : (
-                    ''
-                  )}
-                  {list.children && (
-                    <Menuloop
-                      MenuItems={list}
-                      level={level + 1}
-                      handleToMenu={handleToMenu}
-                      HoverToggleInnerMenuFn={HoverToggleInnerMenuFn}
-                    />
-                  )}
-                </li>
-              </Fragment>
-            ))}
+                          <div
+                            className={`${local_varaiable?.dataVerticalStyle == 'doublemenu' ? '' : 'd-none'}`}
+                          >
+                            {list.icon}
+                          </div>
+                        </OverlayTrigger>
+                        {local_varaiable.dataVerticalStyle != 'doublemenu'
+                          ? list.icon
+                          : ''}
+                        <span className="side-menu__label">
+                          {list.title}{' '}
+                          {list.badgetxt ? (
+                            <span className={list.class}> {list.badgetxt}</span>
+                          ) : (
+                            ''
+                          )}
+                        </span>
+                      </Link>
+                    ) : (
+                      ''
+                    )}
+                    {list.type === 'empty' ? (
+                      <Link
+                        href="#!"
+                        className="side-menu__item"
+                        onClick={handleClick}
+                      >
+                        {list.icon}
+                        <span className="">
+                          {' '}
+                          {list.title}{' '}
+                          {list.badgetxt ? (
+                            <span className={list.class}>{list.badgetxt} </span>
+                          ) : (
+                            ''
+                          )}
+                        </span>
+                      </Link>
+                    ) : (
+                      ''
+                    )}
+                    {list.children && (
+                      <Menuloop
+                        MenuItems={list}
+                        level={level + 1}
+                        handleToMenu={handleToMenu}
+                        HoverToggleInnerMenuFn={HoverToggleInnerMenuFn}
+                      />
+                    )}
+                  </li>
+                </Fragment>
+              ))}
 
-            {/* <!-- End::slide --> */}
-          </ul>
-          <div className="slide-right" id="slide-right" onClick={slideRight}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="#7b8191"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-            >
-              <path d="M10.707 17.707 16.414 12l-5.707-5.707-1.414 1.414L13.586 12l-4.293 4.293z"></path>
-            </svg>
-          </div>
-        </nav>
+              {/* <!-- End::slide --> */}
+            </ul>
+            <div className="slide-right" id="slide-right" onClick={slideRight}>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="#7b8191"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+              >
+                <path d="M10.707 17.707 16.414 12l-5.707-5.707-1.414 1.414L13.586 12l-4.293 4.293z"></path>
+              </svg>
+            </div>
+          </nav>
 
-        {/* <!-- End::nav --> */}
+          {/* <!-- End::nav --> */}
+        </div>
 
         {/* <!-- End::main-sidebar --> */}
       </aside>

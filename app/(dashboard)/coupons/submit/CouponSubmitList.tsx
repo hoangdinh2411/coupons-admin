@@ -1,53 +1,57 @@
 'use client';
 import React from 'react';
-import Image from 'next/image';
 import { Button, Card, Col, Row } from 'react-bootstrap';
-
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
 import SpkTables from '@/shared/@spk-reusable-components/reusable-tables/spk-tables';
-import { StoreData } from '@/types/store.type';
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { APP_ROUTE } from '@/constants/route';
 import SearchBar from '@/shared/layouts-components/searchbar/SearchBar';
 import toast from 'react-hot-toast';
-import { deleteById } from '@/app/actions/store.service';
-import UseAppStore from '@/store/useAppStore';
+import {
+  deleteCouponById,
+  submitCouponById,
+} from '@/app/actions/coupon.service';
 import CustomPagination from '@/shared/layouts-components/pagination/CustomPagination';
+import { CouponData } from '@/types/coupon.type';
+import { CouponType } from '@/types/enum';
 type Props = {
-  data: StoreData[];
+  data: CouponData[];
   total: number;
   currentPage: number;
 };
 const HEADER = [
-  { title: 'Store ID' },
-  { title: 'Name' },
-  { title: 'Image' },
-  { title: 'keywords' },
+  { title: 'Title' },
+  { title: 'Code' },
+  { title: 'Store' },
   { title: 'Category' },
+  { title: 'Expire Date' },
+  { title: 'Type' },
   { title: 'Actions' },
 ];
-export default function StoreList({
+export default function CouponSubmitList({
   data = [],
   total = 0,
   currentPage = 1,
 }: Props) {
-  const router = useRouter();
-  const pathname = usePathname();
-
-  const { setStores, stores } = UseAppStore((state) => state);
-
   //TODO: handle modal
-  const handleOpenUpdateStore = (storeId: number) => {
-    router.push(`${pathname}/update/${storeId}`);
+  const handleAccept = (id: number) => {
+    toast.promise(submitCouponById(id), {
+      loading: 'Pending...',
+      success: (res) => {
+        if (res.success) {
+          return 'Submitted coupon';
+        }
+        throw res.message;
+      },
+    });
   };
   //TODO: handle modal
-  const handleDelete = (storeId: number) => {
-    toast.promise(deleteById(storeId), {
+  const handleDelete = (id: number) => {
+    toast.promise(deleteCouponById(id), {
       loading: 'Deleting...!',
       success: (res) => {
         if (res.success) {
-          setStores(stores.filter((s) => s.id !== storeId));
           return 'Deleted success';
         }
         throw res.message;
@@ -55,69 +59,65 @@ export default function StoreList({
     });
   };
 
+  const getBackgroundForType = (type: CouponType) => {
+    switch (type) {
+      case CouponType.CODE:
+        return 'bg-secondary';
+      case CouponType.ONLINE_AND_IN_STORE:
+        return 'bg-success';
+      case CouponType.SALE:
+        return 'bg-info';
+      default:
+        'bg-primary';
+    }
+  };
   return (
     <Card className="custom-card">
       <Card.Header className="justify-content-between">
-        <Card.Title>All Stores</Card.Title>
+        <Card.Title>All Coupons</Card.Title>
       </Card.Header>
 
       <Card.Body>
         <Row className="align-items-center g-2 flex-wrap">
           <Col xs="12" md>
             <div className="d-flex justify-content-between align-items-center gap-2 flex-wrap">
-              <SearchBar placeholder="Search store..." />
-              <Link href={APP_ROUTE.ADD_STORE}>
-                <SpkButton Buttonvariant="primary" Customclass="w-auto">
-                  Add Store
-                </SpkButton>
-              </Link>
+              <SearchBar placeholder="Search coupon..." />
             </div>
           </Col>
         </Row>
-
-        {/* Table */}
         <div className="table-responsive mt-3">
           <SpkTables tableClass="table-hover text-nowrap" header={HEADER}>
-            {data.map((store: StoreData) => (
-              <tr
-                key={store.id}
-                onDoubleClick={() => router.push(`${pathname}/${store.id}`)}
-              >
-                <td>{store.id}</td>
-                <td>{store.name}</td>
+            {data.map((coupon: CouponData) => (
+              <tr key={coupon.id}>
+                <td>{coupon.title}</td>
+                <td>{coupon.code}</td>
+                <td>{coupon.store?.name || 'N/A'}</td>
+                <td>{coupon.category?.name || 'N/A'}</td>
+                <td>{coupon.expire_date}</td>
                 <td>
-                  <Image
-                    src={store.image_bytes || '/assets/images/empty.png'}
-                    alt={store.name}
-                    width={40}
-                    height={40}
-                    className="rounded"
-                  />{' '}
+                  <p
+                    className={`badge ${getBackgroundForType(coupon.type)} mb-2 `}
+                  >
+                    {coupon.type}
+                  </p>
                 </td>
-                <td>
-                  {store.keywords?.map((k: string, index: number) => (
-                    <span key={index} className="badge bg-primary me-1">
-                      {k}
-                    </span>
-                  ))}
-                </td>
-                <td>{store.category?.name || 'N/A'}</td>
+
                 <td>
                   <Button
                     variant="success-light"
                     size="sm"
                     className="btn btn-sm btn-primary-light"
-                    onClick={() => handleOpenUpdateStore(store.id)}
+                    onClick={() => handleAccept(coupon.id)}
                   >
-                    <i className="ri-edit-line"></i> Edit
+                    <i className="bi bi-check-lg"></i> Accept
                   </Button>
                   <Button
                     variant="danger-light"
                     size="sm"
                     className="btn btn-sm btn-primary-light mx-2"
-                    onClick={() => handleDelete(store.id)}
+                    onClick={() => handleDelete(coupon.id)}
                   >
-                    <i className="ri-delete-bin-line"></i> Delete
+                    <i className="ri-delete-bin-line"></i> Decline
                   </Button>
                 </td>
               </tr>

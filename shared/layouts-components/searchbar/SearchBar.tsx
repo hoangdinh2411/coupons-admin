@@ -3,9 +3,11 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import React, { KeyboardEvent, useState } from 'react';
 import { Button, Form, InputGroup } from 'react-bootstrap';
 
-type Props = {};
+type Props = {
+  placeholder: string;
+};
 
-export default function SearchBar({}: Props) {
+export default function SearchBar({ placeholder }: Props) {
   const [text, setText] = useState<string>('');
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -26,7 +28,7 @@ export default function SearchBar({}: Props) {
   return (
     <InputGroup style={{ flex: 1, minWidth: '300px', marginLeft: 0 }}>
       <Form.Control
-        placeholder="Search categories by name..."
+        placeholder={placeholder}
         value={text}
         onChange={(e) => setText(e.target.value)}
         onKeyDown={handleKeyDown}
