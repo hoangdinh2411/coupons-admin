@@ -86,7 +86,8 @@ const Header = () => {
           setCategory(categoryRes.data.results);
         }
       } else {
-        handleSignOut();
+        console.log('sign outs');
+        // handleSignOut();
       }
     };
     if (!profile) {
