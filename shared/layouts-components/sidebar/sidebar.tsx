@@ -58,7 +58,6 @@ const Sidebar = () => {
         iconOverlay: 'open',
       };
       setState(newState);
-      console.log(newState);
     }
   }
 
@@ -73,7 +72,6 @@ const Sidebar = () => {
         iconOverlay: '',
       };
       setState(newState);
-      console.log(newState);
     }
   }
 

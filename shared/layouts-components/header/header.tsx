@@ -17,7 +17,7 @@ import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk
 import Image from 'next/image';
 import AuthService from '@/app/actions/auth.service';
 import UseAppStore from '@/store/useAppStore';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { APP_ROUTE } from '@/constants/route';
 import toast from 'react-hot-toast';
 import Notification from './Notification';
@@ -72,6 +72,7 @@ const Header = () => {
   useEffect(() => {
     const handleFetchProfile = async () => {
       const res = await AuthService.getProfile();
+      console.log(res);
       if (res.success && res.data) {
         setProfile(res.data);
         const storeRes = await getAllStores();
@@ -88,7 +89,9 @@ const Header = () => {
         handleSignOut();
       }
     };
-    handleFetchProfile();
+    if (!profile) {
+      handleFetchProfile();
+    }
   }, []);
 
   // MenuClose Function

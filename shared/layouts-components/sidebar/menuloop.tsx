@@ -23,7 +23,6 @@ const Menuloop = ({ MenuItems, level, handleToMenu }: any) => {
 
   const local_varaiable = variable;
 
-  console.log(MenuItems);
   return (
     <Fragment>
       <Link
