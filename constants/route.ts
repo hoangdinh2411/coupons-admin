@@ -1,5 +1,5 @@
 export const APP_ROUTE = {
-  DASHBOARD: '/dashboard',
+  DASHBOARD: '/',
   CATEGORY: '/categories',
   BLOG: '/blogs',
   SIGN_IN: '/auth/sign-in',

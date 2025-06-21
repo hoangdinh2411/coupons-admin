@@ -10,8 +10,10 @@ import { usePathname } from 'next/navigation';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 import Image from 'next/image';
+import { APP_ROUTE } from '@/constants/route';
 
 const Sidebar = () => {
+  const pathname = usePathname();
   let [variable, setVariable] = useState(getState());
 
   useEffect(() => {
@@ -763,25 +765,25 @@ const Sidebar = () => {
           >
             <Image
               fill
-              src={`${process.env.NODE_ENV === 'production' ? basePath : ''}/assets/images/brand-logos/desktop-logo.png`}
+              src={`/assets/images/brand-logos/desktop-logo.png`}
               alt="logo"
               className="desktop-logo"
             />
             <Image
               fill
-              src={`${process.env.NODE_ENV === 'production' ? basePath : ''}/assets/images/brand-logos/toggle-logo.png`}
+              src={`/assets/images/brand-logos/toggle-logo.png`}
               alt="logo"
               className="toggle-logo"
             />
             <Image
               fill
-              src={`${process.env.NODE_ENV === 'production' ? basePath : ''}/assets/images/brand-logos/desktop-white.png`}
+              src={`/assets/images/brand-logos/desktop-white.png`}
               alt="logo"
               className="desktop-white"
             />
             <Image
               fill
-              src={`${process.env.NODE_ENV === 'production' ? basePath : ''}/assets/images/brand-logos/toggle-white.png`}
+              src={`/assets/images/brand-logos/toggle-white.png`}
               alt="logo"
               className="toggle-white"
             />
@@ -822,7 +824,7 @@ const Sidebar = () => {
                     {list.type === 'link' ? (
                       <Link
                         href={list.path}
-                        className={`side-menu__item  ${list.selected ? 'active' : ''}`}
+                        className={`side-menu__item  ${pathname === list.path ? 'active' : ''}`}
                       >
                         <OverlayTrigger
                           placement="right"

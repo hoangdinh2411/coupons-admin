@@ -84,7 +84,8 @@ export const MENUITEMS: any = [
     active: false,
     type: 'link',
     dirchange: false,
-    path: '/dashboard',
+    selected: true,
+    path: APP_ROUTE.DASHBOARD,
   },
   {
     title: 'Store',
@@ -118,6 +119,7 @@ export const MENUITEMS: any = [
     type: 'sub',
     active: false,
     dirchange: false,
+    path: APP_ROUTE.COUPONS,
     // path: '/coupons',
     children: [
       {

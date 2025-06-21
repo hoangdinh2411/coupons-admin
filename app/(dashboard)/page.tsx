@@ -1,7 +1,7 @@
 import { Box } from '@mui/material';
 
 function DashboardPage() {
-  return <Box>DashboardTemplate</Box>;
+  return <Box>Dashboard</Box>;
 }
 
 export default DashboardPage;
