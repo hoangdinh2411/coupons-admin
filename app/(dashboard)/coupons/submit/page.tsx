@@ -3,7 +3,7 @@ import React from 'react';
 import {
   getAllCoupons,
   getUnverifiedCoupons,
-} from '@/app/actions/coupon.service';
+} from '@/app/services/coupon.service';
 import CouponSubmitList from './CouponSubmitList';
 
 export default async function CouponPage(props: {

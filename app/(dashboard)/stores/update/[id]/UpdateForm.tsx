@@ -10,7 +10,7 @@ import UploadFile, {
   ImageByte,
 } from '@/shared/layouts-components/uploadFile/UploadFile';
 import toast from 'react-hot-toast';
-import { createStore, updateStore } from '@/app/actions/store.service';
+import { createStore, updateStore } from '@/app/services/store.service';
 import { StoreData, StorePayload } from '@/types/store.type';
 import UseAppStore from '@/store/useAppStore';
 import { generateImageBytesObjectFromBase64 } from '@/helper/image';

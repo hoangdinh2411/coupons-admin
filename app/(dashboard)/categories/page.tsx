@@ -1,4 +1,4 @@
-import { getCategories } from '../../actions/category.service';
+import { getCategories } from '../../services/category.service';
 import CategoryList from './CategoryList';
 // import CategoryService from '@/lib/category.service';
 

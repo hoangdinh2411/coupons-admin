@@ -26,7 +26,10 @@ export default function CustomPagination({ total, currentPage }: Props) {
       router.replace(newUrl, { scroll: false });
     }
   }, [pathname, searchParams]);
-  const pagination = total ? [...Array(total)].map((_, i) => i + 1) : [1];
+  const pagination =
+    total && total > 20
+      ? [...Array(Math.floor(total / 20))].map((_, i) => i + 1)
+      : [1];
   const handleChangePage = (selectedPage: number) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set('page', selectedPage.toString());

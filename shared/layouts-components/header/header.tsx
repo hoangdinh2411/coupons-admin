@@ -15,15 +15,15 @@ import { getState, setState } from '../services/switcherServices';
 
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
 import Image from 'next/image';
-import AuthService from '@/app/actions/auth.service';
+import AuthService, { getProfile, signOut } from '@/app/services/auth.service';
 import UseAppStore from '@/store/useAppStore';
 import { usePathname, useRouter } from 'next/navigation';
 import { APP_ROUTE } from '@/constants/route';
 import toast from 'react-hot-toast';
 import Notification from './Notification';
 import SearchBar from './SearchBar';
-import { getAllStores } from '@/app/actions/store.service';
-import { getCategories } from '@/app/actions/category.service';
+import { getAllStores } from '@/app/services/store.service';
+import { getCategories } from '@/app/services/category.service';
 
 const Header = () => {
   const {
@@ -40,7 +40,7 @@ const Header = () => {
 
   const handleSignOut = async () => {
     toggleAppLoading(true);
-    const res = await AuthService.signOut();
+    const res = await signOut();
     if (res.success) {
       toast.success('See you again');
       setProfile(null);
@@ -71,7 +71,7 @@ const Header = () => {
 
   useEffect(() => {
     const handleFetchProfile = async () => {
-      const res = await AuthService.getProfile();
+      const res = await getProfile();
       console.log(res);
       if (res.success && res.data) {
         setProfile(res.data);

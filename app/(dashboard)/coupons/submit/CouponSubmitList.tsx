@@ -11,7 +11,7 @@ import toast from 'react-hot-toast';
 import {
   deleteCouponById,
   submitCouponById,
-} from '@/app/actions/coupon.service';
+} from '@/app/services/coupon.service';
 import CustomPagination from '@/shared/layouts-components/pagination/CustomPagination';
 import { CouponData } from '@/types/coupon.type';
 import { CouponType } from '@/types/enum';

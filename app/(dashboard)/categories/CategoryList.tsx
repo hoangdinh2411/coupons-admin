@@ -7,7 +7,7 @@ import CreateCategoryModal from './CreateCategoryModal';
 import { CategoryData } from '@/types/category.type';
 import UpdateCategoryModal from './UpdateCategoryModal';
 import toast from 'react-hot-toast';
-import { deleteById } from '@/app/actions/category.service';
+import { deleteById } from '@/app/services/category.service';
 import Image from 'next/image';
 import SearchBar from '@/shared/layouts-components/searchbar/SearchBar';
 import CustomPagination from '@/shared/layouts-components/pagination/CustomPagination';
@@ -100,7 +100,11 @@ export default function CategoryList({
                   <td>{cat.name}</td>
                   <td>
                     <Image
-                      src={cat?.image_bytes ?? '/assets/images/empty.png'}
+                      src={
+                        cat?.image_bytes
+                          ? cat?.image_bytes
+                          : '/assets/images/empty.png'
+                      }
                       alt={cat.name}
                       width={40}
                       height={40}

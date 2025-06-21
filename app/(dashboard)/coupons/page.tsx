@@ -1,7 +1,7 @@
 import Seo from '@/shared/layouts-components/seo/seo';
 import React from 'react';
 import CouponList from './CouponList';
-import { getAllCoupons } from '@/app/actions/coupon.service';
+import { getAllCoupons } from '@/app/services/coupon.service';
 
 export default async function CouponPage(props: {
   searchParams?: Promise<{

@@ -1,8 +1,8 @@
 'use client';
 
+import { login, signOut } from '@/app/services/auth.service';
 import { APP_ROUTE } from '@/constants/route';
 import { authLoginSchema } from '@/helper/validation/auth.validation';
-import AuthService from '@/app/actions/auth.service';
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
 import UseAppStore from '@/store/useAppStore';
 import { UserData } from '@/types/auth.type';
@@ -39,7 +39,7 @@ function SignInPage() {
 
   const onSubmit = async (data: AuthLoginSchemaType) => {
     toggleAppLoading(true);
-    const res = await AuthService.login(data);
+    const res = await login(data);
     if (!res.success && res.message) {
       toast.error(res.message);
       return;
@@ -48,7 +48,7 @@ function SignInPage() {
       const result: UserData = res.data;
       if (result && (result?.role as ROLES) !== ROLES.ADMIN) {
         toast.error('You do not have permission.');
-        await AuthService.signOut();
+        await signOut();
         return;
       }
       if (result && !result.email_verified) {

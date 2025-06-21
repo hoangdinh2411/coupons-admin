@@ -13,7 +13,7 @@ import UploadFile from '@/shared/layouts-components/uploadFile/UploadFile';
 import { CategoryData } from '@/types/category.type';
 import UseAppStore from '@/store/useAppStore';
 import toast from 'react-hot-toast';
-import { updateCategory } from '@/app/actions/category.service';
+import { updateCategory } from '@/app/services/category.service';
 
 interface UpdateCategoryModalProps {
   item: CategoryData | null;

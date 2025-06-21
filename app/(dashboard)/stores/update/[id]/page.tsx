@@ -1,5 +1,5 @@
 import { Box, Paper } from '@mui/material';
-import { getStoreBySlug } from '@/app/actions/store.service';
+import { getStoreBySlug } from '@/app/services/store.service';
 import { notFound } from 'next/navigation';
 import Breadcrumb from '../../Breadcrumb';
 import UpdateForm from './UpdateForm';

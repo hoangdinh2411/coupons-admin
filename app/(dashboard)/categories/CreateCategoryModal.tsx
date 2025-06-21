@@ -12,7 +12,10 @@ import UploadFile, {
   ImageByte,
 } from '@/shared/layouts-components/uploadFile/UploadFile';
 import toast from 'react-hot-toast';
-import { createCategory, updateCategory } from '@/app/actions/category.service';
+import {
+  createCategory,
+  updateCategory,
+} from '@/app/services/category.service';
 import UseAppStore from '@/store/useAppStore';
 
 interface CreateCategoryModalPropsType {
@@ -72,10 +75,11 @@ export default function CreateCategoryModal({
         if (res.success && res.data) {
           setCategory([...categories, res.data]);
           return 'Created success';
+        } else {
+          throw res.message;
         }
-        throw res.message;
       },
-      error: (err) => err || 'Something wrong',
+      error: (err) => err,
     });
   };
 

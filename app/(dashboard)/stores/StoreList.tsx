@@ -11,7 +11,7 @@ import Link from 'next/link';
 import { APP_ROUTE } from '@/constants/route';
 import SearchBar from '@/shared/layouts-components/searchbar/SearchBar';
 import toast from 'react-hot-toast';
-import { deleteById } from '@/app/actions/store.service';
+import { deleteById } from '@/app/services/store.service';
 import UseAppStore from '@/store/useAppStore';
 import CustomPagination from '@/shared/layouts-components/pagination/CustomPagination';
 type Props = {
