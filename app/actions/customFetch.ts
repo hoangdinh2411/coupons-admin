@@ -1,6 +1,7 @@
 import { IResponse } from '@/types/request.type';
 
-export const BASE_URL = process.env.API_URL ?? 'http://localhost:5173/api/v1';
+export const BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5173/api/v1';
 
 export default async function customFetch<T>(
   url: string,
