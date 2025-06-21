@@ -43,7 +43,13 @@ import {
   updateTheme,
 } from '@/shared/data/switcherdata/switcherdata';
 
-const Switcher = ({ show, handleClose }: { show?: boolean; handleClose?: () => void }) => {
+const Switcher = ({
+  show,
+  handleClose,
+}: {
+  show?: boolean;
+  handleClose?: () => void;
+}) => {
   const [variable, setVariable] = useState(getState());
 
   useEffect(() => {
@@ -68,7 +74,10 @@ const Switcher = ({ show, handleClose }: { show?: boolean; handleClose?: () => v
         >
           <OffcanvasHeader className="offcanvas-header border-bottom d-block p-0">
             <div className="d-flex align-items-center justify-content-between p-3">
-              <OffcanvasTitle className="offcanvas-title text-default" id="offcanvasRightLabel">
+              <OffcanvasTitle
+                className="offcanvas-title text-default"
+                id="offcanvasRightLabel"
+              >
                 Switcher
               </OffcanvasTitle>
               <SpkButton
@@ -81,7 +90,11 @@ const Switcher = ({ show, handleClose }: { show?: boolean; handleClose?: () => v
               ></SpkButton>
             </div>
             <nav className="border-top border-block-start-dashed">
-              <Nav className="nav nav-tabs nav-justified" id="switcher-main-tab" role="tablist">
+              <Nav
+                className="nav nav-tabs nav-justified"
+                id="switcher-main-tab"
+                role="tablist"
+              >
                 <Nav.Link
                   as="button"
                   eventKey={0}
@@ -167,7 +180,10 @@ const Switcher = ({ show, handleClose }: { show?: boolean; handleClose?: () => v
                   <Row className="switcher-style gx-0">
                     <Col className="col-4">
                       <Form.Check className="form-check switch-select">
-                        <Form.Check.Label className="form-check-label" htmlFor="switcher-ltr">
+                        <Form.Check.Label
+                          className="form-check-label"
+                          htmlFor="switcher-ltr"
+                        >
                           LTR
                         </Form.Check.Label>
                         <Form.Check.Input
@@ -182,7 +198,10 @@ const Switcher = ({ show, handleClose }: { show?: boolean; handleClose?: () => v
                     </Col>
                     <Col className="col-4">
                       <Form.Check className="form-check switch-select">
-                        <Form.Check.Label className="form-check-label" htmlFor="switcher-rtl">
+                        <Form.Check.Label
+                          className="form-check-label"
+                          htmlFor="switcher-rtl"
+                        >
                           RTL
                         </Form.Check.Label>
                         <Form.Check.Input
@@ -202,7 +221,10 @@ const Switcher = ({ show, handleClose }: { show?: boolean; handleClose?: () => v
                   <Row className="row switcher-style gx-0">
                     <Col className="col-4">
                       <Form.Check className="form-check switch-select">
-                        <Form.Check.Label className="form-check-label" htmlFor="switcher-vertical">
+                        <Form.Check.Label
+                          className="form-check-label"
+                          htmlFor="switcher-vertical"
+                        >
                           Vertical
                         </Form.Check.Label>
                         <Form.Check.Input
@@ -236,7 +258,9 @@ const Switcher = ({ show, handleClose }: { show?: boolean; handleClose?: () => v
                   </Row>
                 </div>
                 <div className="navigation-menu-styles">
-                  <p className="switcher-style-head">Vertical & Horizontal Menu Styles:</p>
+                  <p className="switcher-style-head">
+                    Vertical & Horizontal Menu Styles:
+                  </p>
                   <Row className="row switcher-style gx-0 pb-2 gy-2">
                     <Col className="col-4">
                       <Form.Check className="form-check switch-select">
@@ -251,7 +275,9 @@ const Switcher = ({ show, handleClose }: { show?: boolean; handleClose?: () => v
                           type="radio"
                           name="navigation-menu-styles"
                           checked={variable.dataNavStyle === 'menu-click'}
-                          onClick={() => updateNavStyle('menu-click', 'menu-click-closed')}
+                          onClick={() =>
+                            updateNavStyle('menu-click', 'menu-click-closed')
+                          }
                         />
                       </Form.Check>
                     </Col>
@@ -269,7 +295,9 @@ const Switcher = ({ show, handleClose }: { show?: boolean; handleClose?: () => v
                           name="navigation-menu-styles"
                           id="switcher-menu-hover"
                           checked={variable.dataNavStyle === 'menu-hover'}
-                          onClick={() => updateNavStyle('menu-hover', 'menu-hover-closed')}
+                          onClick={() =>
+                            updateNavStyle('menu-hover', 'menu-hover-closed')
+                          }
                         />
                       </Form.Check>
                     </Col>
@@ -287,7 +315,9 @@ const Switcher = ({ show, handleClose }: { show?: boolean; handleClose?: () => v
                           name="navigation-menu-styles"
                           id="switcher-icon-click"
                           checked={variable.dataNavStyle === 'icon-click'}
-                          onClick={() => updateNavStyle('icon-click', 'icon-click-closed')}
+                          onClick={() =>
+                            updateNavStyle('icon-click', 'icon-click-closed')
+                          }
                         />
                       </Form.Check>
                     </Col>
@@ -305,7 +335,9 @@ const Switcher = ({ show, handleClose }: { show?: boolean; handleClose?: () => v
                           name="navigation-menu-styles"
                           id="switcher-icon-hover"
                           checked={variable.dataNavStyle === 'icon-hover'}
-                          onClick={() => updateNavStyle('icon-hover', 'icon-hover-closed')}
+                          onClick={() =>
+                            updateNavStyle('icon-hover', 'icon-hover-closed')
+                          }
                         />
                       </Form.Check>
                     </Col>
@@ -388,7 +420,10 @@ const Switcher = ({ show, handleClose }: { show?: boolean; handleClose?: () => v
                     </Col>
                     <Col sm={6} className="col-sm-6">
                       <Form.Check className="form-check switch-select">
-                        <Form.Check.Label className="form-check-label" htmlFor="switcher-detached">
+                        <Form.Check.Label
+                          className="form-check-label"
+                          htmlFor="switcher-detached"
+                        >
                           Detached
                         </Form.Check.Label>
                         <Form.Check.Input
@@ -426,7 +461,10 @@ const Switcher = ({ show, handleClose }: { show?: boolean; handleClose?: () => v
                   <Row className="row switcher-style gx-0">
                     <Col className="col-4">
                       <Form.Check className="form-check switch-select">
-                        <Form.Check.Label className="form-check-label" htmlFor="switcher-regular">
+                        <Form.Check.Label
+                          className="form-check-label"
+                          htmlFor="switcher-regular"
+                        >
                           Regular
                         </Form.Check.Label>
                         <Form.Check.Input
@@ -441,7 +479,10 @@ const Switcher = ({ show, handleClose }: { show?: boolean; handleClose?: () => v
                     </Col>
                     <Col className="col-4">
                       <Form.Check className="form-check switch-select">
-                        <Form.Check.Label className="form-check-label" htmlFor="switcher-classic">
+                        <Form.Check.Label
+                          className="form-check-label"
+                          htmlFor="switcher-classic"
+                        >
                           Classic
                         </Form.Check.Label>
                         <Form.Check.Input
@@ -456,7 +497,10 @@ const Switcher = ({ show, handleClose }: { show?: boolean; handleClose?: () => v
                     </Col>
                     <Col className="col-4">
                       <Form.Check className="form-check switch-select">
-                        <Form.Check.Label className="form-check-label" htmlFor="switcher-modern">
+                        <Form.Check.Label
+                          className="form-check-label"
+                          htmlFor="switcher-modern"
+                        >
                           Modern
                         </Form.Check.Label>
                         <Form.Check.Input
@@ -494,7 +538,10 @@ const Switcher = ({ show, handleClose }: { show?: boolean; handleClose?: () => v
                     </Col>
                     <Col className="col-3">
                       <Form.Check className="form-check switch-select">
-                        <Form.Check.Label className="form-check-label" htmlFor="switcher-boxed">
+                        <Form.Check.Label
+                          className="form-check-label"
+                          htmlFor="switcher-boxed"
+                        >
                           Boxed
                         </Form.Check.Label>
                         <Form.Check.Input
@@ -681,8 +728,8 @@ const Switcher = ({ show, handleClose }: { show?: boolean; handleClose?: () => v
                       </Form.Check>
                     </div>
                     <div className="px-4 pb-3 text-muted fs-11">
-                      Note:If you want to change color Menu dynamically change from below Theme
-                      Primary color picker
+                      Note:If you want to change color Menu dynamically change
+                      from below Theme Primary color picker
                     </div>
                   </div>
                   <div className="theme-colors">
@@ -758,15 +805,17 @@ const Switcher = ({ show, handleClose }: { show?: boolean; handleClose?: () => v
                             type="radio"
                             name="header-colors"
                             id="switcher-header-transparent"
-                            checked={variable.dataHeaderStyles === 'transparent'}
+                            checked={
+                              variable.dataHeaderStyles === 'transparent'
+                            }
                             onClick={() => setHeaderStyle('transparent')}
                           />
                         </SpkTooltips>
                       </Form.Check>
                     </div>
                     <div className="px-4 pb-3 text-muted fs-11">
-                      Note:If you want to change color Header dynamically change from below Theme
-                      Primary color picker
+                      Note:If you want to change color Header dynamically change
+                      from below Theme Primary color picker
                     </div>
                   </div>
                   <div className="theme-colors">
@@ -853,7 +902,9 @@ const Switcher = ({ show, handleClose }: { show?: boolean; handleClose?: () => v
                           name="theme-background"
                           id="switcher-background"
                           checked={variable.bodyBg === '70, 40, 115'}
-                          onClick={() => updateBackgroundColor('70, 40, 115', '84, 54, 129')}
+                          onClick={() =>
+                            updateBackgroundColor('70, 40, 115', '84, 54, 129')
+                          }
                         />
                       </Form.Check>
                       <Form.Check className="form-check switch-select me-3">
@@ -863,7 +914,9 @@ const Switcher = ({ show, handleClose }: { show?: boolean; handleClose?: () => v
                           name="theme-background"
                           id="switcher-background1"
                           checked={variable.bodyBg === '32, 87, 105'}
-                          onClick={() => updateBackgroundColor('32, 87, 105', '46, 101, 119')}
+                          onClick={() =>
+                            updateBackgroundColor('32, 87, 105', '46, 101, 119')
+                          }
                         />
                       </Form.Check>
                       <Form.Check className="form-check switch-select me-3">
@@ -873,7 +926,9 @@ const Switcher = ({ show, handleClose }: { show?: boolean; handleClose?: () => v
                           name="theme-background"
                           id="switcher-background2"
                           checked={variable.bodyBg === '105, 40, 83'}
-                          onClick={() => updateBackgroundColor('105, 40, 83', '119, 54, 97')}
+                          onClick={() =>
+                            updateBackgroundColor('105, 40, 83', '119, 54, 97')
+                          }
                         />
                       </Form.Check>
                       <Form.Check className="form-check switch-select me-3">
@@ -883,7 +938,9 @@ const Switcher = ({ show, handleClose }: { show?: boolean; handleClose?: () => v
                           name="theme-background"
                           id="switcher-background3"
                           checked={variable.bodyBg === '0, 56, 51'}
-                          onClick={() => updateBackgroundColor('0, 56, 51', '14, 70, 65')}
+                          onClick={() =>
+                            updateBackgroundColor('0, 56, 51', '14, 70, 65')
+                          }
                         />
                       </Form.Check>
                       <Form.Check className="form-check switch-select me-3">
@@ -893,7 +950,9 @@ const Switcher = ({ show, handleClose }: { show?: boolean; handleClose?: () => v
                           name="theme-background"
                           id="switcher-background4"
                           checked={variable.bodyBg === '5, 53, 100'}
-                          onClick={() => updateBackgroundColor('5, 53, 100', '19, 67, 114')}
+                          onClick={() =>
+                            updateBackgroundColor('5, 53, 100', '19, 67, 114')
+                          }
                         />
                       </Form.Check>
                       <Form.Check className="form-check switch-select ps-0 mt-1 tooltip-static-demo color-bg-transparent">
@@ -918,7 +977,9 @@ const Switcher = ({ show, handleClose }: { show?: boolean; handleClose?: () => v
                     </div>
                   </div>
                   <div className="menu-image mb-3">
-                    <p className="switcher-style-head">Menu With Background Image:</p>
+                    <p className="switcher-style-head">
+                      Menu With Background Image:
+                    </p>
                     <div className="d-flex flex-wrap align-items-center switcher-style">
                       <Form.Check className="form-check switch-select m-2">
                         <Form.Check.Input
