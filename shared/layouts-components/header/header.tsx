@@ -578,7 +578,7 @@ const Header = () => {
                   </div>
                 </Link>
                 <Link
-                  href="#!"
+                  href="/profile"
                   className="dropdown-item d-flex align-items-center border-bottom-0"
                 >
                   <i className="ti ti-user-circle fs-18 me-2 text-gray fw-normal"></i>

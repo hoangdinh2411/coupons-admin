@@ -1,5 +1,4 @@
 'use server';
-
 import { signIn, signOut } from '@/services/auth.service';
 import { cookies } from 'next/headers';
 import { UserData } from '@/types/auth.type';
@@ -44,8 +43,8 @@ export async function loginAction(
   const isProd = process.env.NODE_ENV === 'production';
   cookieStore.set('access_token', res.data.token || '', {
     httpOnly: true,
-    secure: isProd, // enable when client is served over https
-    sameSite: isProd ? 'none' : 'lax', // enable when client is served over https
+    secure: isProd, 
+    sameSite: isProd ? 'none' : 'lax', 
     path: '/',
     maxAge: 1000 * 60 * 60 * 24,
   });

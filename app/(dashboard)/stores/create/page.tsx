@@ -10,7 +10,6 @@ export default async function CreateStorePage() {
       }}
     >
       <Breadcrumb />
-
       <Box display={'flex'} mb={1} justifyContent={'space-between'}>
         <h6>Create store</h6>
       </Box>
