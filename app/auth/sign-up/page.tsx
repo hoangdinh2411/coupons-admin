@@ -1,7 +1,6 @@
 'use client';
 
 import { APP_ROUTE } from '@/constants/route';
-import { registerSchema } from '@/helper/validation/auth.validation'; // Cập nhật đường dẫn nếu cần
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Image from 'next/image';
@@ -24,14 +23,6 @@ function SignUpTemplate() {
     confirm_password: boolean;
   }>({ password: false, confirm_password: false });
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<SignUpInputsType>({
-    resolver: zodResolver(registerSchema),
-  });
-
   const togglePasswordVisibility = (field: 'password' | 'confirm_password') => {
     setPasswordVisibility((prev) => ({ ...prev, [field]: !prev[field] }));
   };
@@ -47,10 +38,13 @@ function SignUpTemplate() {
           <Card.Body>
             <Row className="mx-0 align-items-center">
               <Col xl={6}>
-                <Form onSubmit={handleSubmit(onSubmit)} className="p-3">
+                <Form className="p-3">
                   <Row className="gy-3">
                     <Form.Group>
-                      <label className="form-label text-default" htmlFor="signup-first_name">
+                      <label
+                        className="form-label text-default"
+                        htmlFor="signup-first_name"
+                      >
                         First Name
                         <sup className="fs-12 text-danger">*</sup>
                       </label>
@@ -58,15 +52,14 @@ function SignUpTemplate() {
                         type="text"
                         id="signup-first_name"
                         placeholder="Enter your first name"
-                        {...register('first_name')}
                       />
-                      {errors.first_name && (
-                        <small className="text-danger">{errors.first_name.message}</small>
-                      )}
                     </Form.Group>
 
                     <Form.Group>
-                      <label className="form-label text-default" htmlFor="signup-last_name">
+                      <label
+                        className="form-label text-default"
+                        htmlFor="signup-last_name"
+                      >
                         Last Name
                         <sup className="fs-12 text-danger">*</sup>
                       </label>
@@ -74,16 +67,15 @@ function SignUpTemplate() {
                         type="text"
                         id="signup-last_name"
                         placeholder="Enter your last name"
-                        {...register('last_name')}
                       />
-                      {errors.last_name && (
-                        <small className="text-danger">{errors.last_name.message}</small>
-                      )}
                     </Form.Group>
 
                     {/* Email */}
                     <Col xl={12} className="mt-2">
-                      <label className="form-label text-default" htmlFor="signup-email">
+                      <label
+                        className="form-label text-default"
+                        htmlFor="signup-email"
+                      >
                         Email Address
                         <sup className="fs-12 text-danger">*</sup>
                       </label>
@@ -91,80 +83,83 @@ function SignUpTemplate() {
                         type="email"
                         id="signup-email"
                         placeholder="Enter your email address"
-                        {...register('email')}
-                        aria-invalid={!!errors.email}
                       />
-                      {errors.email && (
-                        <small className="text-danger mt-1">{errors.email.message}</small>
-                      )}
                     </Col>
 
                     {/* Password */}
                     <Col xl={12}>
-                      <label className="form-label text-default" htmlFor="signup-password">
+                      <label
+                        className="form-label text-default"
+                        htmlFor="signup-password"
+                      >
                         Password
                         <sup className="fs-12 text-danger">*</sup>
                       </label>
                       <div className="input-group">
                         <Form.Control
-                          type={passwordVisibility.password ? 'text' : 'password'}
+                          type={
+                            passwordVisibility.password ? 'text' : 'password'
+                          }
                           id="signup-password"
                           placeholder="Create a password"
                           className="signup-password-input"
-                          {...register('password')}
-                          aria-invalid={!!errors.password}
                         />
                         <SpkButton
                           Buttontype="button"
                           Buttonvariant="primary-light"
                           Customclass="show-password-button"
-                          onClickfunc={() => togglePasswordVisibility('password')}
+                          onClickfunc={() =>
+                            togglePasswordVisibility('password')
+                          }
                         >
                           <i
                             className={`ri-${
-                              passwordVisibility.password ? 'eye-line' : 'eye-off-line'
+                              passwordVisibility.password
+                                ? 'eye-line'
+                                : 'eye-off-line'
                             } align-middle`}
                           ></i>
                         </SpkButton>
                       </div>
-                      {errors.password && (
-                        <small className="text-danger mt-1">{errors.password.message}</small>
-                      )}
                     </Col>
 
                     {/* Confirm Password */}
                     <Col xl={12} className="mb-2">
-                      <label className="form-label text-default" htmlFor="create-confirm_password">
+                      <label
+                        className="form-label text-default"
+                        htmlFor="create-confirm_password"
+                      >
                         Confirm Password
                         <sup className="fs-12 text-danger">*</sup>
                       </label>
                       <div className="input-group">
                         <Form.Control
-                          type={passwordVisibility.confirm_password ? 'text' : 'password'}
+                          type={
+                            passwordVisibility.confirm_password
+                              ? 'text'
+                              : 'password'
+                          }
                           id="create-confirm_password"
                           placeholder="Re-enter your password"
                           className="create-password-input"
-                          {...register('confirm_password')}
-                          aria-invalid={!!errors.confirm_password}
                         />
                         <SpkButton
                           Buttontype="button"
                           Buttonvariant="primary-light"
                           Customclass="show-password-button"
-                          onClickfunc={() => togglePasswordVisibility('confirm_password')}
+                          onClickfunc={() =>
+                            togglePasswordVisibility('confirm_password')
+                          }
                         >
                           <i
                             className={`ri-${
-                              passwordVisibility.confirm_password ? 'eye-line' : 'eye-off-line'
+                              passwordVisibility.confirm_password
+                                ? 'eye-line'
+                                : 'eye-off-line'
                             } align-middle`}
                           ></i>
                         </SpkButton>
                       </div>
-                      {errors.confirm_password && (
-                        <small className="text-danger mt-1">
-                          {errors.confirm_password.message}
-                        </small>
-                      )}
                     </Col>
 
                     {/* Submit Button */}
@@ -192,7 +187,10 @@ function SignUpTemplate() {
               </Col>
 
               {/* Image + Welcome Text */}
-              <Col xl={6} className="border rounded border-secondary border-opacity-10">
+              <Col
+                xl={6}
+                className="border rounded border-secondary border-opacity-10"
+              >
                 <div className="d-flex align-items-center justify-content-around flex-column gap-4 h-100">
                   <Image
                     fill
