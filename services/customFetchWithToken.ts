@@ -8,7 +8,7 @@ export default async function customFetchWithToken<T>(
   config: RequestInit = {},
 ): Promise<IResponse<T>> {
   const cookieStore = await cookies();
-  const token = cookieStore.get('access_token')?.value;
+  const token = cookieStore.get('session')?.value;
   if (token) {
     config.headers = {
       ['Cookie']: `token=${token}`,

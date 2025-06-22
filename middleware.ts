@@ -5,7 +5,7 @@ const AUTH_URLS = [APP_ROUTE.SIGN_UP, APP_ROUTE.SIGN_IN];
 // This function can be marked `async` if using `await` inside
 export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
-  const token = request.cookies.get('access_token');
+  const token = request.cookies.get('session');
   if (AUTH_URLS.includes(pathname) && token) {
     return NextResponse.redirect(new URL(APP_ROUTE.DASHBOARD, request.nextUrl));
   }

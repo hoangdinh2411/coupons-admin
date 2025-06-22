@@ -10,7 +10,6 @@ import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk
 import Seo from '@/shared/layouts-components/seo/seo';
 import Breadcrumb from './Breadcrumb';
 import UseAppStore, { StateAppStoredType } from '@/store/useAppStore';
-import { UserData } from '@/types/auth.type';
 import { updateUser } from '@/services/user.service';
 import toast from 'react-hot-toast';
 
@@ -23,13 +22,8 @@ const schema = z.object({
 type ProfileType = z.infer<typeof schema>;
 
 function ProfileTemplate() {
-  const { profile } = UseAppStore((state: StateAppStoredType) => state);
+  const { profile, setProfile } = UseAppStore((state) => state);
 
-  const defaultValues: ProfileType = {
-    email: `${profile?.email ?? ''}`,
-    first_name: `${profile?.first_name ?? ''}`,
-    last_name: `${profile?.last_name ?? ''}`,
-  };
   const {
     register,
     handleSubmit,
@@ -37,7 +31,6 @@ function ProfileTemplate() {
     formState: { errors },
   } = useForm<ProfileType>({
     resolver: zodResolver(schema),
-    defaultValues,
     mode: 'onChange',
   });
 
@@ -45,7 +38,12 @@ function ProfileTemplate() {
     toast.promise(updateUser(data), {
       loading: 'Pending...!',
       success: (res) => {
+        console.log(res);
         if (res.success && res.data) {
+          setProfile({
+            ...profile,
+            ...res.data,
+          });
           return 'Updated success';
         }
         throw res.message;
@@ -56,6 +54,7 @@ function ProfileTemplate() {
 
   //TODO: GET PROFILE
   useEffect(() => {
+    console.log(profile);
     if (profile) {
       reset({
         email: profile.email ?? '',

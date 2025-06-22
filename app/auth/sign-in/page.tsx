@@ -10,7 +10,7 @@ import React, { useActionState, useEffect, useState } from 'react';
 import { Card, Col, Form, Row } from 'react-bootstrap';
 import toast from 'react-hot-toast';
 import { z } from 'zod';
-import { loginAction } from './actions';
+import { loginAction } from '../../actions/sign-in.actions';
 import { signinSchema } from '@/helper/schemas/auth.schema';
 
 export type AuthLoginSchemaType = z.infer<typeof signinSchema>;

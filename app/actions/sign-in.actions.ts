@@ -1,5 +1,5 @@
 'use server';
-import { signIn, signOut } from '@/services/auth.service';
+import { signIn } from '@/services/auth.service';
 import { cookies } from 'next/headers';
 import { UserData } from '@/types/auth.type';
 import { ROLES } from '@/types/enum';
@@ -33,18 +33,16 @@ export async function loginAction(
   if (!res.data) {
     return { error: 'Missing user data' };
   }
-  console.log(res.data);
   if ((res.data?.role as ROLES) !== ROLES.ADMIN) {
-    await signOut();
     return {
       error: 'Done have permission',
     };
   }
   const isProd = process.env.NODE_ENV === 'production';
-  cookieStore.set('access_token', res.data.token || '', {
+  cookieStore.set('session', res.data.token || '', {
     httpOnly: true,
-    secure: isProd, 
-    sameSite: isProd ? 'none' : 'lax', 
+    secure: isProd,
+    sameSite: isProd ? 'none' : 'lax',
     path: '/',
     maxAge: 1000 * 60 * 60 * 24,
   });
