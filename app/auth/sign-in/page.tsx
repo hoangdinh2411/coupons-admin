@@ -1,56 +1,30 @@
 'use client';
 
-import { login, signOut } from '@/app/services/auth.service';
 import { APP_ROUTE } from '@/constants/route';
-import { authLoginSchema } from '@/helper/validation/auth.validation';
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
-import UseAppStore from '@/store/useAppStore';
 import { UserData } from '@/types/auth.type';
-import { ROLES } from '@/types/enum';
-import { zodResolver } from '@hookform/resolvers/zod';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import React, { useActionState, useEffect, useState } from 'react';
 import { Card, Col, Form, Row } from 'react-bootstrap';
-import { SubmitHandler, useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { z } from 'zod';
+import { loginAction } from './actions';
+import { signinSchema } from '@/helper/schemas/auth.schema';
 
-export type AuthLoginSchemaType = z.infer<typeof authLoginSchema>;
+export type AuthLoginSchemaType = z.infer<typeof signinSchema>;
 function SignInPage() {
+  const [state, actions, isPending] = useActionState(loginAction, {});
   const [passwordShow, setPasswordShow] = useState(false);
   const router = useRouter();
-  const { toggleAppLoading, appLoading } = UseAppStore((state) => state);
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors, isSubmitSuccessful },
-  } = useForm<AuthLoginSchemaType>({
-    resolver: zodResolver(authLoginSchema),
-  });
 
   useEffect(() => {
-    if (isSubmitSuccessful) {
-      reset();
+    if (state.error) {
+      toast.error(state.error);
     }
-  }, [isSubmitSuccessful]);
-
-  const onSubmit = async (data: AuthLoginSchemaType) => {
-    toggleAppLoading(true);
-    const res = await login(data);
-    if (!res.success && res.message) {
-      toast.error(res.message);
-      return;
-    }
-    if (res.data) {
-      const result: UserData = res.data;
-      if (result && (result?.role as ROLES) !== ROLES.ADMIN) {
-        toast.error('You do not have permission.');
-        await signOut();
-        return;
-      }
+    if (state.data) {
+      const result: UserData = state.data;
       if (result && !result.email_verified) {
         router.push(APP_ROUTE.VERIFY);
         return;
@@ -58,7 +32,7 @@ function SignInPage() {
       toast.success('Welcome back!');
       router.push(APP_ROUTE.DASHBOARD);
     }
-  };
+  }, [state]);
 
   return (
     <Row className="justify-content-center authentication authentication-basic align-items-center h-100">
@@ -68,7 +42,7 @@ function SignInPage() {
             <Row className="mx-0 align-items-center">
               {/* Login Form Section */}
               <Col xl={6}>
-                <Form onSubmit={handleSubmit(onSubmit)} className="p-3">
+                <Form action={actions} className="p-3">
                   <Row className="gy-2">
                     {/* Email */}
                     <label htmlFor="signin-email" className="text-default px-0">
@@ -78,12 +52,12 @@ function SignInPage() {
                       type="email"
                       id="signin-email"
                       placeholder="Enter your email address"
-                      {...register('email')}
-                      aria-invalid={!!errors.email}
+                      name="email"
+                      // {...register('email')}
                     />
-                    {errors.email && (
+                    {state.errors && (
                       <small className="text-danger mt-1">
-                        {errors.email.message}
+                        {state.errors.email}
                       </small>
                     )}
 
@@ -101,7 +75,8 @@ function SignInPage() {
                         id="signin-password"
                         placeholder="Enter your password"
                         className="signin-password-input"
-                        {...register('password')}
+                        name="password"
+                        // {...register('password')}
                       />
                       <SpkButton
                         Buttontype="button"
@@ -116,9 +91,9 @@ function SignInPage() {
                         ></i>
                       </SpkButton>
                     </div>
-                    {errors.password && (
+                    {state.errors && (
                       <small className="text-danger mt-1">
-                        {errors.password.message}
+                        {state.errors.password}
                       </small>
                     )}
 
@@ -137,10 +112,7 @@ function SignInPage() {
 
                     {/* Submit Button */}
                     <Col xl={12} className="d-grid mt-4 p-0">
-                      <SpkButton
-                        Buttontype="submit"
-                        Disabled={isSubmitSuccessful || appLoading}
-                      >
+                      <SpkButton Buttontype="submit" Disabled={isPending}>
                         <i className="ri-login-circle-line lh-1 me-2 align-middle"></i>
                         Sign In
                       </SpkButton>

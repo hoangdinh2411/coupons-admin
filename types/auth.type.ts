@@ -13,6 +13,7 @@ export interface RegisterRequestPayLoad extends LoginRequestPayload {
 export interface UserData extends RegisterRequestPayLoad {
   email_verified: boolean;
   role: ROLES;
+  token?: string;
 }
 export interface VerifyRequestPayload {
   email: string;

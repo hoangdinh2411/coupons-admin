@@ -8,7 +8,7 @@ import { Col, Form, Row } from 'react-bootstrap';
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
 import toast from 'react-hot-toast';
 import UseAppStore from '@/store/useAppStore';
-import { createCoupon } from '@/app/services/coupon.service';
+import { createCoupon } from '@/services/coupon.service';
 import { CouponType } from '@/types/enum';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';

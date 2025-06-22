@@ -7,7 +7,7 @@ import {
 import customFetch from './customFetch';
 import customFetchWithToken from './customFetchWithToken';
 
-export async function login(payload: LoginRequestPayload) {
+export async function signIn(payload: LoginRequestPayload) {
   return await customFetch<UserData>(`/auth/sign-in`, {
     method: 'POST',
     body: JSON.stringify(payload),

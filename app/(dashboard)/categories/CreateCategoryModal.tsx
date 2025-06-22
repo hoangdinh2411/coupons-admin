@@ -12,10 +12,7 @@ import UploadFile, {
   ImageByte,
 } from '@/shared/layouts-components/uploadFile/UploadFile';
 import toast from 'react-hot-toast';
-import {
-  createCategory,
-  updateCategory,
-} from '@/app/services/category.service';
+import { createCategory, updateCategory } from '@/services/category.service';
 import UseAppStore from '@/store/useAppStore';
 
 interface CreateCategoryModalPropsType {

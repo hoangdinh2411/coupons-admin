@@ -1,7 +1,7 @@
 import { Box, Paper } from '@mui/material';
 import { notFound } from 'next/navigation';
 import UpdateForm from './UpdateForm';
-import { getCouponsById } from '@/app/services/coupon.service';
+import { getCouponsById } from '@/services/coupon.service';
 
 export default async function StoreFormPage({
   params,

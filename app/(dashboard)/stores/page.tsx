@@ -1,7 +1,7 @@
 import Seo from '@/shared/layouts-components/seo/seo';
 import React from 'react';
 import StoreList from './StoreList';
-import { getAllStores } from '@/app/services/store.service';
+import { getAllStores } from '@/services/store.service';
 import Breadcrumb from './Breadcrumb';
 
 export default async function StorePage(props: {

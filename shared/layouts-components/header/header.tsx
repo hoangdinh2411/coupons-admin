@@ -15,15 +15,15 @@ import { getState, setState } from '../services/switcherServices';
 
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
 import Image from 'next/image';
-import AuthService, { getProfile, signOut } from '@/app/services/auth.service';
+import AuthService, { getProfile, signOut } from '@/services/auth.service';
 import UseAppStore from '@/store/useAppStore';
 import { usePathname, useRouter } from 'next/navigation';
 import { APP_ROUTE } from '@/constants/route';
 import toast from 'react-hot-toast';
 import Notification from './Notification';
 import SearchBar from './SearchBar';
-import { getAllStores } from '@/app/services/store.service';
-import { getCategories } from '@/app/services/category.service';
+import { getAllStores } from '@/services/store.service';
+import { getCategories } from '@/services/category.service';
 
 const Header = () => {
   const {

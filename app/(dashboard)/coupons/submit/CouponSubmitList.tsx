@@ -8,10 +8,7 @@ import Link from 'next/link';
 import { APP_ROUTE } from '@/constants/route';
 import SearchBar from '@/shared/layouts-components/searchbar/SearchBar';
 import toast from 'react-hot-toast';
-import {
-  deleteCouponById,
-  submitCouponById,
-} from '@/app/services/coupon.service';
+import { deleteCouponById, submitCouponById } from '@/services/coupon.service';
 import CustomPagination from '@/shared/layouts-components/pagination/CustomPagination';
 import { CouponData } from '@/types/coupon.type';
 import { CouponType } from '@/types/enum';

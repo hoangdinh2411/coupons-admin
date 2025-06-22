@@ -7,7 +7,7 @@ import CreateCategoryModal from './CreateCategoryModal';
 import { CategoryData } from '@/types/category.type';
 import UpdateCategoryModal from './UpdateCategoryModal';
 import toast from 'react-hot-toast';
-import { deleteById } from '@/app/services/category.service';
+import { deleteById } from '@/services/category.service';
 import Image from 'next/image';
 import SearchBar from '@/shared/layouts-components/searchbar/SearchBar';
 import CustomPagination from '@/shared/layouts-components/pagination/CustomPagination';
