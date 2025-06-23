@@ -12,6 +12,7 @@ import { deleteCouponById } from '@/services/coupon.service';
 import CustomPagination from '@/shared/layouts-components/pagination/CustomPagination';
 import { CouponData } from '@/types/coupon.type';
 import { CouponType } from '@/types/enum';
+import { getStatus } from '@/helper/coupons';
 type Props = {
   data: CouponData[];
   total: number;
@@ -22,11 +23,26 @@ const HEADER = [
   { title: 'Code' },
   { title: 'Store' },
   { title: 'Category' },
+  { title: 'Start Date' },
   { title: 'Expire Date' },
   { title: 'Type' },
   { title: 'Status' },
   { title: 'Actions' },
 ];
+
+export const getBackgroundForType = (type: CouponType) => {
+  switch (type) {
+    case CouponType.CODE:
+      return 'bg-secondary';
+    case CouponType.ONLINE_AND_IN_STORE:
+      return 'bg-success';
+    case CouponType.SALE:
+      return 'bg-info';
+    default:
+      'bg-primary';
+  }
+};
+
 export default function CouponList({
   data = [],
   total = 0,
@@ -52,20 +68,6 @@ export default function CouponList({
     });
   };
 
-  const getBackgroundForType = (type: CouponType) => {
-    switch (type) {
-      case CouponType.CODE:
-        return 'bg-secondary';
-      case CouponType.ONLINE_AND_IN_STORE:
-        return 'bg-success';
-      case CouponType.SALE:
-        return 'bg-info';
-      default:
-        'bg-primary';
-    }
-  };
-
-  const getCouponStatus = (expired_date: string) => {};
   return (
     <Card className="custom-card">
       <Card.Header className="justify-content-between">
@@ -95,6 +97,7 @@ export default function CouponList({
                 <td>{coupon.code}</td>
                 <td>{coupon.store?.name || 'N/A'}</td>
                 <td>{coupon.category?.name || 'N/A'}</td>
+                <td>{coupon.start_date}</td>
                 <td>{coupon.expire_date}</td>
                 <td>
                   <p
@@ -105,9 +108,10 @@ export default function CouponList({
                 </td>
                 <td>
                   <p
-                    className={`badge ${getBackgroundForType(coupon.type)} mb-2 `}
+                    className={`badge ${getStatus(coupon.start_date, coupon.expire_date)?.color} mb-2 `}
                   >
-                    {coupon.type}
+                    {getStatus(coupon.start_date, coupon.expire_date)?.label ||
+                      'N/A'}
                   </p>
                 </td>
 
