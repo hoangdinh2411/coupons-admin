@@ -1,20 +1,19 @@
 import Seo from '@/shared/layouts-components/seo/seo';
 import React from 'react';
 import CouponList from './CouponList';
-import { getAllCoupons } from '@/services/coupon.service';
+import { filterCoupon } from '@/services/coupon.service';
+import { makeFilterData } from '@/helper/filter';
 
 export default async function CouponPage(props: {
-  searchParams?: Promise<{
-    query?: string;
-    page?: string;
-    search_text?: string;
-  }>;
+  searchParams?: Promise<Record<string, string>>;
 }) {
   const searchParams = await props.searchParams;
-  const limit = 20;
   const page = Number(searchParams?.page || 1);
-  const search_text = searchParams?.search_text || '';
-  const res = await getAllCoupons(page, limit, search_text);
+  const data = makeFilterData(searchParams || {});
+  const res = await filterCoupon({
+    ...data,
+    is_verified: true,
+  });
   if (!res.success || (res.success && !res.data)) {
     return res.message;
   }

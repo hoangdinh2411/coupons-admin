@@ -12,7 +12,8 @@ import { deleteCouponById, submitCouponById } from '@/services/coupon.service';
 import CustomPagination from '@/shared/layouts-components/pagination/CustomPagination';
 import { CouponData } from '@/types/coupon.type';
 import { CouponType } from '@/types/enum';
-import { getBackgroundForType } from '../CouponList';
+import { getBackgroundForType } from '@/helper/coupons';
+import Filter from '@/shared/layouts-components/filter/Filter';
 type Props = {
   data: CouponData[];
   total: number;
@@ -66,6 +67,9 @@ export default function CouponSubmitList({
 
       <Card.Body>
         <Row className="align-items-center g-2 flex-wrap">
+          <Col xs="12">
+            <Filter byCategory byStore />
+          </Col>
           <Col xs="12" md>
             <div className="d-flex justify-content-between align-items-center gap-2 flex-wrap">
               <SearchBar placeholder="Search coupon..." />

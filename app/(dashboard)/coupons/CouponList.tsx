@@ -1,6 +1,15 @@
 'use client';
-import React from 'react';
-import { Button, Card, Col, Row } from 'react-bootstrap';
+import React, { useState } from 'react';
+import {
+  Accordion,
+  Button,
+  Card,
+  Col,
+  Dropdown,
+  DropdownButton,
+  Form,
+  Row,
+} from 'react-bootstrap';
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
 import SpkTables from '@/shared/@spk-reusable-components/reusable-tables/spk-tables';
 import { usePathname, useRouter } from 'next/navigation';
@@ -11,8 +20,13 @@ import toast from 'react-hot-toast';
 import { deleteCouponById } from '@/services/coupon.service';
 import CustomPagination from '@/shared/layouts-components/pagination/CustomPagination';
 import { CouponData } from '@/types/coupon.type';
-import { CouponType } from '@/types/enum';
-import { getStatus } from '@/helper/coupons';
+import {
+  couponStatus,
+  getBackgroundForType,
+  getStatus,
+} from '@/helper/coupons';
+import UseAppStore from '@/store/useAppStore';
+import Filter from '@/shared/layouts-components/filter/Filter';
 type Props = {
   data: CouponData[];
   total: number;
@@ -29,19 +43,6 @@ const HEADER = [
   { title: 'Status' },
   { title: 'Actions' },
 ];
-
-export const getBackgroundForType = (type: CouponType) => {
-  switch (type) {
-    case CouponType.CODE:
-      return 'bg-secondary';
-    case CouponType.ONLINE_AND_IN_STORE:
-      return 'bg-success';
-    case CouponType.SALE:
-      return 'bg-info';
-    default:
-      'bg-primary';
-  }
-};
 
 export default function CouponList({
   data = [],
@@ -76,6 +77,9 @@ export default function CouponList({
 
       <Card.Body>
         <Row className="align-items-center g-2 flex-wrap">
+          <Col xs="12">
+            <Filter byCategory byStatus byStore />
+          </Col>
           <Col xs="12" md>
             <div className="d-flex justify-content-between align-items-center gap-2 flex-wrap">
               <SearchBar placeholder="Search coupon..." />
