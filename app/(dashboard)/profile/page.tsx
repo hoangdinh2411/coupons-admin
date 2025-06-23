@@ -14,7 +14,6 @@ import { updateUser } from '@/services/user.service';
 import toast from 'react-hot-toast';
 
 const schema = z.object({
-  email: z.string().email('Invalid email address'),
   first_name: z.string().min(1, 'First name is required'),
   last_name: z.string().min(1, 'Last name is required'),
 });
@@ -38,7 +37,6 @@ function ProfileTemplate() {
     toast.promise(updateUser(data), {
       loading: 'Pending...!',
       success: (res) => {
-        console.log(res);
         if (res.success && res.data) {
           setProfile({
             ...profile,
@@ -57,7 +55,6 @@ function ProfileTemplate() {
     console.log(profile);
     if (profile) {
       reset({
-        email: profile.email ?? '',
         first_name: profile.first_name ?? '',
         last_name: profile.last_name ?? '',
       });
@@ -107,15 +104,10 @@ function ProfileTemplate() {
                   <Form.Group className="mb-3">
                     <Form.Label>Email</Form.Label>
                     <Form.Control
-                      type="email"
+                      type="text"
                       disabled
-                      placeholder="Enter your email"
-                      isInvalid={!!errors.email}
-                      {...register('email')}
+                      defaultValue={profile?.email}
                     />
-                    <Form.Control.Feedback type="invalid">
-                      {errors.email?.message}
-                    </Form.Control.Feedback>
                   </Form.Group>
 
                   <Form.Group className="mb-3">
