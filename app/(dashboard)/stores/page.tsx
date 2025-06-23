@@ -1,8 +1,8 @@
 import Seo from '@/shared/layouts-components/seo/seo';
 import React from 'react';
 import StoreList from './StoreList';
-import { getAllStores } from '@/services/store.service';
-import Breadcrumb from './Breadcrumb';
+import { filterStore } from '@/services/store.service';
+import { makeFilterData } from '@/helper/filter';
 
 export default async function StorePage(props: {
   searchParams?: Promise<{
@@ -12,10 +12,11 @@ export default async function StorePage(props: {
   }>;
 }) {
   const searchParams = await props.searchParams;
-  const limit = 20;
   const page = Number(searchParams?.page || 1);
-  const search_text = searchParams?.search_text || '';
-  const res = await getAllStores(page, limit, search_text);
+  const { categories, rating, search_text } = makeFilterData(
+    searchParams || {},
+  );
+  const res = await filterStore({ categories, rating, search_text, page });
   if (!res.success || (res.success && !res.data)) {
     return res.message;
   }
