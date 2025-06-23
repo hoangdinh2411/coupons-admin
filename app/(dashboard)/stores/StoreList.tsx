@@ -64,7 +64,7 @@ export default function StoreList({
 
       <Card.Body>
         <Row className="align-items-center g-2 flex-wrap">
-          <Col xs="12" md>
+          <Col xs="12">
             <Filter byCategory />
           </Col>
           <Col xs="12" md>
