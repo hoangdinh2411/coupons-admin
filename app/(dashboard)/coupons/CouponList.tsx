@@ -27,6 +27,7 @@ import {
 } from '@/helper/coupons';
 import UseAppStore from '@/store/useAppStore';
 import Filter from '@/shared/layouts-components/filter/Filter';
+import { Rating } from '@mui/material';
 type Props = {
   data: CouponData[];
   total: number;
@@ -39,6 +40,7 @@ const HEADER = [
   { title: 'Category' },
   { title: 'Start Date' },
   { title: 'Expire Date' },
+  { title: 'Rating' },
   { title: 'Type' },
   { title: 'Status' },
   { title: 'Actions' },
@@ -51,7 +53,14 @@ export default function CouponList({
 }: Props) {
   const router = useRouter();
   const pathname = usePathname();
+  const [ratings, setRatings] = useState<Record<string, number>>({});
 
+  const handleRatingChange = (id: string | number, value: number) => {
+    setRatings((prev) => ({
+      ...prev,
+      [id]: value,
+    }));
+  };
   //TODO: handle modal
   const handleOpenUpdate = (id: number) => {
     router.push(`${pathname}/update/${id}`);
@@ -103,6 +112,17 @@ export default function CouponList({
                 <td>{coupon.category?.name || 'N/A'}</td>
                 <td>{coupon.start_date}</td>
                 <td>{coupon.expire_date}</td>
+                <td>
+                  <Rating
+                    key={coupon.id}
+                    value={ratings[coupon.id] || 0}
+                    onChange={(_, newValue: number | null) => {
+                      if (newValue !== null) {
+                        handleRatingChange(coupon.id, newValue);
+                      }
+                    }}
+                  />
+                </td>
                 <td>
                   <p
                     className={`badge ${getBackgroundForType(coupon.type)} mb-2 `}
