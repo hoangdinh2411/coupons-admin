@@ -30,23 +30,25 @@ export async function loginAction(
   if (!res.success) {
     return { error: res.message };
   }
-  if (!res.data) {
+  const data = res.data;
+  if (!data) {
     return { error: 'Missing user data' };
   }
-  if ((res.data?.role as ROLES) !== ROLES.ADMIN) {
+  if ((data?.role as ROLES) !== ROLES.ADMIN) {
     return {
       error: 'Done have permission',
     };
   }
   const isProd = process.env.NODE_ENV === 'production';
-  cookieStore.set('session', res.data.token || '', {
+  cookieStore.set('session', data.token || '', {
     httpOnly: true,
     secure: isProd,
     sameSite: isProd ? 'none' : 'lax',
     path: '/',
     maxAge: 1000 * 60 * 60 * 24,
   });
+  delete data.token;
   return {
-    data: res.data,
+    data,
   };
 }
