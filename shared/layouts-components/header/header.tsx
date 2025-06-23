@@ -350,7 +350,8 @@ const Header = () => {
             <div className="header-element">
               <div className="horizontal-logo">
                 <Link scroll={false} href="/dashboard/" className="header-logo">
-                  <Image
+                  aaa{' '}
+                  {/* <Image
                     fill
                     src={`/assets/images/brand-logos/desktop-logo.png`}
                     alt="logo"
@@ -373,7 +374,7 @@ const Header = () => {
                     src={`/assets/images/brand-logos/toggle-white.png`}
                     alt="logo"
                     className="toggle-white"
-                  />
+                  /> */}
                 </Link>
               </div>
             </div>

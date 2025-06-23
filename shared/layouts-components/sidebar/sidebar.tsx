@@ -759,9 +759,13 @@ const Sidebar = () => {
           <Link
             scroll={false}
             href="/dashboards/sales/"
-            className="header-logo"
+            style={{
+              position: 'relative',
+              width: 'auto',
+              height: 40,
+            }}
           >
-            <Image
+            {/* <Image
               fill
               src={`/assets/images/brand-logos/desktop-logo.png`}
               alt="logo"
@@ -772,19 +776,19 @@ const Sidebar = () => {
               src={`/assets/images/brand-logos/toggle-logo.png`}
               alt="logo"
               className="toggle-logo"
-            />
+            /> */}
             <Image
               fill
-              src={`/assets/images/brand-logos/desktop-white.png`}
+              src={`/assets/images/logo/logo-icon-white.png`}
               alt="logo"
               className="desktop-white"
             />
-            <Image
+            {/* <Image
               fill
               src={`/assets/images/brand-logos/toggle-white.png`}
               alt="logo"
               className="toggle-white"
-            />
+            /> */}
           </Link>
         </div>
         {/* <!-- End::main-sidebar-header --> */}
