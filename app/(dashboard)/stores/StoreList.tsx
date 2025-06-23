@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import { Button, Card, Col, Row } from 'react-bootstrap';
 
@@ -15,6 +15,7 @@ import { deleteById } from '@/services/store.service';
 import UseAppStore from '@/store/useAppStore';
 import CustomPagination from '@/shared/layouts-components/pagination/CustomPagination';
 import Filter from '@/shared/layouts-components/filter/Filter';
+import { Rating } from '@mui/material';
 type Props = {
   data: StoreData[];
   total: number;
@@ -26,6 +27,7 @@ const HEADER = [
   { title: 'Image' },
   { title: 'keywords' },
   { title: 'Category' },
+  { title: 'Rating' },
   { title: 'Actions' },
 ];
 export default function StoreList({
@@ -37,7 +39,13 @@ export default function StoreList({
   const pathname = usePathname();
 
   const { setStores, stores } = UseAppStore((state) => state);
-
+  const [ratings, setRatings] = useState<Record<string, number>>({});
+  const handleRatingChange = (id: string | number, value: number) => {
+    setRatings((prev) => ({
+      ...prev,
+      [id]: value,
+    }));
+  };
   //TODO: handle modal
   const handleOpenUpdateStore = (storeId: number) => {
     router.push(`${pathname}/update/${storeId}`);
@@ -106,6 +114,17 @@ export default function StoreList({
                   ))}
                 </td>
                 <td>{store.category?.name || 'N/A'}</td>
+                <td>
+                <Rating
+                    key={store.id}
+                    value={ratings[store.id] || 0}
+                    onChange={(_, newValue: number | null) => {
+                      if (newValue !== null) {
+                        handleRatingChange(store.id, newValue);
+                      }
+                    }}
+                  />
+                </td>
                 <td>
                   <Button
                     variant="success-light"

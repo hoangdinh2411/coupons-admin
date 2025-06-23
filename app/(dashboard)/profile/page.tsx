@@ -108,6 +108,7 @@ function ProfileTemplate() {
                     <Form.Label>Email</Form.Label>
                     <Form.Control
                       type="email"
+                      disabled
                       placeholder="Enter your email"
                       isInvalid={!!errors.email}
                       {...register('email')}
