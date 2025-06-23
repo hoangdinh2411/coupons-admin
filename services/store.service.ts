@@ -4,10 +4,18 @@ import { revalidateTag } from 'next/cache';
 import { IResponse, IResponseWithTotal } from '@/types/request.type';
 import { StoreData, StorePayload } from '@/types/store.type';
 import customFetchWithToken from './customFetchWithToken';
+import { FilterPayload } from '@/types/filter.type';
 
 export async function searchStore(text: string) {
   return await customFetch<StoreData>(`/stores/search?name=${text}`, {
     method: 'GET',
+  });
+}
+
+export async function filterStore(data: FilterPayload) {
+  return await customFetch<IResponseWithTotal<StoreData[]>>(`/stores/filter`, {
+    method: 'POST',
+    body: JSON.stringify(data),
   });
 }
 export async function getAllStores(

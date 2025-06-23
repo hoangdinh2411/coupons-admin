@@ -8,6 +8,7 @@ import { Accordion, Button, Dropdown, Form } from 'react-bootstrap';
 type Props = {
   byCategory?: boolean;
   byStore?: boolean;
+  byRating?: boolean;
   byStatus?: boolean;
 };
 
@@ -15,11 +16,13 @@ const defaultValue = {
   categories: [],
   stores: [],
   status: [...couponStatus.map((s) => s.status)],
+  rating: 5,
 };
 export default function Filter({
   byCategory = false,
   byStore = false,
   byStatus = false,
+  byRating = false,
 }: Props) {
   const { categories, stores } = UseAppStore((state) => state);
   const searchParams = useSearchParams();
@@ -29,6 +32,7 @@ export default function Filter({
     categories: number[];
     stores: number[];
     status: number[];
+    rating: number;
   }>(defaultValue);
 
   const handleSelectCategory = (selected: number) => {
@@ -64,7 +68,10 @@ export default function Filter({
   const handleFilter = () => {
     const params = new URLSearchParams(searchParams.toString());
     (Object.keys(filter) as Array<keyof typeof filter>).forEach((k) => {
-      params.set(k, filter[k].join(','));
+      params.set(
+        k,
+        Array.isArray(filter[k]) ? filter[k].join(',') : filter[k].toString(),
+      );
     });
 
     router.push(`${pathname}?${params.toString()}`);
@@ -137,6 +144,35 @@ export default function Filter({
                     onChange={() => handleSelectStatus(opt.status)}
                   />
                 ))}
+              </Dropdown.Menu>
+            </Dropdown>
+          )}
+          {/* Rating */}
+          {byRating && (
+            <Dropdown
+              title="Select category"
+              onSelect={(eventKey) =>
+                setFilter({
+                  ...filter,
+                  rating: Number(eventKey),
+                })
+              }
+            >
+              <Dropdown.Toggle variant="light">Select status</Dropdown.Toggle>
+              <Dropdown.Menu className="px-2 py-2">
+                {Array.from({ length: 5 }, (_, i) => i + 1).map(
+                  (rating, idx) => (
+                    <Dropdown.Item
+                      className="py-2 "
+                      eventKey={rating}
+                      key={idx}
+                      id={rating.toString()}
+                      active={filter.rating === rating}
+                    >
+                      {rating}
+                    </Dropdown.Item>
+                  ),
+                )}
               </Dropdown.Menu>
             </Dropdown>
           )}

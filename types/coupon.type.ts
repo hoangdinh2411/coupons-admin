@@ -5,6 +5,19 @@ import { MetaData, TimestampedEntity } from './request.type';
 import { StoreData } from './store.type';
 
 export interface CouponPayload {
+  title?: string;
+  code?: string;
+  offer_detail?: string;
+  store_id?: number;
+  category_id?: number;
+  is_exclusive?: boolean;
+  expire_date?: string;
+  start_date?: string;
+  type?: CouponType;
+  rating?: number;
+}
+
+export interface CouponData extends TimestampedEntity {
   title: string;
   code: string;
   offer_detail: string;
@@ -14,12 +27,10 @@ export interface CouponPayload {
   expire_date: string;
   start_date: string;
   type: CouponType;
-}
-
-export interface CouponData extends CouponPayload, TimestampedEntity {
+  rating: number;
   id: number;
-  store: StoreData;
-  category: CategoryData;
+  store?: StoreData;
+  category?: CategoryData;
   meta_data?: MetaData;
   added_by: number;
   user?: UserData;

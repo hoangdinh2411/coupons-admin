@@ -5,11 +5,13 @@ export const makeFilterData = (searchParams: { [key: string]: string }) => {
     searchParams?.categories?.split(',').map((i) => Number(i)) || [];
   const stores = searchParams?.stores?.split(',').map((i) => Number(i)) || [];
   const status = searchParams?.status?.split(',').map((i) => Number(i)) || [];
+  const rating = Number(searchParams?.rating || 5);
   return {
     categories,
     stores,
     status,
     search_text,
     page,
+    rating,
   };
 };
