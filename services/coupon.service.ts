@@ -4,11 +4,16 @@ import { revalidateTag } from 'next/cache';
 import { IResponse, IResponseWithTotal } from '@/types/request.type';
 import customFetchWithToken from './customFetchWithToken';
 import { CouponData, CouponPayload } from '@/types/coupon.type';
+import { FilterPayload } from '@/types/filter.type';
 
-export async function searchCoupon(text: string) {
-  return await customFetch<CouponData>(`/coupons/search?name=${text}`, {
-    method: 'GET',
-  });
+export async function filterCoupon(data: FilterPayload) {
+  return await customFetch<IResponseWithTotal<CouponData[]>>(
+    `/coupons/filter`,
+    {
+      method: 'POST',
+      body: JSON.stringify(data),
+    },
+  );
 }
 export async function getAllCoupons(
   page?: number,

@@ -15,7 +15,6 @@ import { getState, setState } from '../services/switcherServices';
 
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
 import Image from 'next/image';
-import AuthService, { getProfile, signOut } from '@/services/auth.service';
 import UseAppStore from '@/store/useAppStore';
 import { usePathname, useRouter } from 'next/navigation';
 import { APP_ROUTE } from '@/constants/route';
@@ -24,30 +23,23 @@ import Notification from './Notification';
 import SearchBar from './SearchBar';
 import { getAllStores } from '@/services/store.service';
 import { getCategories } from '@/services/category.service';
+import { getProfile } from '@/services/user.service';
+import { SignOutAction } from '@/app/actions/sign-out.action';
 
 const Header = () => {
-  const {
-    setProfile,
-    toggleAppLoading,
-    profile,
-    categories,
-    stores,
-    setCategory,
-    setStores,
-  } = UseAppStore((state) => state);
+  const { setProfile, profile, setCategory, setStores } = UseAppStore(
+    (state) => state,
+  );
   const router = useRouter();
   // Fullscreen Function
 
   const handleSignOut = async () => {
-    toggleAppLoading(true);
-    const res = await signOut();
-    if (res.success) {
-      toast.success('See you again');
-      setProfile(null);
-      setStores([]);
-      setCategory([]);
-      router.push(APP_ROUTE.SIGN_IN);
-    }
+    await SignOutAction();
+    toast.success('See you again');
+    setProfile(null);
+    setStores([]);
+    setCategory([]);
+    router.push(APP_ROUTE.SIGN_IN);
   };
   const [isFullscreen, setIsFullscreen] = useState(false);
 
@@ -71,23 +63,29 @@ const Header = () => {
 
   useEffect(() => {
     const handleFetchProfile = async () => {
-      const res = await getProfile();
-      console.log(res);
-      if (res.success && res.data) {
-        setProfile(res.data);
-        const storeRes = await getAllStores();
-        console.log('storeRes', storeRes.data);
-        if (storeRes.success && storeRes.data) {
-          setStores(storeRes.data.results);
-        }
-        const categoryRes = await getCategories();
-        console.log('categoryRes', categoryRes.data);
-        if (categoryRes.success && categoryRes.data) {
-          setCategory(categoryRes.data.results);
-        }
-      } else {
-        console.log('sign outs');
-        // handleSignOut();
+      const profileRes = await getProfile();
+      console.log(profileRes);
+      if (!profileRes.success) {
+        toast.error('Your session has expired. Please log in again. ');
+        handleSignOut();
+        return;
+      }
+      if (!profileRes.data) {
+        toast.error('Missing user data');
+        return;
+      }
+      setProfile(profileRes.data);
+      const [storeRes, categoryRes] = await Promise.all([
+        getAllStores(),
+        getCategories(),
+      ]);
+      // const storeRes = await getAllStores();
+      if (storeRes.success && storeRes.data) {
+        setStores(storeRes.data.results);
+      }
+      // const categoryRes = await getCategories();
+      if (categoryRes.success && categoryRes.data) {
+        setCategory(categoryRes.data.results);
       }
     };
     if (!profile) {
@@ -578,7 +576,7 @@ const Header = () => {
                   </div>
                 </Link>
                 <Link
-                  href="#!"
+                  href="/profile"
                   className="dropdown-item d-flex align-items-center border-bottom-0"
                 >
                   <i className="ti ti-user-circle fs-18 me-2 text-gray fw-normal"></i>

@@ -14,6 +14,7 @@ import toast from 'react-hot-toast';
 import { deleteById } from '@/services/store.service';
 import UseAppStore from '@/store/useAppStore';
 import CustomPagination from '@/shared/layouts-components/pagination/CustomPagination';
+import Filter from '@/shared/layouts-components/filter/Filter';
 type Props = {
   data: StoreData[];
   total: number;
@@ -63,6 +64,9 @@ export default function StoreList({
 
       <Card.Body>
         <Row className="align-items-center g-2 flex-wrap">
+          <Col xs="12" md>
+            <Filter byCategory />
+          </Col>
           <Col xs="12" md>
             <div className="d-flex justify-content-between align-items-center gap-2 flex-wrap">
               <SearchBar placeholder="Search store..." />

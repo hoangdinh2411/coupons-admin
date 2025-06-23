@@ -22,13 +22,9 @@ export const schema = z
     code: z.string().min(1, 'Code is required'),
     offer_detail: z.string().min(1, 'Offer detail is required'),
     is_exclusive: z.boolean(),
-    expire_date: z
-      .date({
-        message: 'Expire date is required',
-      })
-      .refine((data) => dayjs(data).isAfter(dayjs()), {
-        message: 'Expire date must be after today',
-      }),
+    expire_date: z.date({
+      message: 'Expire date is required',
+    }),
     start_date: z.date({
       message: 'Start date is required',
     }),

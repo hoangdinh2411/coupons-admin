@@ -12,6 +12,8 @@ import { deleteCouponById, submitCouponById } from '@/services/coupon.service';
 import CustomPagination from '@/shared/layouts-components/pagination/CustomPagination';
 import { CouponData } from '@/types/coupon.type';
 import { CouponType } from '@/types/enum';
+import { getBackgroundForType } from '@/helper/coupons';
+import Filter from '@/shared/layouts-components/filter/Filter';
 type Props = {
   data: CouponData[];
   total: number;
@@ -22,6 +24,7 @@ const HEADER = [
   { title: 'Code' },
   { title: 'Store' },
   { title: 'Category' },
+  { title: 'Start Date' },
   { title: 'Expire Date' },
   { title: 'Type' },
   { title: 'Actions' },
@@ -56,18 +59,6 @@ export default function CouponSubmitList({
     });
   };
 
-  const getBackgroundForType = (type: CouponType) => {
-    switch (type) {
-      case CouponType.CODE:
-        return 'bg-secondary';
-      case CouponType.ONLINE_AND_IN_STORE:
-        return 'bg-success';
-      case CouponType.SALE:
-        return 'bg-info';
-      default:
-        'bg-primary';
-    }
-  };
   return (
     <Card className="custom-card">
       <Card.Header className="justify-content-between">
@@ -76,6 +67,9 @@ export default function CouponSubmitList({
 
       <Card.Body>
         <Row className="align-items-center g-2 flex-wrap">
+          <Col xs="12">
+            <Filter byCategory byStore />
+          </Col>
           <Col xs="12" md>
             <div className="d-flex justify-content-between align-items-center gap-2 flex-wrap">
               <SearchBar placeholder="Search coupon..." />
@@ -90,6 +84,7 @@ export default function CouponSubmitList({
                 <td>{coupon.code}</td>
                 <td>{coupon.store?.name || 'N/A'}</td>
                 <td>{coupon.category?.name || 'N/A'}</td>
+                <td>{coupon.start_date}</td>
                 <td>{coupon.expire_date}</td>
                 <td>
                   <p
