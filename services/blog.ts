@@ -5,65 +5,66 @@ import { IResponse, IResponseWithTotal } from '@/types/share.type';
 import { StoreData, StorePayload } from '@/types/store.type';
 import customFetchWithToken from './customFetchWithToken';
 import { FilterPayload } from '@/types/filter.type';
+import { BlogData } from '@/types/blog.type';
 
-export async function filterStore(data: FilterPayload) {
-  return await customFetch<IResponseWithTotal<StoreData[]>>(`/stores/filter`, {
+export async function filterBlog(data: FilterPayload) {
+  return await customFetch<IResponseWithTotal<BlogData[]>>(`/blogs/filter`, {
     method: 'POST',
     body: JSON.stringify(data),
   });
 }
-export async function getAllStores(
+export async function getAllBlogs(
   page?: number,
   limit?: number,
   search_text: string = '',
 ) {
   const query = `?page=${page ?? ''}&limit=${limit ?? ''}&search_text=${search_text ?? ''}`;
-  return await customFetch<IResponseWithTotal<StoreData[]>>(`/stores${query}`, {
+  return await customFetch<IResponseWithTotal<StoreData[]>>(`/blogs${query}`, {
     method: 'GET',
     next: {
-      tags: ['stores-data'],
+      tags: ['blogs-data'],
     },
   });
 }
-export async function getStoreBySlug(slug: string) {
-  return await customFetch<StoreData>(`/stores/${slug}`, {
+export async function getBlogBySlug(slug: string) {
+  return await customFetch<StoreData>(`/blogs/${slug}`, {
     method: 'GET',
     next: {
       tags: [`store-${slug}`],
     },
   });
 }
-export async function updateStore(id: number, payload: StorePayload) {
+export async function updateBlog(id: number, payload: StorePayload) {
   const param = `/${id}`;
-  const res = await customFetchWithToken<StoreData>(`/stores${param}`, {
+  const res = await customFetchWithToken<StoreData>(`/blogs${param}`, {
     method: 'PATCH',
     body: JSON.stringify(payload),
   });
   if (res.success) {
-    revalidateTag('stores-data');
+    revalidateTag('blogs-data');
     revalidateTag('category-' + res.data?.slug);
   }
   return res;
 }
-export async function deleteById(id: number) {
+export async function deleteBlogById(id: number) {
   const param = `/${id}`;
-  const res = await customFetchWithToken<StoreData>(`/stores${param}`, {
+  const res = await customFetchWithToken<StoreData>(`/blogs${param}`, {
     method: 'DELETE',
   });
   if (res.success) {
-    revalidateTag('stores-data');
+    revalidateTag('blogs-data');
   }
   return res;
 }
 
-export async function createStore(payload: StorePayload) {
-  const res = await customFetchWithToken<StoreData>(`/stores`, {
+export async function createBlog(payload: StorePayload) {
+  const res = await customFetchWithToken<StoreData>(`/blogs`, {
     method: 'POST',
     body: JSON.stringify(payload),
   });
 
   if (res.success) {
-    revalidateTag('stores-data');
+    revalidateTag('blogs-data');
   }
   return res;
 }

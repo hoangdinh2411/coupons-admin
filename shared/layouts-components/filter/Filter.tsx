@@ -88,7 +88,7 @@ export default function Filter({
           {/* category */}
           {byCategory && (
             <Dropdown autoClose="outside">
-              <Dropdown.Toggle variant="light">Select category</Dropdown.Toggle>
+              <Dropdown.Toggle variant="light">By categories</Dropdown.Toggle>
 
               <Dropdown.Menu className="px-2 py-2">
                 {categories.map((opt) => (
@@ -109,7 +109,7 @@ export default function Filter({
 
           {byStore && (
             <Dropdown title="Select category" autoClose="outside">
-              <Dropdown.Toggle variant="light">Select stores</Dropdown.Toggle>
+              <Dropdown.Toggle variant="light">By stores</Dropdown.Toggle>
 
               <Dropdown.Menu className="px-2 py-2">
                 {stores.map((opt) => (
@@ -130,7 +130,7 @@ export default function Filter({
           {/* Status */}
           {byStatus && (
             <Dropdown title="Select category" autoClose="outside">
-              <Dropdown.Toggle variant="light">Select status</Dropdown.Toggle>
+              <Dropdown.Toggle variant="light">By status</Dropdown.Toggle>
 
               <Dropdown.Menu className="px-2 py-2">
                 {couponStatus.map((opt, idx) => (
@@ -158,7 +158,7 @@ export default function Filter({
                 })
               }
             >
-              <Dropdown.Toggle variant="light">Select status</Dropdown.Toggle>
+              <Dropdown.Toggle variant="light">By rating</Dropdown.Toggle>
               <Dropdown.Menu className="px-2 py-2">
                 {Array.from({ length: 5 }, (_, i) => i + 1).map(
                   (rating, idx) => (

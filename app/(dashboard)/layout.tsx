@@ -1,6 +1,5 @@
 import React, { Fragment } from 'react';
 import { Metadata } from 'next';
-import Switcher from '@/shared/layouts-components/switcher/switcher';
 import Loader from '@/shared/layouts-components/loader/loader';
 import Header from '@/shared/layouts-components/header/header';
 import Sidebar from '@/shared/layouts-components/sidebar/sidebar';
@@ -18,7 +17,6 @@ export default function DashboardLayout({
 }>) {
   return (
     <Fragment>
-      <Switcher />
       <Loader />
       <div className="page">
         <Header />

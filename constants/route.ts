@@ -2,6 +2,7 @@ export const APP_ROUTE = {
   DASHBOARD: '/dashboard',
   CATEGORY: '/categories',
   BLOG: '/blogs',
+  CREATE_BLOG: '/blogs/create',
   SIGN_IN: '/auth/sign-in',
   SIGN_UP: '/auth/sign-up',
   FORGOT: '/auth/forgot-password',

@@ -2,14 +2,9 @@
 import { CategoryData, CategoryPayload } from '@/types/category.type';
 import customFetch from './customFetch';
 import { revalidateTag } from 'next/cache';
-import { IResponseWithTotal } from '@/types/request.type';
+import { IResponseWithTotal } from '@/types/share.type';
 import customFetchWithToken from './customFetchWithToken';
 
-export async function searchCategory(text: string) {
-  return await customFetch<CategoryData>(`/categories/search?name=${text}`, {
-    method: 'GET',
-  });
-}
 export async function getCategories(
   page?: number,
   limit?: number,

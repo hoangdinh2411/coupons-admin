@@ -1,0 +1,156 @@
+'use client';
+import React, { Fragment, useEffect } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Box } from '@mui/material';
+import { Col, Form, Row } from 'react-bootstrap';
+import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
+import toast from 'react-hot-toast';
+import UseAppStore from '@/store/useAppStore';
+import 'react-datepicker/dist/react-datepicker.css';
+import dynamic from 'next/dynamic';
+import { RawDraftContentState } from 'draft-js';
+import { RichTextEditorProps } from '@/shared/layouts-components/richtext-editor/RichEditor';
+import { createBlog } from '@/services/blog';
+import { BlogData, BlogPayload } from '@/types/blog.type';
+const RichTextEditor = dynamic<RichTextEditorProps>(
+  () =>
+    import(
+      '../../../../../shared/layouts-components/richtext-editor/RichEditor'
+    ),
+  {
+    ssr: false,
+  },
+);
+export const schema = z.object({
+  title: z.string().min(1, 'Coupon title is required'),
+  keywords: z.string(),
+  category_id: z.number({
+    message: 'Select category',
+  }),
+});
+
+export const defaultValues: PostFormData = {
+  title: '',
+  keywords: '',
+  category_id: 0,
+};
+export type PostFormData = z.infer<typeof schema>;
+
+export default function UpdateForm({ item }: { item?: BlogData }) {
+  const {
+    register,
+    handleSubmit,
+    control,
+    reset,
+    formState: { errors, isSubmitSuccessful },
+  } = useForm<PostFormData>({
+    resolver: zodResolver(schema),
+    defaultValues,
+    mode: 'onChange',
+  });
+  const [content, setContent] = React.useState<RawDraftContentState>();
+  const { categories } = UseAppStore((state) => state);
+  useEffect(() => {
+    if (isSubmitSuccessful) {
+      reset(defaultValues);
+    }
+  }, [isSubmitSuccessful]);
+
+  const handleChangeContent = (raw: RawDraftContentState) => {
+    setContent(raw);
+  };
+  const onSubmit = async (data: any) => {
+    const payload: BlogPayload = {
+      ...data,
+      content,
+      keywords: data.keywords.split(',').map((k: string) => k.trim()),
+    };
+    toast.promise(createBlog(payload), {
+      loading: 'Pending...!',
+      success: (res) => {
+        if (res.success && res.data) {
+          return 'Created successfully';
+        }
+        throw res.message;
+      },
+      error: (err) => err || 'Something wrong',
+    });
+  };
+
+  return (
+    <Form onSubmit={handleSubmit(onSubmit)}>
+      {/* Store Name */}
+      <Box className="mb-3">
+        <Form.Label className="text-default">Title</Form.Label>
+        <Form.Control
+          type="text"
+          placeholder="Enter blog title"
+          {...register('title')}
+        />
+        {errors.title && (
+          <small className="text-danger">{errors.title.message}</small>
+        )}
+      </Box>
+      <Box className="mb-3">
+        <Form.Label className="">Post content</Form.Label>
+        <RichTextEditor
+          onChange={handleChangeContent}
+          placeholder="Write blog content here"
+        />
+      </Box>
+      {/* Keywords */}
+      <Box className="mb-3">
+        <Form.Label className="text-default">
+          Keywords (comma separated)
+        </Form.Label>
+        <Form.Control
+          type="text"
+          placeholder="e.g., AI, programming"
+          {...register('keywords')}
+        />
+        {errors.keywords && (
+          <small className="text-danger">{errors.keywords.message}</small>
+        )}
+      </Box>
+      <Box className="mb-3">
+        <Form.Label className="text-default">Category</Form.Label>
+        <Controller
+          control={control}
+          name="category_id"
+          render={({ field: { onChange, value, ref } }) => {
+            return (
+              <Fragment>
+                <Form.Select
+                  ref={ref}
+                  value={Number(value ?? 0)}
+                  onChange={(e) => onChange(Number(e.target.value))}
+                >
+                  <option value={0}>Select category</option>
+                  {categories &&
+                    categories.map((cat) => (
+                      <option key={cat.id} value={Number(cat.id)}>
+                        {cat.name}
+                      </option>
+                    ))}
+                </Form.Select>
+                {errors.category_id && (
+                  <small className="text-danger">
+                    {errors.category_id.message}
+                  </small>
+                )}
+              </Fragment>
+            );
+          }}
+        />
+      </Box>
+
+      <Box display="flex" justifyContent="end" mt={4} gap={1}>
+        <SpkButton Buttonvariant="primary" Buttontype="submit">
+          Create Blog
+        </SpkButton>
+      </Box>
+    </Form>
+  );
+}

@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useEffect, useTransition } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import React, { useEffect } from 'react';
+import { useForm, Controller, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import { set, z } from 'zod';
 import { Box, Paper } from '@mui/material';
 import { Modal, Form } from 'react-bootstrap';
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
@@ -12,8 +12,13 @@ import UploadFile, {
   ImageByte,
 } from '@/shared/layouts-components/uploadFile/UploadFile';
 import toast from 'react-hot-toast';
-import { createCategory, updateCategory } from '@/services/category.service';
+import { createCategory } from '@/services/category.service';
 import UseAppStore from '@/store/useAppStore';
+import SeoForm, {
+  seoDataSchema,
+  seoDefaultValues,
+} from '@/shared/layouts-components/seo-form/SeoForm';
+import { getKeyWordsArray } from '@/helper/keywords';
 
 interface CreateCategoryModalPropsType {
   open: boolean;
@@ -21,6 +26,7 @@ interface CreateCategoryModalPropsType {
 }
 
 export const schema = z.object({
+  ...seoDataSchema.shape,
   name: z.string().min(1, 'Category name is required'),
   image: z.object({
     filename: z.string(),
@@ -30,6 +36,7 @@ export const schema = z.object({
 });
 
 export const defaultValue = {
+  ...seoDefaultValues,
   name: '',
   image: {
     filename: '',
@@ -43,16 +50,17 @@ export default function CreateCategoryModal({
   open,
   onClose,
 }: CreateCategoryModalPropsType) {
+  const method = useForm<CategoryFormData>({
+    resolver: zodResolver(schema),
+  });
   const {
     register,
     handleSubmit,
     control,
     reset,
     setValue,
-    formState: { errors, isSubmitSuccessful },
-  } = useForm<CategoryFormData>({
-    resolver: zodResolver(schema),
-  });
+    formState: { errors, isSubmitSuccessful, isSubmitted },
+  } = method;
 
   const { setCategory, categories } = UseAppStore((state) => state);
   useEffect(() => {
@@ -60,10 +68,11 @@ export default function CreateCategoryModal({
       reset(defaultValue);
     }
   }, [isSubmitSuccessful, open]);
-  const onSubmit = async (data: CategoryFormData) => {
+  const onSubmit = async ({ image, ...rest }: CategoryFormData) => {
     const payload = {
-      name: data.name,
-      image_bytes: data.image.data,
+      ...rest,
+      seo_keywords: getKeyWordsArray(rest.seo_keywords),
+      image_bytes: image.data,
     };
 
     toast.promise(createCategory(payload), {
@@ -84,6 +93,7 @@ export default function CreateCategoryModal({
     console.log(data);
     setValue('image', data);
   };
+
   return (
     <Modal
       centered
@@ -98,7 +108,7 @@ export default function CreateCategoryModal({
         <Modal.Title as="h6">Create Category</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Paper>
+        <FormProvider {...method}>
           <Form onSubmit={handleSubmit(onSubmit)}>
             <Box className="mb-3">
               <Form.Label className="fw-bold text-default">
@@ -130,16 +140,19 @@ export default function CreateCategoryModal({
                     )}
                   />
                 </Box>
+                {errors.image && (
+                  <small className="text-danger">{errors.image.message}</small>
+                )}
               </Box>
             </Box>
-
+            <SeoForm />
             <Box display="flex" justifyContent="end" mt={4} gap={1}>
               <SpkButton Buttonvariant="primary" Buttontype="submit">
                 Create Category
               </SpkButton>
             </Box>
           </Form>
-        </Paper>
+        </FormProvider>
       </Modal.Body>
     </Modal>
   );

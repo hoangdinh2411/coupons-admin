@@ -149,12 +149,30 @@ export const MENUITEMS: any = [
     ],
   },
   {
-    title: 'Post',
+    title: 'Blogs',
     icon: PostIcon,
-    type: 'link',
+    type: 'sub',
     active: false,
     dirchange: false,
-    path: '/posts',
+    path: APP_ROUTE.BLOG,
+    children: [
+      {
+        title: 'List',
+        type: 'link',
+        active: false,
+        dirchange: false,
+        children: [],
+        path: APP_ROUTE.BLOG,
+      },
+      {
+        title: 'Create blog',
+        type: 'link',
+        active: false,
+        dirchange: false,
+        children: [],
+        path: APP_ROUTE.CREATE_BLOG,
+      },
+    ],
   },
   {
     title: 'Category',

@@ -1,7 +1,7 @@
 import { UserData } from './auth.type';
 import { CategoryData } from './category.type';
 import { CouponType } from './enum';
-import { MetaData, TimestampedEntity } from './request.type';
+import { MetaData, TimestampedEntity } from './share.type';
 import { StoreData } from './store.type';
 
 export interface CouponPayload {
@@ -31,7 +31,7 @@ export interface CouponData extends TimestampedEntity {
   id: number;
   store?: StoreData;
   category?: CategoryData;
-  meta_data?: MetaData;
+  // meta_data?: MetaData;
   added_by: number;
   user?: UserData;
 }
