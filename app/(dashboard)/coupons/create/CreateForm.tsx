@@ -34,6 +34,7 @@ export const schema = z
     store_id: z.number({
       message: 'Select store',
     }),
+    offer_link: z.string().optional(),
     type: z.string({
       message: 'Coupon type is required',
     }),
@@ -53,6 +54,7 @@ export const defaultValues: CouponFormData = {
   category_id: 0,
   store_id: 0,
   type: '',
+  offer_link: '',
 };
 export type CouponFormData = z.infer<typeof schema>;
 
@@ -143,6 +145,17 @@ export default function CreateForm() {
         />
         {errors.title && (
           <small className="text-danger">{errors.title.message}</small>
+        )}
+      </Box>
+      <Box className="mb-3">
+        <Form.Label className="text-default">Offer link</Form.Label>
+        <Form.Control
+          type="text"
+          placeholder="Enter offer link"
+          {...register('offer_link')}
+        />
+        {errors.offer_link && (
+          <small className="text-danger">{errors.offer_link.message}</small>
         )}
       </Box>
 

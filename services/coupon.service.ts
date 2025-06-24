@@ -1,7 +1,7 @@
 'use server';
 import customFetch from './customFetch';
 import { revalidateTag } from 'next/cache';
-import { IResponse, IResponseWithTotal } from '@/types/request.type';
+import { IResponse, IResponseWithTotal } from '@/types/share.type';
 import customFetchWithToken from './customFetchWithToken';
 import { CouponData, CouponPayload } from '@/types/coupon.type';
 import { FilterPayload } from '@/types/filter.type';

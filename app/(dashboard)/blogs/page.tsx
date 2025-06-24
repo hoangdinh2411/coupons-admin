@@ -1,16 +1,18 @@
 import React from 'react';
-import CouponList from './CouponList';
+import BlogList from './BlogList';
 import { filterCoupon } from '@/services/coupon.service';
 import { makeFilterData } from '@/helper/filter';
+import { filterBlog } from '@/services/blog';
 
-export default async function CouponPage(props: {
+export default async function PostManagementPage(props: {
   searchParams?: Promise<Record<string, string>>;
 }) {
   const searchParams = await props.searchParams;
-  const data = makeFilterData(searchParams || {});
-  const res = await filterCoupon({
-    ...data,
-    is_verified: true,
+  const { categories, page, search_text } = makeFilterData(searchParams || {});
+  const res = await filterBlog({
+    categories,
+    page,
+    search_text,
   });
   if (!res.success || (res.success && !res.data)) {
     return res.message;
@@ -18,10 +20,10 @@ export default async function CouponPage(props: {
   return (
     <>
       {res.data && (
-        <CouponList
+        <BlogList
           data={res.data?.results}
           total={res.data?.total}
-          currentPage={data.page}
+          currentPage={page}
         />
       )}
     </>

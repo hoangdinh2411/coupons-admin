@@ -1,5 +1,5 @@
 'use server';
-import { IResponse } from '@/types/request.type';
+import { IResponse } from '@/types/share.type';
 import { cookies } from 'next/headers';
 import customFetch from './customFetch';
 

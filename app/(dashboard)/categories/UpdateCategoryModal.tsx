@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, memo } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Modal, Form, CloseButton } from 'react-bootstrap';
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
@@ -14,6 +14,8 @@ import { CategoryData } from '@/types/category.type';
 import UseAppStore from '@/store/useAppStore';
 import toast from 'react-hot-toast';
 import { updateCategory } from '@/services/category.service';
+import SeoForm from '@/shared/layouts-components/seo-form/SeoForm';
+import { getKeyWordsString } from '@/helper/keywords';
 
 interface UpdateCategoryModalProps {
   item: CategoryData | null;
@@ -27,25 +29,25 @@ function UpdateCategoryModal({
   onClose,
 }: UpdateCategoryModalProps) {
   const { setCategory, categories } = UseAppStore((state) => state);
+  const method = useForm<CategoryFormData>({
+    resolver: zodResolver(schema),
+  });
   const {
     register,
     handleSubmit,
     control,
     setValue,
+    reset,
     formState: { errors },
-  } = useForm<CategoryFormData>({
-    resolver: zodResolver(schema),
-  });
+  } = method;
 
   useEffect(() => {
     if (item) {
-      setValue('name', item.name);
-      if (item.image_bytes) {
-        setValue(
-          'image',
-          generateImageBytesObjectFromBase64(item.image_bytes, item.name),
-        );
-      }
+      reset({
+        ...item,
+        seo_keywords: getKeyWordsString(item.meta_data?.keywords || []),
+        image: generateImageBytesObjectFromBase64(item.image_bytes, item.name),
+      });
     }
   }, [item]);
   const onSubmit = async (data: CategoryFormData) => {
@@ -88,7 +90,7 @@ function UpdateCategoryModal({
         <CloseButton onClick={onClose} aria-label="close" />
       </Modal.Header>
       <Modal.Body>
-        <Paper>
+        <FormProvider {...method}>
           <Form onSubmit={handleSubmit(onSubmit)}>
             <Box className="mb-3">
               <Form.Label className="fw-bold text-default">
@@ -122,7 +124,7 @@ function UpdateCategoryModal({
                 </Box>
               </Box>
             </Box>
-
+            <SeoForm />
             <Box display="flex" justifyContent="end" mt={4} gap={1}>
               <SpkButton Buttonvariant="primary" Buttontype="submit">
                 Update
@@ -136,7 +138,7 @@ function UpdateCategoryModal({
               </SpkButton>
             </Box>
           </Form>
-        </Paper>
+        </FormProvider>
       </Modal.Body>
     </Modal>
   );

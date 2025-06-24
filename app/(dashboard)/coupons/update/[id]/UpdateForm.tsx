@@ -77,7 +77,17 @@ export default function UpdateForm({ item }: { item: CouponData }) {
           <small className="text-danger">{errors.title.message}</small>
         )}
       </Box>
-
+      <Box className="mb-3">
+        <Form.Label className="text-default">Offer link</Form.Label>
+        <Form.Control
+          type="text"
+          placeholder="Enter offer link"
+          {...register('offer_link')}
+        />
+        {errors.offer_link && (
+          <small className="text-danger">{errors.offer_link.message}</small>
+        )}
+      </Box>
       {/* Description */}
       <Box className="mb-3">
         <Form.Label className="text-default">Offer detail</Form.Label>

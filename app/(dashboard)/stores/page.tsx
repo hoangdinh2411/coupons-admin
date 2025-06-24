@@ -1,4 +1,3 @@
-import Seo from '@/shared/layouts-components/seo/seo';
 import React from 'react';
 import StoreList from './StoreList';
 import { filterStore } from '@/services/store.service';
@@ -12,8 +11,7 @@ export default async function StorePage(props: {
   }>;
 }) {
   const searchParams = await props.searchParams;
-  const page = Number(searchParams?.page || 1);
-  const { categories, rating, search_text } = makeFilterData(
+  const { categories, rating, search_text, page } = makeFilterData(
     searchParams || {},
   );
   const res = await filterStore({ categories, rating, search_text, page });
@@ -22,7 +20,6 @@ export default async function StorePage(props: {
   }
   return (
     <>
-      <Seo title="Store management" />
       {res.data && (
         <StoreList
           data={res.data?.results}
@@ -30,11 +27,6 @@ export default async function StorePage(props: {
           currentPage={page}
         />
       )}
-      {/* <UpdateStoreModal
-        item={updateStore.item}
-        open={updateStore.isOpen}
-        onClose={handleCloseUpdateStore}
-      /> */}
     </>
   );
 }

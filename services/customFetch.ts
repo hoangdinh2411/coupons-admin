@@ -1,4 +1,4 @@
-import { IResponse } from '@/types/request.type';
+import { IResponse } from '@/types/share.type';
 
 export const BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5173/api/v1';
