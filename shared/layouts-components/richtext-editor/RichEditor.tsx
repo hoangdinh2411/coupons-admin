@@ -138,7 +138,8 @@ const RichTextEditor: React.FC = ({
         style={{
           borderTop: '1px solid #ccc',
           paddingTop: '10px',
-          height: '150px',
+          minHeight: 300,
+          maxHeight: 900,
         }}
       >
         <Editor

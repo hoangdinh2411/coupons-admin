@@ -15,7 +15,7 @@ const Dashboardicon = (
   </svg>
 );
 
-const TopicIcon = (
+const BlogIcon = (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width="16"
@@ -37,7 +37,7 @@ const StoreIcon = (
     width="24"
     fill="#5f6368"
   >
-    <path d="M20 6H4l-2 4v2h20v-2l-2-4zM4 18v2h5v-2h6v2h5v-2H4z" />
+    <path d="M21 5H3v14h18V5zm-2 12H5V7h14v10zM7 9h2v2H7zm0 4h2v2H7zm4-4h6v1h-6zm0 4h6v1h-6z" />
   </svg>
 );
 
@@ -56,24 +56,14 @@ const CategoryIcon = (
 const CouponIcon = (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    className="side-menu__icon"
-    height="24"
-    width="24"
-    fill="#5f6368"
+    width="16"
+    height="16"
+    fill="currentColor"
+    className="bi bi-code-square side-menu__icon"
+    viewBox="0 0 16 16"
   >
-    <path d="M21 5H3v14h18V5zm-2 12H5V7h14v10zM7 9h2v2H7zm0 4h2v2H7zm4-4h6v1h-6zm0 4h6v1h-6z" />
-  </svg>
-);
-
-const PostIcon = (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    className="side-menu__icon"
-    height="24"
-    width="24"
-    fill="#5f6368"
-  >
-    <path d="M4 4h16v2H4zm0 4h10v2H4zm0 4h16v2H4zm0 4h10v2H4z" />
+    <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z" />
+    <path d="M6.854 4.646a.5.5 0 0 1 0 .708L4.207 8l2.647 2.646a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 0 1 .708 0m2.292 0a.5.5 0 0 0 0 .708L11.793 8l-2.647 2.646a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708 0" />
   </svg>
 );
 
@@ -108,7 +98,6 @@ export const MENUITEMS: any = [
         type: 'link',
         active: false,
         dirchange: false,
-        children: [],
         path: APP_ROUTE.STORES,
       },
       {
@@ -116,7 +105,6 @@ export const MENUITEMS: any = [
         type: 'link',
         active: false,
         dirchange: false,
-        children: [],
         path: APP_ROUTE.ADD_STORE,
       },
     ],
@@ -135,7 +123,6 @@ export const MENUITEMS: any = [
         type: 'link',
         active: false,
         dirchange: false,
-        children: [],
         path: APP_ROUTE.COUPONS,
       },
       {
@@ -143,7 +130,6 @@ export const MENUITEMS: any = [
         type: 'link',
         active: false,
         dirchange: false,
-        children: [],
         path: APP_ROUTE.SUBMIT_COUPON,
       },
       {
@@ -151,22 +137,14 @@ export const MENUITEMS: any = [
         type: 'link',
         active: false,
         dirchange: false,
-        children: [],
         path: APP_ROUTE.ADD_COUPON,
       },
     ],
   },
-  {
-    title: 'Topic',
-    icon: TopicIcon,
-    active: false,
-    dirchange: false,
-    type: 'link',
-    path: APP_ROUTE.TOPIC,
-  },
+
   {
     title: 'Blogs',
-    icon: PostIcon,
+    icon: BlogIcon,
     type: 'sub',
     active: false,
     dirchange: false,
@@ -177,7 +155,6 @@ export const MENUITEMS: any = [
         type: 'link',
         active: false,
         dirchange: false,
-        children: [],
         path: APP_ROUTE.BLOG,
       },
       {
@@ -185,8 +162,14 @@ export const MENUITEMS: any = [
         type: 'link',
         active: false,
         dirchange: false,
-        children: [],
         path: APP_ROUTE.CREATE_BLOG,
+      },
+      {
+        title: 'Topic',
+        active: false,
+        dirchange: false,
+        type: 'link',
+        path: APP_ROUTE.TOPIC,
       },
     ],
   },
