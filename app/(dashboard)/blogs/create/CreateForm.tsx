@@ -29,7 +29,7 @@ const RichTextEditor = dynamic<RichTextEditorProps>(
     ssr: false,
   },
 );
-export const schema = z.object({
+export const blogSchema = z.object({
   ...seoDataSchema.shape,
   title: z.string().min(1, 'Coupon title is required'),
   keywords: z.string(),
@@ -43,7 +43,7 @@ export const schema = z.object({
   }),
 });
 
-export const defaultValues: PostFormData = {
+export const defaultValues: BlogFormData = {
   ...seoDefaultValues,
   title: '',
   keywords: '',
@@ -54,11 +54,11 @@ export const defaultValues: PostFormData = {
     type: '',
   },
 };
-export type PostFormData = z.infer<typeof schema>;
+export type BlogFormData = z.infer<typeof blogSchema>;
 
 export default function CreateForm() {
-  const method = useForm<PostFormData>({
-    resolver: zodResolver(schema),
+  const method = useForm<BlogFormData>({
+    resolver: zodResolver(blogSchema),
     defaultValues,
     mode: 'onChange',
   });
@@ -142,7 +142,7 @@ export default function CreateForm() {
           </Box>
         </Box>
         <Box className="mb-3">
-          <Form.Label className="">Post content</Form.Label>
+          <Form.Label className="">Blog content</Form.Label>
           <RichTextEditor
             onChange={handleChangeContent}
             placeholder="Write blog content here"

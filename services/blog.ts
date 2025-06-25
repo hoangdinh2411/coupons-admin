@@ -5,7 +5,7 @@ import { IResponse, IResponseWithTotal } from '@/types/share.type';
 import { StoreData, StorePayload } from '@/types/store.type';
 import customFetchWithToken from './customFetchWithToken';
 import { FilterPayload } from '@/types/filter.type';
-import { BlogData } from '@/types/blog.type';
+import { BlogData, BlogPayload } from '@/types/blog.type';
 
 export async function filterBlog(data: FilterPayload) {
   return await customFetch<IResponseWithTotal<BlogData[]>>(`/blogs/filter`, {
@@ -19,24 +19,23 @@ export async function getAllBlogs(
   search_text: string = '',
 ) {
   const query = `?page=${page ?? ''}&limit=${limit ?? ''}&search_text=${search_text ?? ''}`;
-  return await customFetch<IResponseWithTotal<StoreData[]>>(`/blogs${query}`, {
+  return await customFetch<IResponseWithTotal<BlogData[]>>(`/blogs${query}`, {
     method: 'GET',
     next: {
       tags: ['blogs-data'],
     },
   });
 }
-export async function getBlogBySlug(slug: string) {
-  return await customFetch<StoreData>(`/blogs/${slug}`, {
+export async function getBlogBy(identity: string | number) {
+  return await customFetch<BlogData>(`/blogs/${identity}`, {
     method: 'GET',
     next: {
-      tags: [`store-${slug}`],
+      tags: [`store-${identity}`],
     },
   });
 }
-export async function updateBlog(id: number, payload: StorePayload) {
-  const param = `/${id}`;
-  const res = await customFetchWithToken<StoreData>(`/blogs${param}`, {
+export async function updateBlog(id: number, payload: BlogPayload) {
+  const res = await customFetchWithToken<BlogData>(`/blogs/${id}`, {
     method: 'PATCH',
     body: JSON.stringify(payload),
   });
@@ -48,7 +47,7 @@ export async function updateBlog(id: number, payload: StorePayload) {
 }
 export async function deleteBlogById(id: number) {
   const param = `/${id}`;
-  const res = await customFetchWithToken<StoreData>(`/blogs${param}`, {
+  const res = await customFetchWithToken<BlogData>(`/blogs${param}`, {
     method: 'DELETE',
   });
   if (res.success) {
@@ -57,8 +56,8 @@ export async function deleteBlogById(id: number) {
   return res;
 }
 
-export async function createBlog(payload: StorePayload) {
-  const res = await customFetchWithToken<StoreData>(`/blogs`, {
+export async function createBlog(payload: BlogPayload) {
+  const res = await customFetchWithToken<BlogData>(`/blogs`, {
     method: 'POST',
     body: JSON.stringify(payload),
   });

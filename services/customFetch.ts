@@ -1,4 +1,7 @@
+import { SignOutAction } from '@/app/actions/sign-out.action';
+import { APP_ROUTE } from '@/constants/route';
 import { IResponse } from '@/types/share.type';
+import { redirect } from 'next/navigation';
 
 export const BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5173/api/v1';
@@ -23,7 +26,12 @@ export default async function customFetch<T>(
       clearTimeout(id);
       return response.json();
     })
-    .then((data) => {
+    .then((data: IResponse<T>) => {
+      if (data.status === 401) {
+        SignOutAction();
+        window.location.href = APP_ROUTE.SIGN_IN;
+        throw new Error('Unauthorized access, please sign in again');
+      }
       return data as T;
     })
     .catch((error) => {

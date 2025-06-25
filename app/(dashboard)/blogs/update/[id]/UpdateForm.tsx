@@ -1,10 +1,9 @@
 'use client';
 import React, { Fragment, useEffect } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { Box } from '@mui/material';
-import { Col, Form, Row } from 'react-bootstrap';
+import { Form } from 'react-bootstrap';
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
 import toast from 'react-hot-toast';
 import UseAppStore from '@/store/useAppStore';
@@ -14,6 +13,14 @@ import { RawDraftContentState } from 'draft-js';
 import { RichTextEditorProps } from '@/shared/layouts-components/richtext-editor/RichEditor';
 import { createBlog } from '@/services/blog';
 import { BlogData, BlogPayload } from '@/types/blog.type';
+import SeoForm from '@/shared/layouts-components/seo-form/SeoForm';
+import {
+  BlogFormData,
+  blogSchema,
+  defaultValues,
+} from '../../create/CreateForm';
+import { getKeyWordsArray, getKeyWordsString } from '@/helper/keywords';
+import { generateImageBytesObjectFromBase64 } from '@/helper/image';
 const RichTextEditor = dynamic<RichTextEditorProps>(
   () =>
     import(
@@ -23,33 +30,19 @@ const RichTextEditor = dynamic<RichTextEditorProps>(
     ssr: false,
   },
 );
-export const schema = z.object({
-  title: z.string().min(1, 'Coupon title is required'),
-  keywords: z.string(),
-  category_id: z.number({
-    message: 'Select category',
-  }),
-});
 
-export const defaultValues: PostFormData = {
-  title: '',
-  keywords: '',
-  category_id: 0,
-};
-export type PostFormData = z.infer<typeof schema>;
-
-export default function UpdateForm({ item }: { item?: BlogData }) {
+export default function UpdateForm({ item }: { item: BlogData }) {
+  const method = useForm<BlogFormData>({
+    resolver: zodResolver(blogSchema),
+    mode: 'onChange',
+  });
   const {
     register,
     handleSubmit,
     control,
     reset,
     formState: { errors, isSubmitSuccessful },
-  } = useForm<PostFormData>({
-    resolver: zodResolver(schema),
-    defaultValues,
-    mode: 'onChange',
-  });
+  } = method;
   const [content, setContent] = React.useState<RawDraftContentState>();
   const { categories } = UseAppStore((state) => state);
   useEffect(() => {
@@ -58,14 +51,27 @@ export default function UpdateForm({ item }: { item?: BlogData }) {
     }
   }, [isSubmitSuccessful]);
 
+  useEffect(() => {
+    if (item) {
+      reset({
+        ...item,
+        keywords: getKeyWordsString(item.keywords || []),
+        seo_keywords: getKeyWordsString(item.seo_keywords || []),
+        image: generateImageBytesObjectFromBase64(item.image_bytes, item.title),
+      });
+      setContent(item.content);
+    }
+  }, [item]);
   const handleChangeContent = (raw: RawDraftContentState) => {
     setContent(raw);
   };
-  const onSubmit = async (data: any) => {
+  const onSubmit = async ({ image, ...data }: BlogFormData) => {
     const payload: BlogPayload = {
       ...data,
       content,
-      keywords: data.keywords.split(',').map((k: string) => k.trim()),
+      keywords: getKeyWordsArray(data.keywords),
+      seo_keywords: getKeyWordsArray(data.seo_keywords),
+      image_bytes: image.data,
     };
     toast.promise(createBlog(payload), {
       loading: 'Pending...!',
@@ -80,77 +86,81 @@ export default function UpdateForm({ item }: { item?: BlogData }) {
   };
 
   return (
-    <Form onSubmit={handleSubmit(onSubmit)}>
-      {/* Store Name */}
-      <Box className="mb-3">
-        <Form.Label className="text-default">Title</Form.Label>
-        <Form.Control
-          type="text"
-          placeholder="Enter blog title"
-          {...register('title')}
-        />
-        {errors.title && (
-          <small className="text-danger">{errors.title.message}</small>
-        )}
-      </Box>
-      <Box className="mb-3">
-        <Form.Label className="">Post content</Form.Label>
-        <RichTextEditor
-          onChange={handleChangeContent}
-          placeholder="Write blog content here"
-        />
-      </Box>
-      {/* Keywords */}
-      <Box className="mb-3">
-        <Form.Label className="text-default">
-          Keywords (comma separated)
-        </Form.Label>
-        <Form.Control
-          type="text"
-          placeholder="e.g., AI, programming"
-          {...register('keywords')}
-        />
-        {errors.keywords && (
-          <small className="text-danger">{errors.keywords.message}</small>
-        )}
-      </Box>
-      <Box className="mb-3">
-        <Form.Label className="text-default">Category</Form.Label>
-        <Controller
-          control={control}
-          name="category_id"
-          render={({ field: { onChange, value, ref } }) => {
-            return (
-              <Fragment>
-                <Form.Select
-                  ref={ref}
-                  value={Number(value ?? 0)}
-                  onChange={(e) => onChange(Number(e.target.value))}
-                >
-                  <option value={0}>Select category</option>
-                  {categories &&
-                    categories.map((cat) => (
-                      <option key={cat.id} value={Number(cat.id)}>
-                        {cat.name}
-                      </option>
-                    ))}
-                </Form.Select>
-                {errors.category_id && (
-                  <small className="text-danger">
-                    {errors.category_id.message}
-                  </small>
-                )}
-              </Fragment>
-            );
-          }}
-        />
-      </Box>
+    <FormProvider {...method}>
+      <Form onSubmit={handleSubmit(onSubmit)}>
+        {/* Store Name */}
+        <Box className="mb-3">
+          <Form.Label className="text-default">Title</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Enter blog title"
+            {...register('title')}
+          />
+          {errors.title && (
+            <small className="text-danger">{errors.title.message}</small>
+          )}
+        </Box>
+        <Box className="mb-3">
+          <Form.Label className="">Post content</Form.Label>
+          <RichTextEditor
+            onChange={handleChangeContent}
+            placeholder="Write blog content here"
+            content={content}
+          />
+        </Box>
+        {/* Keywords */}
+        <Box className="mb-3">
+          <Form.Label className="text-default">
+            Keywords (comma separated)
+          </Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="e.g., AI, programming"
+            {...register('keywords')}
+          />
+          {errors.keywords && (
+            <small className="text-danger">{errors.keywords.message}</small>
+          )}
+        </Box>
+        <Box className="mb-3">
+          <Form.Label className="text-default">Category</Form.Label>
+          <Controller
+            control={control}
+            name="category_id"
+            render={({ field: { onChange, value, ref } }) => {
+              return (
+                <Fragment>
+                  <Form.Select
+                    ref={ref}
+                    value={Number(value ?? 0)}
+                    onChange={(e) => onChange(Number(e.target.value))}
+                  >
+                    <option value={0}>Select category</option>
+                    {categories &&
+                      categories.map((cat) => (
+                        <option key={cat.id} value={Number(cat.id)}>
+                          {cat.name}
+                        </option>
+                      ))}
+                  </Form.Select>
+                  {errors.category_id && (
+                    <small className="text-danger">
+                      {errors.category_id.message}
+                    </small>
+                  )}
+                </Fragment>
+              );
+            }}
+          />
+        </Box>
+        <SeoForm />
 
-      <Box display="flex" justifyContent="end" mt={4} gap={1}>
-        <SpkButton Buttonvariant="primary" Buttontype="submit">
-          Create Blog
-        </SpkButton>
-      </Box>
-    </Form>
+        <Box display="flex" justifyContent="end" mt={4} gap={1}>
+          <SpkButton Buttonvariant="primary" Buttontype="submit">
+            Create Blog
+          </SpkButton>
+        </Box>
+      </Form>
+    </FormProvider>
   );
 }

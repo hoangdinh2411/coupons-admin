@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Editor,
   EditorState,
@@ -8,6 +8,7 @@ import {
   DraftEditorCommand,
   convertToRaw,
   RawDraftContentState,
+  convertFromRaw,
 } from 'draft-js';
 import 'draft-js/dist/Draft.css';
 
@@ -66,10 +67,12 @@ const INLINE_STYLES = [
 
 export interface RichTextEditorProps {
   placeholder?: string;
+  content?: RawDraftContentState;
   onChange?: (raw: RawDraftContentState) => void;
 }
 const RichTextEditor: React.FC = ({
   placeholder,
+  content,
   onChange,
 }: RichTextEditorProps) => {
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
@@ -77,8 +80,12 @@ const RichTextEditor: React.FC = ({
   const handleChange = (state: EditorState) => {
     setEditorState(state);
   };
+  useEffect(() => {
+    if (content) {
+      setEditorState(EditorState.createWithContent(convertFromRaw(content)));
+    }
+  }, [content]);
 
-  console.log(convertToRaw(editorState.getCurrentContent()));
   const handleKeyCommand = (
     command: DraftEditorCommand,
     state: EditorState,

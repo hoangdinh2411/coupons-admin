@@ -10,7 +10,7 @@ import SearchBar from '@/shared/layouts-components/searchbar/SearchBar';
 import toast from 'react-hot-toast';
 import CustomPagination from '@/shared/layouts-components/pagination/CustomPagination';
 import Filter from '@/shared/layouts-components/filter/Filter';
-import { Rating } from '@mui/material';
+import { Rating, Switch } from '@mui/material';
 import { BlogData } from '@/types/blog.type';
 import { deleteBlogById, updateBlog } from '@/services/blog';
 type Props = {
@@ -23,6 +23,8 @@ const HEADER = [
   { title: 'Category' },
   { title: 'Rating' },
   { title: 'Keywords' },
+  { title: 'Publish' },
+  { title: 'Index' },
   { title: 'Actions' },
 ];
 
@@ -61,6 +63,30 @@ export default function BlogList({
         throw res.message;
       },
     });
+  };
+  const handleUpdateSwitch = (
+    id: number,
+    field: 'is_published' | 'is_indexed',
+    value: boolean,
+  ) => {
+    toast.promise(
+      updateBlog(id, {
+        [field]: value,
+      }),
+      {
+        loading: 'Updating...!',
+        success: (res) => {
+          if (res.success) {
+            if (value === true) {
+              return 'On success';
+            } else {
+              return 'Off success';
+            }
+          }
+          throw res.message;
+        },
+      },
+    );
   };
 
   return (
@@ -113,6 +139,34 @@ export default function BlogList({
                         </span>
                       ))
                     : 'N/A'}
+                </td>
+                <td>
+                  <Switch
+                    size="small"
+                    checked={blog.is_published}
+                    color="info"
+                    onChange={() => {
+                      handleUpdateSwitch(
+                        blog.id,
+                        'is_published',
+                        !blog.is_published,
+                      );
+                    }}
+                  />
+                </td>
+                <td>
+                  <Switch
+                    size="small"
+                    checked={blog.is_indexed}
+                    color="warning"
+                    onChange={() => {
+                      handleUpdateSwitch(
+                        blog.id,
+                        'is_indexed',
+                        !blog.is_indexed,
+                      );
+                    }}
+                  />
                 </td>
                 <td>
                   <Button
