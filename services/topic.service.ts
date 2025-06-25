@@ -1,0 +1,48 @@
+'use server';
+import customFetch from './customFetch';
+import { revalidateTag } from 'next/cache';
+import { IResponseWithTotal } from '@/types/share.type';
+import customFetchWithToken from './customFetchWithToken';
+import { TopicData, TopicPayload } from '@/types/topic.type';
+
+export async function getTopics(page?: number, search_text: string = '') {
+  const query = `?page=${page}&search_text=${search_text}`;
+  return await customFetch<IResponseWithTotal<TopicData[]>>(`/topic${query}`, {
+    method: 'GET',
+    next: {
+      tags: ['topic-data'],
+    },
+  });
+}
+export async function updateTopic(id: number, payload: TopicPayload) {
+  const res = await customFetchWithToken<TopicData>(`/topic/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  });
+  if (res.success) {
+    revalidateTag('topic-data');
+    revalidateTag('topic-' + id);
+  }
+  return res;
+}
+export async function deleteById(id: number) {
+  const res = await customFetchWithToken<TopicData>(`/topic/${id}`, {
+    method: 'DELETE',
+  });
+  if (res.success) {
+    revalidateTag('topic-data');
+  }
+  return res;
+}
+
+export async function createTopic(payload: TopicPayload) {
+  const res = await customFetchWithToken<TopicData>(`/topic`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+
+  if (res.success) {
+    revalidateTag('topic-data');
+  }
+  return res;
+}

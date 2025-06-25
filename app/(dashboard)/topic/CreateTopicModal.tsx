@@ -12,22 +12,22 @@ import UploadFile, {
   ImageByte,
 } from '@/shared/layouts-components/uploadFile/UploadFile';
 import toast from 'react-hot-toast';
-import { createCategory } from '@/services/category.service';
 import UseAppStore from '@/store/useAppStore';
 import SeoForm, {
   seoDataSchema,
   seoDefaultValues,
 } from '@/shared/layouts-components/seo-form/SeoForm';
 import { getKeyWordsArray } from '@/helper/keywords';
+import { createTopic } from '@/services/topic.service';
 
-interface CreateCategoryModalPropsType {
+interface CreateTopicModalPropsType {
   open: boolean;
   onClose: () => void;
 }
 
 export const schema = z.object({
   ...seoDataSchema.shape,
-  name: z.string().min(1, 'Category name is required'),
+  name: z.string().min(1, 'Topic name is required'),
   image: z.object({
     filename: z.string(),
     data: z.string(),
@@ -44,13 +44,13 @@ export const defaultValue = {
     type: '',
   },
 };
-export type CategoryFormData = z.infer<typeof schema>;
+export type TopicFormData = z.infer<typeof schema>;
 
-export default function CreateCategoryModal({
+export default function CreateTopicModal({
   open,
   onClose,
-}: CreateCategoryModalPropsType) {
-  const method = useForm<CategoryFormData>({
+}: CreateTopicModalPropsType) {
+  const method = useForm<TopicFormData>({
     resolver: zodResolver(schema),
   });
   const {
@@ -62,24 +62,26 @@ export default function CreateCategoryModal({
     formState: { errors },
   } = method;
 
-  const { setCategory, categories } = UseAppStore((state) => state);
+  const { setTopics, topics } = UseAppStore((state) => state);
   useEffect(() => {
     if (!open) {
       reset(defaultValue);
     }
   }, [open]);
-  const onSubmit = async ({ image, ...rest }: CategoryFormData) => {
+  const onSubmit = async ({ image, ...rest }: TopicFormData) => {
     const payload = {
       ...rest,
       seo_keywords: getKeyWordsArray(rest.seo_keywords),
       image_bytes: image.data,
     };
 
-    toast.promise(createCategory(payload), {
+    toast.promise(createTopic(payload), {
       loading: 'Creating...!',
       success: (res) => {
         if (res.success && res.data) {
-          setCategory([...categories, res.data]);
+          setTopics([...topics, res.data]);
+          reset(defaultValue);
+
           return 'Created success';
         } else {
           throw res.message;
@@ -104,18 +106,18 @@ export default function CreateCategoryModal({
       className="modal fade"
     >
       <Modal.Header closeButton>
-        <Modal.Title as="h6">Create Category</Modal.Title>
+        <Modal.Title as="h6">Create Topic</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <FormProvider {...method}>
           <Form onSubmit={handleSubmit(onSubmit)}>
             <Box className="mb-3">
               <Form.Label className="fw-bold text-default">
-                Category Name
+                Topic Name
               </Form.Label>
               <Form.Control
                 type="text"
-                placeholder="Enter your category name"
+                placeholder="Enter your topic name"
                 {...register('name')}
               />
               {errors.name && (
@@ -134,7 +136,7 @@ export default function CreateCategoryModal({
                       <UploadFile
                         filename={field.value?.filename}
                         onUploadFile={handleUploadFile}
-                        id="create-category"
+                        id="create-topic"
                       />
                     )}
                   />

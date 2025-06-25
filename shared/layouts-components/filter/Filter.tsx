@@ -10,10 +10,12 @@ type Props = {
   byStore?: boolean;
   byRating?: boolean;
   byStatus?: boolean;
+  byTopic?: boolean;
 };
 
 const defaultValue = {
   categories: [],
+  topics: [],
   stores: [],
   status: [...couponStatus.map((s) => s.status)],
   rating: 5,
@@ -23,8 +25,9 @@ export default function Filter({
   byStore = false,
   byStatus = false,
   byRating = false,
+  byTopic = false,
 }: Props) {
-  const { categories, stores } = UseAppStore((state) => state);
+  const { categories, stores, topics } = UseAppStore((state) => state);
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -33,6 +36,7 @@ export default function Filter({
     stores: number[];
     status: number[];
     rating: number;
+    topics: number[];
   }>(defaultValue);
 
   const handleSelectCategory = (selected: number) => {
@@ -77,9 +81,6 @@ export default function Filter({
     router.push(`${pathname}?${params.toString()}`);
   };
 
-  if (!byCategory && !byCategory && !byStatus) {
-    return null;
-  }
   return (
     <Accordion defaultActiveKey="0">
       <Accordion.Item eventKey="0">
@@ -92,6 +93,25 @@ export default function Filter({
 
               <Dropdown.Menu className="px-2 py-2">
                 {categories.map((opt) => (
+                  <Form.Check
+                    className="py-2 "
+                    key={opt.id}
+                    type="checkbox"
+                    id={opt.id.toString()}
+                    label={opt.name}
+                    checked={filter.categories.includes(opt.id)}
+                    onChange={() => handleSelectCategory(opt.id)}
+                  />
+                ))}
+              </Dropdown.Menu>
+            </Dropdown>
+          )}
+          {byTopic && (
+            <Dropdown autoClose="outside">
+              <Dropdown.Toggle variant="light">By topics</Dropdown.Toggle>
+
+              <Dropdown.Menu className="px-2 py-2">
+                {topics.map((opt) => (
                   <Form.Check
                     className="py-2 "
                     key={opt.id}

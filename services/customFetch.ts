@@ -27,9 +27,11 @@ export default async function customFetch<T>(
       return response.json();
     })
     .then((data: IResponse<T>) => {
+      console.log('response', data);
       if (data.status === 401) {
-        SignOutAction();
-        window.location.href = APP_ROUTE.SIGN_IN;
+        if (window !== undefined) {
+          window.location.href = 'logout';
+        }
         throw new Error('Unauthorized access, please sign in again');
       }
       return data as T;

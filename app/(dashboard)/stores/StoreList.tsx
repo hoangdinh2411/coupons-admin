@@ -114,7 +114,7 @@ export default function StoreList({
                 <td>
                   {store.keywords
                     ? store.keywords.map((k: string, index: number) => (
-                        <span key={index} className="badge bg-primary me-1">
+                        <span key={index} className="badge bg-dark me-1">
                           {k}
                         </span>
                       ))

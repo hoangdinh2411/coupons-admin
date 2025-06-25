@@ -34,8 +34,7 @@ export async function getStoreBySlug(slug: string) {
   });
 }
 export async function updateStore(id: number, payload: StorePayload) {
-  const param = `/${id}`;
-  const res = await customFetchWithToken<StoreData>(`/stores${param}`, {
+  const res = await customFetchWithToken<StoreData>(`/stores/${id}`, {
     method: 'PATCH',
     body: JSON.stringify(payload),
   });
@@ -46,8 +45,7 @@ export async function updateStore(id: number, payload: StorePayload) {
   return res;
 }
 export async function deleteById(id: number) {
-  const param = `/${id}`;
-  const res = await customFetchWithToken<StoreData>(`/stores${param}`, {
+  const res = await customFetchWithToken<StoreData>(`/stores/${id}`, {
     method: 'DELETE',
   });
   if (res.success) {

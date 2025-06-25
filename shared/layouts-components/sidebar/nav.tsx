@@ -15,18 +15,18 @@ const Dashboardicon = (
   </svg>
 );
 
-const NestedmenuIcon = (
+const TopicIcon = (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    className="side-menu__icon"
-    height="24px"
-    viewBox="0 0 24 24"
-    width="24px"
-    fill="#5f6368"
+    width="16"
+    height="16"
+    fill="currentColor"
+    className="bi bi-journal-richtext side-menu__icon"
+    viewBox="0 0 16 16"
   >
-    <path d="M0 0h24v24H0V0z" fill="none"></path>
-    <path d="M6.26 9L12 13.47 17.74 9 12 4.53z" opacity=".3"></path>
-    <path d="M19.37 12.8l-7.38 5.74-7.37-5.73L3 14.07l9 7 9-7zM12 2L3 9l1.63 1.27L12 16l7.36-5.73L21 9l-9-7zm0 11.47L6.26 9 12 4.53 17.74 9 12 13.47z"></path>
+    <path d="M7.5 3.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0m-.861 1.542 1.33.886 1.854-1.855a.25.25 0 0 1 .289-.047L11 4.75V7a.5.5 0 0 1-.5.5h-5A.5.5 0 0 1 5 7v-.5s1.54-1.274 1.639-1.208M5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5" />
+    <path d="M3 0h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-1h1v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v1H1V2a2 2 0 0 1 2-2" />
+    <path d="M1 5v-.5a.5.5 0 0 1 1 0V5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1zm0 3v-.5a.5.5 0 0 1 1 0V8h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1zm0 3v-.5a.5.5 0 0 1 1 0v.5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1z" />
   </svg>
 );
 const StoreIcon = (
@@ -86,6 +86,14 @@ export const MENUITEMS: any = [
     dirchange: false,
     selected: true,
     path: APP_ROUTE.DASHBOARD,
+  },
+  {
+    title: 'Category',
+    icon: CategoryIcon,
+    active: false,
+    dirchange: false,
+    type: 'link',
+    path: APP_ROUTE.CATEGORY,
   },
   {
     title: 'Store',
@@ -149,6 +157,14 @@ export const MENUITEMS: any = [
     ],
   },
   {
+    title: 'Topic',
+    icon: TopicIcon,
+    active: false,
+    dirchange: false,
+    type: 'link',
+    path: APP_ROUTE.TOPIC,
+  },
+  {
     title: 'Blogs',
     icon: PostIcon,
     type: 'sub',
@@ -173,13 +189,5 @@ export const MENUITEMS: any = [
         path: APP_ROUTE.CREATE_BLOG,
       },
     ],
-  },
-  {
-    title: 'Category',
-    icon: CategoryIcon,
-    active: false,
-    dirchange: false,
-    type: 'link',
-    path: '/categories',
   },
 ];

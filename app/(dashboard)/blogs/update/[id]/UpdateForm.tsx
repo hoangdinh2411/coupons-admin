@@ -44,7 +44,7 @@ export default function UpdateForm({ item }: { item: BlogData }) {
     formState: { errors, isSubmitSuccessful },
   } = method;
   const [content, setContent] = React.useState<RawDraftContentState>();
-  const { categories } = UseAppStore((state) => state);
+  const { topics } = UseAppStore((state) => state);
   useEffect(() => {
     if (isSubmitSuccessful) {
       reset(defaultValues);
@@ -123,10 +123,10 @@ export default function UpdateForm({ item }: { item: BlogData }) {
           )}
         </Box>
         <Box className="mb-3">
-          <Form.Label className="text-default">Category</Form.Label>
+          <Form.Label className="text-default">Topic</Form.Label>
           <Controller
             control={control}
-            name="category_id"
+            name="topic_id"
             render={({ field: { onChange, value, ref } }) => {
               return (
                 <Fragment>
@@ -135,17 +135,17 @@ export default function UpdateForm({ item }: { item: BlogData }) {
                     value={Number(value ?? 0)}
                     onChange={(e) => onChange(Number(e.target.value))}
                   >
-                    <option value={0}>Select category</option>
-                    {categories &&
-                      categories.map((cat) => (
-                        <option key={cat.id} value={Number(cat.id)}>
-                          {cat.name}
+                    <option value={0}>Select topic</option>
+                    {topics &&
+                      topics.map((topic) => (
+                        <option key={topic.id} value={Number(topic.id)}>
+                          {topic.name}
                         </option>
                       ))}
                   </Form.Select>
-                  {errors.category_id && (
+                  {errors.topic_id && (
                     <small className="text-danger">
-                      {errors.category_id.message}
+                      {errors.topic_id.message}
                     </small>
                   )}
                 </Fragment>

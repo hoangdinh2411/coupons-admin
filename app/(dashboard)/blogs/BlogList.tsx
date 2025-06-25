@@ -20,7 +20,7 @@ type Props = {
 };
 const HEADER = [
   { title: 'Title' },
-  { title: 'Category' },
+  { title: 'Topic' },
   { title: 'Rating' },
   { title: 'Keywords' },
   { title: 'Publish' },
@@ -89,6 +89,7 @@ export default function BlogList({
     );
   };
 
+  console.log(data);
   return (
     <Card className="custom-card">
       <Card.Header className="justify-content-between">
@@ -98,7 +99,7 @@ export default function BlogList({
       <Card.Body>
         <Row className="align-items-center g-2 flex-wrap">
           <Col xs="12">
-            <Filter byCategory byRating />
+            <Filter byTopic byRating />
           </Col>
           <Col xs="12" md>
             <div className="d-flex justify-content-between align-items-center gap-2 flex-wrap">
@@ -118,7 +119,7 @@ export default function BlogList({
             {data.map((blog: BlogData) => (
               <tr key={blog.id}>
                 <td>{blog.title}</td>
-                <td>{blog.category?.name || 'N/A'}</td>
+                <td>{blog.topic?.name || 'N/A'}</td>
                 <td>
                   <Rating
                     key={blog.id}
@@ -134,7 +135,7 @@ export default function BlogList({
                 <td>
                   {blog.keywords
                     ? blog.keywords.map((k: string, index: number) => (
-                        <span key={index} className="badge bg-primary me-1">
+                        <span key={index} className="badge bg-dark me-1">
                           {k}
                         </span>
                       ))

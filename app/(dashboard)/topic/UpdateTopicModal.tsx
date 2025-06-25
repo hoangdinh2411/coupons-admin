@@ -7,29 +7,25 @@ import { Modal, Form, CloseButton } from 'react-bootstrap';
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
 import { generateImageBytesObjectFromBase64 } from '@/helper/image';
 import { ImageByte } from '@/helper/image';
-import { CategoryFormData, schema } from './CreateCategoryModal';
-import { Box, Paper } from '@mui/material';
+import { schema, TopicFormData } from './CreateTopicModal';
+import { Box } from '@mui/material';
 import UploadFile from '@/shared/layouts-components/uploadFile/UploadFile';
-import { CategoryData } from '@/types/category.type';
 import UseAppStore from '@/store/useAppStore';
 import toast from 'react-hot-toast';
-import { updateCategory } from '@/services/category.service';
 import SeoForm from '@/shared/layouts-components/seo-form/SeoForm';
-import { getKeyWordsString } from '@/helper/keywords';
+import { getKeyWordsArray, getKeyWordsString } from '@/helper/keywords';
+import { TopicData } from '@/types/topic.type';
+import { updateTopic } from '@/services/topic.service';
 
-interface UpdateCategoryModalProps {
-  item: CategoryData | null;
+interface UpdateTopicModalProps {
+  item: TopicData | null;
   open: boolean;
   onClose: () => void;
 }
 
-function UpdateCategoryModal({
-  item,
-  open,
-  onClose,
-}: UpdateCategoryModalProps) {
-  const { setCategory, categories } = UseAppStore((state) => state);
-  const method = useForm<CategoryFormData>({
+function UpdateTopicModal({ item, open, onClose }: UpdateTopicModalProps) {
+  const { setTopics, topics } = UseAppStore((state) => state);
+  const method = useForm<TopicFormData>({
     resolver: zodResolver(schema),
   });
   const {
@@ -50,19 +46,20 @@ function UpdateCategoryModal({
       });
     }
   }, [item]);
-  const onSubmit = async ({ image, ...data }: CategoryFormData) => {
+  const onSubmit = async ({ image, ...data }: TopicFormData) => {
     if (item) {
       const payload = {
         ...data,
         name: data.name,
         image_bytes: image.data,
+        seo_keywords: getKeyWordsArray(data.seo_keywords),
       };
-      toast.promise(updateCategory(item?.id, payload), {
+      toast.promise(updateTopic(item?.id, payload), {
         loading: 'Updating...!',
         success: (res) => {
           if (res.success && res.data) {
-            setCategory(
-              categories.map((cat) =>
+            setTopics(
+              topics.map((cat) =>
                 cat.id === item?.id ? { ...cat, ...res.data } : cat,
               ),
             );
@@ -83,11 +80,11 @@ function UpdateCategoryModal({
       show={open}
       onHide={onClose}
       centered
-      aria-labelledby="update-category-modal"
-      aria-describedby="modal-to-update-category"
+      aria-labelledby="update-topic-modal"
+      aria-describedby="modal-to-update-topic"
     >
       <Modal.Header className="d-flex justify-content-between align-items-center">
-        <Modal.Title as="h6">Update Category</Modal.Title>
+        <Modal.Title as="h6">Update Topic</Modal.Title>
         <CloseButton onClick={onClose} aria-label="close" />
       </Modal.Header>
       <Modal.Body>
@@ -95,11 +92,11 @@ function UpdateCategoryModal({
           <Form onSubmit={handleSubmit(onSubmit)}>
             <Box className="mb-3">
               <Form.Label className="fw-bold text-default">
-                Category Name
+                Topic Name
               </Form.Label>
               <Form.Control
                 type="text"
-                placeholder="Enter your category name"
+                placeholder="Enter your topic name"
                 {...register('name')}
               />
               {errors.name && (
@@ -118,7 +115,7 @@ function UpdateCategoryModal({
                       <UploadFile
                         filename={field.value?.filename}
                         onUploadFile={handleUploadFile}
-                        id="update-category"
+                        id="update-topic"
                       />
                     )}
                   />
@@ -145,4 +142,4 @@ function UpdateCategoryModal({
   );
 }
 
-export default memo(UpdateCategoryModal);
+export default memo(UpdateTopicModal);

@@ -8,11 +8,11 @@ export default async function PostManagementPage(props: {
   searchParams?: Promise<Record<string, string>>;
 }) {
   const searchParams = await props.searchParams;
-  const { categories, page, search_text, rating } = makeFilterData(
+  const { topics, page, search_text, rating } = makeFilterData(
     searchParams || {},
   );
   const res = await filterBlog({
-    categories,
+    topics,
     page,
     search_text,
     rating,

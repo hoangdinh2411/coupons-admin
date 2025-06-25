@@ -70,7 +70,6 @@ export default function CreateForm() {
     formState: { errors, isSubmitSuccessful },
   } = method;
 
-  const router = useRouter();
   const { categories, setStores, stores } = UseAppStore((state) => state);
   useEffect(() => {
     if (isSubmitSuccessful) {

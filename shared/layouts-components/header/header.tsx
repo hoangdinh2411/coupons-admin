@@ -15,7 +15,7 @@ import { getState, setState } from '../services/switcherServices';
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
 import Image from 'next/image';
 import UseAppStore from '@/store/useAppStore';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { APP_ROUTE } from '@/constants/route';
 import toast from 'react-hot-toast';
 import Notification from './Notification';
@@ -24,11 +24,11 @@ import { getAllStores } from '@/services/store.service';
 import { getCategories } from '@/services/category.service';
 import { getProfile } from '@/services/user.service';
 import { SignOutAction } from '@/app/actions/sign-out.action';
+import { getTopics } from '@/services/topic.service';
 
 const Header = () => {
-  const { setProfile, profile, setCategory, setStores } = UseAppStore(
-    (state) => state,
-  );
+  const { setProfile, profile, setTopics, setCategory, setStores } =
+    UseAppStore((state) => state);
   const router = useRouter();
   // Fullscreen Function
 
@@ -37,6 +37,7 @@ const Header = () => {
     toast.success('See you again');
     setProfile(null);
     setStores([]);
+    setTopics([]);
     setCategory([]);
     router.push(APP_ROUTE.SIGN_IN);
   };
@@ -63,7 +64,7 @@ const Header = () => {
   useEffect(() => {
     const handleFetchProfile = async () => {
       const profileRes = await getProfile();
-      console.log(profileRes);
+      console.log(profile);
       if (!profileRes.success) {
         toast.error('Your session has expired. Please log in again. ');
         handleSignOut();
@@ -74,9 +75,10 @@ const Header = () => {
         return;
       }
       setProfile(profileRes.data);
-      const [storeRes, categoryRes] = await Promise.all([
+      const [storeRes, categoryRes, topicsRes] = await Promise.all([
         getAllStores(),
         getCategories(),
+        getTopics(),
       ]);
       // const storeRes = await getAllStores();
       if (storeRes.success && storeRes.data) {
@@ -85,6 +87,9 @@ const Header = () => {
       // const categoryRes = await getCategories();
       if (categoryRes.success && categoryRes.data) {
         setCategory(categoryRes.data.results);
+      }
+      if (topicsRes.success && topicsRes.data) {
+        setTopics(topicsRes.data.results);
       }
     };
     if (!profile) {

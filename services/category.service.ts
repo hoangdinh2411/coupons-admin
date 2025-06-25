@@ -22,8 +22,7 @@ export async function getCategories(
   );
 }
 export async function updateCategory(id: number, payload: CategoryPayload) {
-  const param = `/${id}`;
-  const res = await customFetchWithToken<CategoryData>(`/categories${param}`, {
+  const res = await customFetchWithToken<CategoryData>(`/categories/${id}`, {
     method: 'PATCH',
     body: JSON.stringify(payload),
   });
@@ -34,8 +33,7 @@ export async function updateCategory(id: number, payload: CategoryPayload) {
   return res;
 }
 export async function deleteById(id: number) {
-  const param = `/${id}`;
-  const res = await customFetchWithToken<CategoryData>(`/categories${param}`, {
+  const res = await customFetchWithToken<CategoryData>(`/categories/${id}`, {
     method: 'DELETE',
   });
   if (res.success) {

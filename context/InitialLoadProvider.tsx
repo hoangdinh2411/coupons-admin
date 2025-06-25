@@ -1,6 +1,5 @@
 'use client';
 import React, { useContext, useEffect, useState } from 'react';
-import { LocalStorageBackup } from '@/shared/data/switcherdata/switcherdata';
 import { getState } from '@/shared/layouts-components/services/switcherServices';
 import useAppStore from '@/store/useAppStore';
 import { LinearProgress } from '@mui/material';

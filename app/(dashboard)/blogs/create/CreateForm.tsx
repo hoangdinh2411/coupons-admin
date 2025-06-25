@@ -33,8 +33,8 @@ export const blogSchema = z.object({
   ...seoDataSchema.shape,
   title: z.string().min(1, 'Coupon title is required'),
   keywords: z.string(),
-  category_id: z.number({
-    message: 'Select category',
+  topic_id: z.number({
+    message: 'Select topic',
   }),
   image: z.object({
     filename: z.string(),
@@ -47,7 +47,7 @@ export const defaultValues: BlogFormData = {
   ...seoDefaultValues,
   title: '',
   keywords: '',
-  category_id: 0,
+  topic_id: 0,
   image: {
     filename: '',
     data: '',
@@ -71,7 +71,7 @@ export default function CreateForm() {
     formState: { errors, isSubmitSuccessful },
   } = method;
   const [content, setContent] = React.useState<RawDraftContentState>();
-  const { categories } = UseAppStore((state) => state);
+  const { topics } = UseAppStore((state) => state);
   useEffect(() => {
     if (isSubmitSuccessful) {
       reset(defaultValues);
@@ -131,7 +131,7 @@ export default function CreateForm() {
                   <UploadFile
                     filename={field.value?.filename}
                     onUploadFile={handleUploadFile}
-                    id="create-category"
+                    id="create-topic"
                   />
                 )}
               />
@@ -163,10 +163,10 @@ export default function CreateForm() {
           )}
         </Box>
         <Box className="mb-3">
-          <Form.Label className="text-default">Category</Form.Label>
+          <Form.Label className="text-default">Topic</Form.Label>
           <Controller
             control={control}
-            name="category_id"
+            name="topic_id"
             render={({ field: { onChange, value, ref } }) => {
               return (
                 <Fragment>
@@ -175,17 +175,17 @@ export default function CreateForm() {
                     value={Number(value ?? 0)}
                     onChange={(e) => onChange(Number(e.target.value))}
                   >
-                    <option value={0}>Select category</option>
-                    {categories &&
-                      categories.map((cat) => (
-                        <option key={cat.id} value={Number(cat.id)}>
-                          {cat.name}
+                    <option value={0}>Select topic</option>
+                    {topics &&
+                      topics.map((topic) => (
+                        <option key={topic.id} value={Number(topic.id)}>
+                          {topic.name}
                         </option>
                       ))}
                   </Form.Select>
-                  {errors.category_id && (
+                  {errors.topic_id && (
                     <small className="text-danger">
-                      {errors.category_id.message}
+                      {errors.topic_id.message}
                     </small>
                   )}
                 </Fragment>
