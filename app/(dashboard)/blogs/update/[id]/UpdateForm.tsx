@@ -9,8 +9,6 @@ import toast from 'react-hot-toast';
 import UseAppStore from '@/store/useAppStore';
 import 'react-datepicker/dist/react-datepicker.css';
 import dynamic from 'next/dynamic';
-import { RawDraftContentState } from 'draft-js';
-import { RichTextEditorProps } from '@/shared/layouts-components/richtext-editor/RichEditor';
 import { createBlog } from '@/services/blog';
 import { BlogData, BlogPayload } from '@/types/blog.type';
 import SeoForm from '@/shared/layouts-components/seo-form/SeoForm';
@@ -21,10 +19,10 @@ import {
 } from '../../create/CreateForm';
 import { getKeyWordsArray, getKeyWordsString } from '@/helper/keywords';
 import { generateImageBytesObjectFromBase64 } from '@/helper/image';
-const RichTextEditor = dynamic<RichTextEditorProps>(
+const RichTextEditor = dynamic(
   () =>
     import(
-      '../../../../../shared/layouts-components/richtext-editor/RichEditor'
+      '../../../../../shared/layouts-components/richtext-editor/RickTextEditor'
     ),
   {
     ssr: false,
@@ -43,14 +41,16 @@ export default function UpdateForm({ item }: { item: BlogData }) {
     reset,
     formState: { errors, isSubmitSuccessful },
   } = method;
-  const [content, setContent] = React.useState<RawDraftContentState>();
+  const [content, setContent] = React.useState<string>('');
   const { topics } = UseAppStore((state) => state);
   useEffect(() => {
     if (isSubmitSuccessful) {
       reset(defaultValues);
     }
   }, [isSubmitSuccessful]);
-
+  const handleChangeContent = (value: string) => {
+    setContent(value);
+  };
   useEffect(() => {
     if (item) {
       reset({
@@ -62,9 +62,7 @@ export default function UpdateForm({ item }: { item: BlogData }) {
       setContent(item.content);
     }
   }, [item]);
-  const handleChangeContent = (raw: RawDraftContentState) => {
-    setContent(raw);
-  };
+
   const onSubmit = async ({ image, ...data }: BlogFormData) => {
     const payload: BlogPayload = {
       ...data,
@@ -102,11 +100,7 @@ export default function UpdateForm({ item }: { item: BlogData }) {
         </Box>
         <Box className="mb-3">
           <Form.Label className="">Post content</Form.Label>
-          <RichTextEditor
-            onChange={handleChangeContent}
-            placeholder="Write blog content here"
-            content={content}
-          />
+          <RichTextEditor onBlur={handleChangeContent} content={content} />
         </Box>
         {/* Keywords */}
         <Box className="mb-3">

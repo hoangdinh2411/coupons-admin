@@ -1,11 +1,10 @@
-import { RawDraftContentState } from 'draft-js';
 import { CategoryData } from './category.type';
 import { MetaData, SeoData, TimestampedEntity } from './share.type';
 import { TopicData } from './topic.type';
 
 export interface BlogPayload extends SeoData {
   title?: string;
-  content?: RawDraftContentState;
+  content?: string;
   keywords?: string[];
   topic_id?: number;
   rating?: number;
@@ -13,7 +12,7 @@ export interface BlogPayload extends SeoData {
 }
 export interface BlogData extends TimestampedEntity, SeoData {
   title: string;
-  content: RawDraftContentState;
+  content: string;
   keywords: string[];
   topic_id: number;
   id: number;

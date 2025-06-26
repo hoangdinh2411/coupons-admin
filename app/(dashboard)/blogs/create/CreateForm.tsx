@@ -10,8 +10,6 @@ import toast from 'react-hot-toast';
 import UseAppStore from '@/store/useAppStore';
 import 'react-datepicker/dist/react-datepicker.css';
 import dynamic from 'next/dynamic';
-import { RawDraftContentState } from 'draft-js';
-import { RichTextEditorProps } from '@/shared/layouts-components/richtext-editor/RichEditor';
 import { createBlog } from '@/services/blog';
 import { BlogPayload } from '@/types/blog.type';
 import SeoForm, {
@@ -22,9 +20,11 @@ import { getKeyWordsArray } from '@/helper/keywords';
 import UploadFile, {
   ImageByte,
 } from '@/shared/layouts-components/uploadFile/UploadFile';
-const RichTextEditor = dynamic<RichTextEditorProps>(
+const RichTextEditor = dynamic(
   () =>
-    import('../../../../shared/layouts-components/richtext-editor/RichEditor'),
+    import(
+      '../../../../shared/layouts-components/richtext-editor/RickTextEditor'
+    ),
   {
     ssr: false,
   },
@@ -70,7 +70,7 @@ export default function CreateForm() {
     setValue,
     formState: { errors, isSubmitSuccessful },
   } = method;
-  const [content, setContent] = React.useState<RawDraftContentState>();
+  const [content, setContent] = React.useState<string>('hello');
   const { topics } = UseAppStore((state) => state);
   useEffect(() => {
     if (isSubmitSuccessful) {
@@ -78,8 +78,8 @@ export default function CreateForm() {
     }
   }, [isSubmitSuccessful]);
 
-  const handleChangeContent = (raw: RawDraftContentState) => {
-    setContent(raw);
+  const handleChangeContent = (value: string) => {
+    setContent(value);
   };
   const onSubmit = async ({ image, ...data }: any) => {
     const payload: BlogPayload = {
@@ -144,8 +144,10 @@ export default function CreateForm() {
         <Box className="mb-3">
           <Form.Label className="">Blog content</Form.Label>
           <RichTextEditor
-            onChange={handleChangeContent}
-            placeholder="Write blog content here"
+            content={content}
+            onBlur={handleChangeContent}
+            // onChange={handleChangeContent}
+            // placeholder="Write blog content here"
           />
         </Box>
         {/* Keywords */}

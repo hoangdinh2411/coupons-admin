@@ -27,7 +27,6 @@ export default async function customFetch<T>(
       return response.json();
     })
     .then((data: IResponse<T>) => {
-      console.log('response', data);
       if (data.status === 401) {
         if (window !== undefined) {
           window.location.href = 'logout';

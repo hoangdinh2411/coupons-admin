@@ -1,5 +1,10 @@
 @use '../variables';
 
+.rich-text-editor {
+  height: 100% !important;
+  max-height: 400px;
+  overflow-y: hidden;
+}
 //  sun editor css
 
 .sun-editor .se-toolbar {
