@@ -1,22 +1,23 @@
 'use client';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { Box, Divider, Paper } from '@mui/material';
-import { is } from 'immutable';
-import React, { useEffect, useImperativeHandle, useRef } from 'react';
 import { Form } from 'react-bootstrap';
-import { useForm, useFormContext } from 'react-hook-form';
+import { FieldErrors, useFormContext } from 'react-hook-form';
 import { z } from 'zod';
 
 export const seoDataSchema = z.object({
-  seo_title: z.string().trim().min(1, 'SEO title is required'),
-  seo_description: z.string().trim().min(1, 'SEO description is required'),
-  seo_keywords: z.string().trim().min(1, 'SEO keywords is required'),
+  meta_data: z.object({
+    title: z.string().trim().min(1, 'SEO title is required'),
+    description: z.string().trim().min(1, 'SEO description is required'),
+    keywords: z.string().trim().min(1, 'SEO keywords is required'),
+  }),
 });
 
 export const seoDefaultValues = {
-  seo_title: '',
-  seo_description: '',
-  seo_keywords: '',
+  meta_data: {
+    title: '',
+    description: '',
+    keywords: '',
+  },
 };
 
 export type SeoFormData = z.infer<typeof seoDataSchema>;
@@ -29,7 +30,7 @@ export default function SeoForm() {
     register,
     formState: { errors },
   } = formContext;
-
+  const seoErrors = errors?.meta_data as FieldErrors<SeoFormData['meta_data']>;
   return (
     <Box>
       <Divider sx={{ my: 2 }} />
@@ -44,11 +45,11 @@ export default function SeoForm() {
         <Form.Control
           type="text"
           placeholder="Enter seo title"
-          {...register('seo_title')}
+          {...register('meta_data.title')}
         />
-        {errors.seo_title && (
+        {seoErrors?.title && (
           <small className="text-danger">
-            {errors.seo_title.message as string}
+            {seoErrors?.title.message as string}
           </small>
         )}
       </Box>
@@ -59,11 +60,11 @@ export default function SeoForm() {
           as="textarea"
           type="text"
           placeholder="Enter seo description"
-          {...register('seo_description')}
+          {...register('meta_data.description')}
         />
-        {errors.seo_description && (
+        {seoErrors?.description && (
           <small className="text-danger">
-            {errors.seo_description.message as string}
+            {seoErrors?.description.message as string}
           </small>
         )}
       </Box>
@@ -74,11 +75,11 @@ export default function SeoForm() {
         <Form.Control
           type="text"
           placeholder="e.g., AI, programming"
-          {...register('seo_keywords')}
+          {...register('meta_data.keywords')}
         />
-        {errors.seo_keywords && (
+        {seoErrors?.keywords && (
           <small className="text-danger">
-            {errors.seo_keywords.message as string}
+            {seoErrors?.keywords.message as string}
           </small>
         )}
       </Box>

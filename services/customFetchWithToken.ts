@@ -12,6 +12,7 @@ export default async function customFetchWithToken<T>(
   if (token) {
     config.headers = {
       ['Cookie']: `token=${token}`,
+      ...config.headers,
     };
   }
   return await customFetch(url, config);

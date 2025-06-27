@@ -17,6 +17,9 @@ export async function getTopics(page?: number, search_text: string = '') {
 export async function updateTopic(id: number, payload: TopicPayload) {
   const res = await customFetchWithToken<TopicData>(`/topic/${id}`, {
     method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify(payload),
   });
   if (res.success) {
@@ -38,6 +41,9 @@ export async function deleteById(id: number) {
 export async function createTopic(payload: TopicPayload) {
   const res = await customFetchWithToken<TopicData>(`/topic`, {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify(payload),
   });
 

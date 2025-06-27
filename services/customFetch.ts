@@ -1,8 +1,4 @@
-import { SignOutAction } from '@/app/actions/sign-out.action';
-import { APP_ROUTE } from '@/constants/route';
 import { IResponse } from '@/types/share.type';
-import { redirect } from 'next/navigation';
-
 export const BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5173/api/v1';
 
@@ -13,14 +9,14 @@ export default async function customFetch<T>(
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), 60000);
 
+  // Ensure headers is always an object
+  if (!config.headers) {
+    config.headers = {};
+  }
   return fetch(`${BASE_URL + url}`, {
-    ...config,
     signal: controller.signal,
-    headers: {
-      'Content-Type': 'application/json',
-      ...config.headers,
-    },
     credentials: 'include',
+    ...config,
   })
     .then((response) => {
       clearTimeout(id);

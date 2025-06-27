@@ -104,7 +104,9 @@ export default function StoreList({
                 <td>{store.name}</td>
                 <td>
                   <Image
-                    src={store.image_bytes || '/assets/images/empty.png'}
+                    src={
+                      store.image ? store.image.url : '/assets/images/empty.png'
+                    }
                     alt={store.name}
                     width={40}
                     height={40}

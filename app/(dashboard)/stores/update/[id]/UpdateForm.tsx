@@ -7,7 +7,7 @@ import { Form } from 'react-bootstrap';
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
 
 import UploadFile, {
-  ImageByte,
+  ImageType,
 } from '@/shared/layouts-components/uploadFile/UploadFile';
 import toast from 'react-hot-toast';
 import { createStore, updateStore } from '@/services/store.service';
@@ -32,7 +32,6 @@ export default function UpdateForm({ item }: Props) {
     handleSubmit,
     control,
     reset,
-    setValue,
     formState: { errors, isSubmitSuccessful },
   } = method;
 
@@ -45,30 +44,31 @@ export default function UpdateForm({ item }: Props) {
 
   useEffect(() => {
     if (item !== null) {
-      const { image_bytes, ...rest } = item;
-      console.log(rest);
       reset({
-        ...rest,
-        max_discount_pct: Number(rest.max_discount_pct),
-        category_id: rest.category_id,
-        keywords: getKeyWordsString(rest.keywords || []),
-        seo_keywords: getKeyWordsString(rest.seo_keywords || []),
-        image: generateImageBytesObjectFromBase64(image_bytes, reset.name),
+        ...item,
+        max_discount_pct: Number(item.max_discount_pct),
+        keywords: getKeyWordsString(item.keywords || []),
+        meta_data: {
+          ...item.meta_data,
+          keywords: getKeyWordsString(item.meta_data?.keywords || []),
+        },
       });
     }
   }, [item]);
 
-  const onSubmit = async ({ image, ...rest }: StoreFormData) => {
+  const onSubmit = async (data: StoreFormData) => {
     if (item) {
       const payload: StorePayload = {
-        ...rest,
-        keywords: getKeyWordsArray(rest.keywords),
-        seo_keywords: getKeyWordsArray(rest.seo_keywords),
-        image_bytes: image.data,
+        ...data,
+        keywords: getKeyWordsArray(data.keywords),
+        meta_data: {
+          ...data.meta_data,
+          keywords: getKeyWordsArray(data.meta_data.keywords),
+        },
       };
 
       toast.promise(updateStore(item.id, payload), {
-        loading: 'Pending...!',
+        loading: 'Updating...!',
         success: (res) => {
           if (res.success && res.data) {
             const newStores = stores.map((s) =>
@@ -82,10 +82,6 @@ export default function UpdateForm({ item }: Props) {
         error: (err) => err || 'Something wrong',
       });
     }
-  };
-
-  const handleUploadFile = (data: ImageByte) => {
-    setValue('image', data);
   };
 
   return (
@@ -196,20 +192,27 @@ export default function UpdateForm({ item }: Props) {
         {/* Image Upload */}
         <Box mb={2}>
           <Form.Label className="text-default">Image</Form.Label>
-          <Controller
-            control={control}
-            name="image"
-            render={({ field }) => (
-              <UploadFile
-                id="create-file-input"
-                filename={field.value?.filename}
-                onUploadFile={handleUploadFile}
+          <Box display="flex" alignItems="flex-start" flexDirection={'column'}>
+            <Box position="relative" flex={1} width={'100%'}>
+              <Controller
+                control={control}
+                name="image"
+                render={({ field }) => (
+                  <UploadFile
+                    folder="stores"
+                    newFile={field.value}
+                    onUploadFile={(data: ImageType[]) =>
+                      field.onChange(data[0])
+                    }
+                    id="update-store"
+                  />
+                )}
               />
+            </Box>
+            {errors.image?.url && (
+              <small className="text-danger">{errors.image?.url.message}</small>
             )}
-          />
-          {errors.image?.message && (
-            <small className="text-danger">Image required</small>
-          )}
+          </Box>
         </Box>
         <SeoForm />
         {/* Submit */}

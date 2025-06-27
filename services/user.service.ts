@@ -7,6 +7,9 @@ import { cookies } from 'next/headers';
 export async function updateUser(payload: UserRequestPayload) {
   const res = await customFetchWithToken<UserData>(`/users/profile`, {
     method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify(payload),
   });
   if (res.success) {

@@ -1,12 +1,13 @@
-import { MetaData, SeoData } from './share.type';
+import { ImageType } from '@/shared/layouts-components/uploadFile/UploadFile';
+import { MetaData } from './share.type';
 
 export interface CategoryPayload {
   name: string;
-  image_bytes: string;
+  image: ImageType;
+  meta_data?: MetaData;
 }
 
-export interface CategoryData extends CategoryPayload, SeoData {
+export interface CategoryData extends CategoryPayload {
   id: number;
   slug: string;
-  meta_data?: MetaData;
 }

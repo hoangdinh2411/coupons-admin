@@ -18,7 +18,7 @@ import SeoForm, {
 } from '@/shared/layouts-components/seo-form/SeoForm';
 import { getKeyWordsArray } from '@/helper/keywords';
 import UploadFile, {
-  ImageByte,
+  ImageType,
 } from '@/shared/layouts-components/uploadFile/UploadFile';
 const RichTextEditor = dynamic(
   () =>
@@ -37,9 +37,9 @@ export const blogSchema = z.object({
     message: 'Select topic',
   }),
   image: z.object({
-    filename: z.string(),
-    data: z.string(),
-    type: z.string(),
+    file_name: z.string(),
+    url: z.string().min(1, 'Need to upload image'),
+    public_id: z.string(),
   }),
 });
 
@@ -49,9 +49,9 @@ export const defaultValues: BlogFormData = {
   keywords: '',
   topic_id: 0,
   image: {
-    filename: '',
-    data: '',
-    type: '',
+    file_name: '',
+    url: '',
+    public_id: '',
   },
 };
 export type BlogFormData = z.infer<typeof blogSchema>;
@@ -67,10 +67,9 @@ export default function CreateForm() {
     handleSubmit,
     control,
     reset,
-    setValue,
     formState: { errors, isSubmitSuccessful },
   } = method;
-  const [content, setContent] = React.useState<string>('hello');
+  const [content, setContent] = React.useState<string>('');
   const { topics } = UseAppStore((state) => state);
   useEffect(() => {
     if (isSubmitSuccessful) {
@@ -79,15 +78,18 @@ export default function CreateForm() {
   }, [isSubmitSuccessful]);
 
   const handleChangeContent = (value: string) => {
+    console.log(value);
     setContent(value);
   };
-  const onSubmit = async ({ image, ...data }: any) => {
+  const onSubmit = async (data: any) => {
     const payload: BlogPayload = {
       ...data,
       content,
       keywords: getKeyWordsArray(data.keywords),
-      seo_keywords: getKeyWordsArray(data.seo_keywords),
-      image_bytes: image.data,
+      meta_data: {
+        ...data.meta_data,
+        keywords: getKeyWordsArray(data.meta_data.keywords),
+      },
     };
     toast.promise(createBlog(payload), {
       loading: 'Pending...!',
@@ -99,10 +101,6 @@ export default function CreateForm() {
       },
       error: (err) => err || 'Something wrong',
     });
-  };
-  const handleUploadFile = (data: ImageByte) => {
-    console.log(data);
-    setValue('image', data);
   };
 
   return (
@@ -122,22 +120,25 @@ export default function CreateForm() {
         </Box>
         <Box mb={2}>
           <Form.Label className="fw-bold text-default">Image</Form.Label>
-          <Box display="flex" alignItems="center" gap={2}>
-            <Box position="relative" flex={1}>
+          <Box display="flex" alignItems="flex-start" flexDirection={'column'}>
+            <Box position="relative" flex={1} width={'100%'}>
               <Controller
                 control={control}
                 name="image"
                 render={({ field }) => (
                   <UploadFile
-                    filename={field.value?.filename}
-                    onUploadFile={handleUploadFile}
-                    id="create-topic"
+                    folder="blogs"
+                    newFile={field.value}
+                    onUploadFile={(data: ImageType[]) =>
+                      field.onChange(data[0])
+                    }
+                    id="create-blog"
                   />
                 )}
               />
             </Box>
-            {errors.image && (
-              <small className="text-danger">{errors.image.message}</small>
+            {errors.image?.url && (
+              <small className="text-danger">{errors.image?.url.message}</small>
             )}
           </Box>
         </Box>

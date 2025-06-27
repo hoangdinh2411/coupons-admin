@@ -16,15 +16,8 @@ export interface TimestampedEntity {
   deleted_at?: string;
 }
 
-export interface SeoData {
-  seo_title?: string;
-  seo_description?: string;
-  seo_keywords?: string[];
-}
 export interface MetaData {
-  image: string;
-  keywords: string[];
-  description: string;
-  slug: string;
-  title: string;
+  title?: string;
+  description?: string;
+  keywords?: string[];
 }

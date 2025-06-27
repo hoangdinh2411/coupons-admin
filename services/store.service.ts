@@ -9,6 +9,9 @@ import { FilterPayload } from '@/types/filter.type';
 export async function filterStore(data: FilterPayload) {
   return await customFetch<IResponseWithTotal<StoreData[]>>(`/stores/filter`, {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify(data),
   });
 }
@@ -36,6 +39,9 @@ export async function getStoreBySlug(slug: string) {
 export async function updateStore(id: number, payload: StorePayload) {
   const res = await customFetchWithToken<StoreData>(`/stores/${id}`, {
     method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify(payload),
   });
   if (res.success) {
@@ -57,6 +63,9 @@ export async function deleteById(id: number) {
 export async function createStore(payload: StorePayload) {
   const res = await customFetchWithToken<StoreData>(`/stores`, {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify(payload),
   });
 

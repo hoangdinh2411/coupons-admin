@@ -9,7 +9,9 @@ import { generateImageBytesObjectFromBase64 } from '@/helper/image';
 import { ImageByte } from '@/helper/image';
 import { schema, TopicFormData } from './CreateTopicModal';
 import { Box } from '@mui/material';
-import UploadFile from '@/shared/layouts-components/uploadFile/UploadFile';
+import UploadFile, {
+  ImageType,
+} from '@/shared/layouts-components/uploadFile/UploadFile';
 import UseAppStore from '@/store/useAppStore';
 import toast from 'react-hot-toast';
 import SeoForm from '@/shared/layouts-components/seo-form/SeoForm';
@@ -41,18 +43,21 @@ function UpdateTopicModal({ item, open, onClose }: UpdateTopicModalProps) {
     if (item) {
       reset({
         ...item,
-        seo_keywords: getKeyWordsString(item.meta_data?.keywords || []),
-        image: generateImageBytesObjectFromBase64(item.image_bytes, item.name),
+        meta_data: {
+          ...item.meta_data,
+          keywords: getKeyWordsString(item.meta_data?.keywords || []),
+        },
       });
     }
   }, [item]);
-  const onSubmit = async ({ image, ...data }: TopicFormData) => {
+  const onSubmit = async (data: TopicFormData) => {
     if (item) {
       const payload = {
         ...data,
-        name: data.name,
-        image_bytes: image.data,
-        seo_keywords: getKeyWordsArray(data.seo_keywords),
+        meta_data: {
+          ...data.meta_data,
+          keywords: getKeyWordsArray(data.meta_data.keywords),
+        },
       };
       toast.promise(updateTopic(item?.id, payload), {
         loading: 'Updating...!',
@@ -70,9 +75,6 @@ function UpdateTopicModal({ item, open, onClose }: UpdateTopicModalProps) {
         error: (err) => err || 'Something wrong',
       });
     }
-  };
-  const handleUploadFile = (data: ImageByte) => {
-    setValue('image', data);
   };
 
   return (
@@ -106,20 +108,32 @@ function UpdateTopicModal({ item, open, onClose }: UpdateTopicModalProps) {
 
             <Box mb={2}>
               <Form.Label className="fw-bold text-default">Image</Form.Label>
-              <Box display="flex" alignItems="center" gap={2}>
-                <Box position="relative" flex={1}>
+              <Box
+                display="flex"
+                alignItems="flex-start"
+                flexDirection={'column'}
+              >
+                <Box position="relative" flex={1} width={'100%'}>
                   <Controller
                     control={control}
                     name="image"
                     render={({ field }) => (
                       <UploadFile
-                        filename={field.value?.filename}
-                        onUploadFile={handleUploadFile}
-                        id="update-topic"
+                        folder="topics"
+                        newFile={field.value}
+                        onUploadFile={(data: ImageType[]) =>
+                          field.onChange(data[0])
+                        }
+                        id="create-topic"
                       />
                     )}
                   />
                 </Box>
+                {errors.image?.url && (
+                  <small className="text-danger">
+                    {errors.image?.url.message}
+                  </small>
+                )}
               </Box>
             </Box>
             <SeoForm />

@@ -11,6 +11,7 @@ import { TopicData } from '@/types/topic.type';
 import UpdateTopicModal from './UpdateTopicModal';
 import CreateTopicModal from './CreateTopicModal';
 import { deleteById } from '@/services/topic.service';
+import UseAppStore from '@/store/useAppStore';
 type Props = {
   data: TopicData[];
   total: number;
@@ -29,6 +30,7 @@ export default function TopicList({
     isOpen: false,
     item: null,
   });
+  const { topics, setTopics } = UseAppStore((state) => state);
 
   const handleOpenUpdateModal = (item: TopicData) => {
     setModal({
@@ -48,6 +50,7 @@ export default function TopicList({
       loading: 'Deleting...!',
       success: (res) => {
         if (res.success) {
+          setTopics(topics.filter((t) => t.id !== id));
           return 'Deleted success';
         }
         throw res.message;
@@ -94,8 +97,8 @@ export default function TopicList({
                   <td>
                     <Image
                       src={
-                        topic?.image_bytes
-                          ? topic?.image_bytes
+                        topic?.image
+                          ? topic?.image?.url
                           : '/assets/images/empty.png'
                       }
                       alt={topic.name}

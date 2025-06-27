@@ -3,19 +3,17 @@ import React, { Fragment, useEffect } from 'react';
 import { useForm, Controller, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Box, Paper } from '@mui/material';
+import { Box } from '@mui/material';
 import { Form } from 'react-bootstrap';
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
 
 import UploadFile, {
-  ImageByte,
+  ImageType,
 } from '@/shared/layouts-components/uploadFile/UploadFile';
 import toast from 'react-hot-toast';
-import { createStore, updateStore } from '@/services/store.service';
-import { StoreData, StorePayload } from '@/types/store.type';
+import { createStore } from '@/services/store.service';
+import { StorePayload } from '@/types/store.type';
 import UseAppStore from '@/store/useAppStore';
-import { generateImageBytesObjectFromBase64 } from '@/helper/image';
-import { useRouter } from 'next/navigation';
 import SeoForm, {
   seoDataSchema,
   seoDefaultValues,
@@ -23,12 +21,8 @@ import SeoForm, {
 import { getKeyWordsArray } from '@/helper/keywords';
 
 export const schema = z.object({
+  ...seoDataSchema.shape,
   name: z.string().min(1, 'Store name is required'),
-  image: z.object({
-    filename: z.string(),
-    data: z.string(),
-    type: z.string(),
-  }),
   description: z.string().min(1, 'Description is required'),
   max_discount_pct: z
     .number({ invalid_type_error: 'Must be a number' })
@@ -37,22 +31,26 @@ export const schema = z.object({
   keywords: z.string(),
   url: z.string().url('Invalid URL'),
   category_id: z.number(),
-  ...seoDataSchema.shape,
+  image: z.object({
+    file_name: z.string(),
+    url: z.string().min(1, 'Need to upload image'),
+    public_id: z.string(),
+  }),
 });
 
 export const defaultValue: StoreFormData = {
   ...seoDefaultValues,
   name: '',
-  image: {
-    filename: '',
-    data: '',
-    type: '',
-  },
   description: '',
   max_discount_pct: 0,
   keywords: '',
   url: '',
   category_id: 0,
+  image: {
+    file_name: '',
+    url: '',
+    public_id: '',
+  },
 };
 export type StoreFormData = z.infer<typeof schema>;
 
@@ -66,7 +64,6 @@ export default function CreateForm() {
     handleSubmit,
     control,
     reset,
-    setValue,
     formState: { errors, isSubmitSuccessful },
   } = method;
 
@@ -77,12 +74,14 @@ export default function CreateForm() {
     }
   }, [isSubmitSuccessful]);
 
-  const onSubmit = async ({ image, ...rest }: StoreFormData) => {
+  const onSubmit = async (data: StoreFormData) => {
     const payload: StorePayload = {
-      ...rest,
-      keywords: getKeyWordsArray(rest.keywords),
-      seo_keywords: getKeyWordsArray(rest.seo_keywords),
-      image_bytes: image.data,
+      ...data,
+      keywords: getKeyWordsArray(data.keywords),
+      meta_data: {
+        ...data.meta_data,
+        keywords: getKeyWordsArray(data.meta_data.keywords),
+      },
     };
 
     toast.promise(createStore(payload), {
@@ -97,10 +96,6 @@ export default function CreateForm() {
       },
       error: (err) => err || 'Something wrong',
     });
-  };
-
-  const handleUploadFile = (data: ImageByte) => {
-    setValue('image', data);
   };
 
   return (
@@ -210,21 +205,31 @@ export default function CreateForm() {
 
         {/* Image Upload */}
         <Box mb={2}>
-          <Form.Label className="text-default">Image</Form.Label>
-          <Controller
-            control={control}
-            name="image"
-            render={({ field }) => (
-              <UploadFile
-                id="create-file-input"
-                filename={field.value?.filename}
-                onUploadFile={handleUploadFile}
+          <Form.Label className="fw-bold text-default">Image</Form.Label>
+          <Box display="flex" alignItems="flex-start" flexDirection={'column'}>
+            <Box position="relative" flex={1} width={'100%'}>
+              <Controller
+                control={control}
+                name="image"
+                render={({ field }) => (
+                  <UploadFile
+                    folder="stores"
+                    newFile={field.value}
+                    onUploadFile={(data: ImageType[]) =>
+                      field.onChange(data[0])
+                    }
+                    id="create-store"
+                  />
+                )}
               />
+            </Box>
+            {errors.image?.message && (
+              <small className="text-danger">{errors.image.message}</small>
             )}
-          />
-          {errors.image?.message && (
-            <small className="text-danger">Image required</small>
-          )}
+            {errors.image?.url && (
+              <small className="text-danger">{errors.image?.url.message}</small>
+            )}
+          </Box>
         </Box>
         <SeoForm />
         {/* Submit */}

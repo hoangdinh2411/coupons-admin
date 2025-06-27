@@ -11,6 +11,9 @@ export async function filterCoupon(data: FilterPayload) {
     `/coupons/filter`,
     {
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify(data),
     },
   );
@@ -58,6 +61,9 @@ export async function getCouponsById(id: string) {
 export async function updateCoupon(id: number, payload: CouponPayload) {
   const res = await customFetchWithToken<CouponData>(`/coupons/${id}`, {
     method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify(payload),
   });
   if (res.success) {
@@ -80,6 +86,9 @@ export async function deleteCouponById(id: number) {
 export async function submitCouponById(id: number) {
   const res = await customFetchWithToken<CouponData>(`/coupons/submit/${id}`, {
     method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
   });
   if (res.success) {
     revalidateTag('coupons-data');
@@ -92,6 +101,9 @@ export async function submitCouponById(id: number) {
 export async function createCoupon(payload: CouponPayload) {
   const res = await customFetchWithToken<CouponData>(`/coupons`, {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify(payload),
   });
 

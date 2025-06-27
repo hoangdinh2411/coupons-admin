@@ -10,6 +10,9 @@ import { BlogData, BlogPayload } from '@/types/blog.type';
 export async function filterBlog(data: FilterPayload) {
   return await customFetch<IResponseWithTotal<BlogData[]>>(`/blogs/filter`, {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify(data),
   });
 }
@@ -37,6 +40,9 @@ export async function getBlogBy(identity: string | number) {
 export async function updateBlog(id: number, payload: BlogPayload) {
   const res = await customFetchWithToken<BlogData>(`/blogs/${id}`, {
     method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify(payload),
   });
   if (res.success) {
@@ -59,6 +65,9 @@ export async function deleteBlogById(id: number) {
 export async function createBlog(payload: BlogPayload) {
   const res = await customFetchWithToken<BlogData>(`/blogs`, {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify(payload),
   });
 

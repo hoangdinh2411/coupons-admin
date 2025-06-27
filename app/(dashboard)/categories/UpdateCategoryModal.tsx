@@ -9,13 +9,15 @@ import { generateImageBytesObjectFromBase64 } from '@/helper/image';
 import { ImageByte } from '@/helper/image';
 import { CategoryFormData, schema } from './CreateCategoryModal';
 import { Box, Paper } from '@mui/material';
-import UploadFile from '@/shared/layouts-components/uploadFile/UploadFile';
+import UploadFile, {
+  ImageType,
+} from '@/shared/layouts-components/uploadFile/UploadFile';
 import { CategoryData } from '@/types/category.type';
 import UseAppStore from '@/store/useAppStore';
 import toast from 'react-hot-toast';
 import { updateCategory } from '@/services/category.service';
 import SeoForm from '@/shared/layouts-components/seo-form/SeoForm';
-import { getKeyWordsString } from '@/helper/keywords';
+import { getKeyWordsArray, getKeyWordsString } from '@/helper/keywords';
 
 interface UpdateCategoryModalProps {
   item: CategoryData | null;
@@ -45,17 +47,21 @@ function UpdateCategoryModal({
     if (item) {
       reset({
         ...item,
-        seo_keywords: getKeyWordsString(item.meta_data?.keywords || []),
-        image: generateImageBytesObjectFromBase64(item.image_bytes, item.name),
+        meta_data: {
+          ...item.meta_data,
+          keywords: getKeyWordsString(item.meta_data?.keywords || []),
+        },
       });
     }
   }, [item]);
-  const onSubmit = async ({ image, ...data }: CategoryFormData) => {
+  const onSubmit = async (data: CategoryFormData) => {
     if (item) {
       const payload = {
         ...data,
-        name: data.name,
-        image_bytes: image.data,
+        meta_data: {
+          ...data.meta_data,
+          keywords: getKeyWordsArray(data.meta_data?.keywords),
+        },
       };
       toast.promise(updateCategory(item?.id, payload), {
         loading: 'Updating...!',
@@ -73,9 +79,6 @@ function UpdateCategoryModal({
         error: (err) => err || 'Something wrong',
       });
     }
-  };
-  const handleUploadFile = (data: ImageByte) => {
-    setValue('image', data);
   };
 
   return (
@@ -109,20 +112,32 @@ function UpdateCategoryModal({
 
             <Box mb={2}>
               <Form.Label className="fw-bold text-default">Image</Form.Label>
-              <Box display="flex" alignItems="center" gap={2}>
-                <Box position="relative" flex={1}>
+              <Box
+                display="flex"
+                alignItems="flex-start"
+                flexDirection={'column'}
+              >
+                <Box position="relative" flex={1} width={'100%'}>
                   <Controller
                     control={control}
                     name="image"
                     render={({ field }) => (
                       <UploadFile
-                        filename={field.value?.filename}
-                        onUploadFile={handleUploadFile}
+                        folder="categories"
+                        newFile={field.value}
+                        onUploadFile={(data: ImageType[]) =>
+                          field.onChange(data[0])
+                        }
                         id="update-category"
                       />
                     )}
                   />
                 </Box>
+                {errors.image?.url && (
+                  <small className="text-danger">
+                    {errors.image?.url.message}
+                  </small>
+                )}
               </Box>
             </Box>
             <SeoForm />

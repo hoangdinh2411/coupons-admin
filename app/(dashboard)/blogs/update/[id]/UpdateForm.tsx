@@ -9,7 +9,7 @@ import toast from 'react-hot-toast';
 import UseAppStore from '@/store/useAppStore';
 import 'react-datepicker/dist/react-datepicker.css';
 import dynamic from 'next/dynamic';
-import { createBlog } from '@/services/blog';
+import { createBlog, updateBlog } from '@/services/blog';
 import { BlogData, BlogPayload } from '@/types/blog.type';
 import SeoForm from '@/shared/layouts-components/seo-form/SeoForm';
 import {
@@ -18,7 +18,9 @@ import {
   defaultValues,
 } from '../../create/CreateForm';
 import { getKeyWordsArray, getKeyWordsString } from '@/helper/keywords';
-import { generateImageBytesObjectFromBase64 } from '@/helper/image';
+import UploadFile, {
+  ImageType,
+} from '@/shared/layouts-components/uploadFile/UploadFile';
 const RichTextEditor = dynamic(
   () =>
     import(
@@ -56,22 +58,26 @@ export default function UpdateForm({ item }: { item: BlogData }) {
       reset({
         ...item,
         keywords: getKeyWordsString(item.keywords || []),
-        seo_keywords: getKeyWordsString(item.seo_keywords || []),
-        image: generateImageBytesObjectFromBase64(item.image_bytes, item.title),
+        meta_data: {
+          ...item.meta_data,
+          keywords: getKeyWordsString(item.meta_data?.keywords || []),
+        },
       });
       setContent(item.content);
     }
   }, [item]);
 
-  const onSubmit = async ({ image, ...data }: BlogFormData) => {
+  const onSubmit = async (data: BlogFormData) => {
     const payload: BlogPayload = {
       ...data,
       content,
       keywords: getKeyWordsArray(data.keywords),
-      seo_keywords: getKeyWordsArray(data.seo_keywords),
-      image_bytes: image.data,
+      meta_data: {
+        ...data.meta_data,
+        keywords: getKeyWordsArray(data.meta_data.keywords),
+      },
     };
-    toast.promise(createBlog(payload), {
+    toast.promise(updateBlog(item.id, payload), {
       loading: 'Pending...!',
       success: (res) => {
         if (res.success && res.data) {
@@ -97,6 +103,30 @@ export default function UpdateForm({ item }: { item: BlogData }) {
           {errors.title && (
             <small className="text-danger">{errors.title.message}</small>
           )}
+        </Box>
+        <Box mb={2}>
+          <Form.Label className="fw-bold text-default">Image</Form.Label>
+          <Box display="flex" alignItems="flex-start" flexDirection={'column'}>
+            <Box position="relative" flex={1} width={'100%'}>
+              <Controller
+                control={control}
+                name="image"
+                render={({ field }) => (
+                  <UploadFile
+                    folder="blogs"
+                    newFile={field.value}
+                    onUploadFile={(data: ImageType[]) =>
+                      field.onChange(data[0])
+                    }
+                    id="update-blog"
+                  />
+                )}
+              />
+            </Box>
+            {errors.image?.url && (
+              <small className="text-danger">{errors.image?.url.message}</small>
+            )}
+          </Box>
         </Box>
         <Box className="mb-3">
           <Form.Label className="">Post content</Form.Label>

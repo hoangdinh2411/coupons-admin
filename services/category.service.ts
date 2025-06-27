@@ -24,6 +24,9 @@ export async function getCategories(
 export async function updateCategory(id: number, payload: CategoryPayload) {
   const res = await customFetchWithToken<CategoryData>(`/categories/${id}`, {
     method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify(payload),
   });
   if (res.success) {
@@ -45,6 +48,9 @@ export async function deleteById(id: number) {
 export async function createCategory(payload: CategoryPayload) {
   const res = await customFetchWithToken<CategoryData>(`/categories`, {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify(payload),
   });
 

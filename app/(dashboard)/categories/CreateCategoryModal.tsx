@@ -9,7 +9,7 @@ import { Modal, Form } from 'react-bootstrap';
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
 
 import UploadFile, {
-  ImageByte,
+  ImageType,
 } from '@/shared/layouts-components/uploadFile/UploadFile';
 import toast from 'react-hot-toast';
 import { createCategory } from '@/services/category.service';
@@ -29,9 +29,9 @@ export const schema = z.object({
   ...seoDataSchema.shape,
   name: z.string().min(1, 'Category name is required'),
   image: z.object({
-    filename: z.string(),
-    data: z.string(),
-    type: z.string(),
+    file_name: z.string(),
+    url: z.string().min(1, 'Need to upload image'),
+    public_id: z.string(),
   }),
 });
 
@@ -39,9 +39,9 @@ export const defaultValue = {
   ...seoDefaultValues,
   name: '',
   image: {
-    filename: '',
-    data: '',
-    type: '',
+    file_name: '',
+    url: '',
+    public_id: '',
   },
 };
 export type CategoryFormData = z.infer<typeof schema>;
@@ -68,11 +68,13 @@ export default function CreateCategoryModal({
       reset(defaultValue);
     }
   }, [open]);
-  const onSubmit = async ({ image, ...rest }: CategoryFormData) => {
+  const onSubmit = async (data: CategoryFormData) => {
     const payload = {
-      ...rest,
-      seo_keywords: getKeyWordsArray(rest.seo_keywords),
-      image_bytes: image.data,
+      ...data,
+      meta_data: {
+        ...data.meta_data,
+        keywords: getKeyWordsArray(data.meta_data.keywords),
+      },
     };
 
     toast.promise(createCategory(payload), {
@@ -89,9 +91,10 @@ export default function CreateCategoryModal({
     });
   };
 
-  const handleUploadFile = (data: ImageByte) => {
-    setValue('image', data);
-  };
+  // const handleUploadFile = (data: ImageType) => {
+  //   console.log(data);
+  //   setValue('image', data);
+  // };
 
   return (
     <Modal
@@ -125,22 +128,31 @@ export default function CreateCategoryModal({
 
             <Box mb={2}>
               <Form.Label className="fw-bold text-default">Image</Form.Label>
-              <Box display="flex" alignItems="center" gap={2}>
-                <Box position="relative" flex={1}>
+              <Box
+                display="flex"
+                alignItems="flex-start"
+                flexDirection={'column'}
+              >
+                <Box position="relative" flex={1} width={'100%'}>
                   <Controller
                     control={control}
                     name="image"
                     render={({ field }) => (
                       <UploadFile
-                        filename={field.value?.filename}
-                        onUploadFile={handleUploadFile}
+                        folder="categories"
+                        newFile={field.value}
+                        onUploadFile={(data: ImageType[]) =>
+                          field.onChange(data[0])
+                        }
                         id="create-category"
                       />
                     )}
                   />
                 </Box>
-                {errors.image && (
-                  <small className="text-danger">{errors.image.message}</small>
+                {errors.image?.url && (
+                  <small className="text-danger">
+                    {errors.image?.url.message}
+                  </small>
                 )}
               </Box>
             </Box>
