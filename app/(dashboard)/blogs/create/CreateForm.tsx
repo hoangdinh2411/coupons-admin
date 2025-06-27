@@ -33,12 +33,15 @@ export const blogSchema = z.object({
   ...seoDataSchema.shape,
   title: z.string().min(1, 'Coupon title is required'),
   keywords: z.string(),
-  topic_id: z.number({
-    message: 'Select topic',
-  }),
+  topic_id: z
+    .number({
+      message: 'Select topic',
+    })
+    .positive('Topic is required'),
+  content: z.string().min(1, 'Content is required'),
   image: z.object({
     file_name: z.string(),
-    url: z.string().min(1, 'Need to upload image'),
+    url: z.string(),
     public_id: z.string(),
   }),
 });
@@ -47,7 +50,8 @@ export const defaultValues: BlogFormData = {
   ...seoDefaultValues,
   title: '',
   keywords: '',
-  topic_id: 0,
+  content: '',
+  topic_id: -1,
   image: {
     file_name: '',
     url: '',
@@ -65,6 +69,7 @@ export default function CreateForm() {
   const {
     register,
     handleSubmit,
+    setValue,
     control,
     reset,
     formState: { errors, isSubmitSuccessful },
@@ -78,9 +83,10 @@ export default function CreateForm() {
   }, [isSubmitSuccessful]);
 
   const handleChangeContent = (value: string) => {
-    console.log(value);
+    setValue('content', value);
     setContent(value);
   };
+  console.log(errors);
   const onSubmit = async (data: any) => {
     const payload: BlogPayload = {
       ...data,
@@ -92,9 +98,11 @@ export default function CreateForm() {
       },
     };
     toast.promise(createBlog(payload), {
-      loading: 'Pending...!',
+      loading: 'Creating...!',
       success: (res) => {
         if (res.success && res.data) {
+          reset(defaultValues);
+          setContent('');
           return 'Created successfully';
         }
         throw res.message;
@@ -137,9 +145,6 @@ export default function CreateForm() {
                 )}
               />
             </Box>
-            {errors.image?.url && (
-              <small className="text-danger">{errors.image?.url.message}</small>
-            )}
           </Box>
         </Box>
         <Box className="mb-3">
@@ -147,6 +152,8 @@ export default function CreateForm() {
           <RichTextEditor
             content={content}
             onBlur={handleChangeContent}
+            error={Boolean(errors.content)}
+            helpText={errors.content?.message}
             // onChange={handleChangeContent}
             // placeholder="Write blog content here"
           />

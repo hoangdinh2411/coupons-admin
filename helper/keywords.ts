@@ -1,7 +1,9 @@
 export const getKeyWordsArray = (keywords: string): string[] => {
-  return keywords.split(',').map((item) => item.trim()) ?? [];
+  return keywords !== '' ? keywords.split(',').map((item) => item.trim()) : [];
 };
 
 export const getKeyWordsString = (keywords: string[]): string => {
-  return keywords.map((item) => item.trim()).join(', ') ?? '';
+  return keywords.length > 0
+    ? keywords.map((item) => item.trim()).join(', ')
+    : '';
 };

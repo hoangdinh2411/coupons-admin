@@ -13,7 +13,7 @@ import CustomPagination from '@/shared/layouts-components/pagination/CustomPagin
 import { CouponData } from '@/types/coupon.type';
 import { getBackgroundForType, getStatus } from '@/helper/coupons';
 import Filter from '@/shared/layouts-components/filter/Filter';
-import { Rating } from '@mui/material';
+import { Box, Rating } from '@mui/material';
 type Props = {
   data: CouponData[];
   total: number;
@@ -100,7 +100,20 @@ export default function CouponList({
                 <td>{coupon.title}</td>
                 <td>{coupon.code}</td>
                 <td>{coupon.store?.name || 'N/A'}</td>
-                <td>{coupon.category?.name || 'N/A'}</td>
+                <td>
+                  {' '}
+                  {coupon.categories && coupon.categories.length > 0 ? (
+                    <Box display={'flex'} gap={1} flexWrap={'wrap'}>
+                      {coupon.categories.map((c) => (
+                        <span key={c.id} className="badge bg-primary me-1 ">
+                          {c.name}
+                        </span>
+                      ))}
+                    </Box>
+                  ) : (
+                    'N/A'
+                  )}
+                </td>
                 <td>{coupon.start_date}</td>
                 <td>{coupon.expire_date}</td>
                 <td>

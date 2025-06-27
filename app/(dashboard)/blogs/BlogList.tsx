@@ -89,7 +89,6 @@ export default function BlogList({
     );
   };
 
-  console.log(data);
   return (
     <Card className="custom-card">
       <Card.Header className="justify-content-between">
@@ -186,6 +185,18 @@ export default function BlogList({
                   >
                     <i className="ri-delete-bin-line"></i> Delete
                   </Button>
+                  <Link
+                    href={`${process.env.NEXT_PUBLIC_CLIENT_DOMAIN}/blogs/${blog.slug}`}
+                    target="_blank"
+                  >
+                    <Button
+                      variant="link"
+                      size="sm"
+                      className="btn btn-sm btn-primary-light mx-2"
+                    >
+                      <i className="bi bi-eye">View</i>
+                    </Button>
+                  </Link>
                 </td>
               </tr>
             ))}

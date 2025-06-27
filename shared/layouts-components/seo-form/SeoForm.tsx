@@ -6,9 +6,9 @@ import { z } from 'zod';
 
 export const seoDataSchema = z.object({
   meta_data: z.object({
-    title: z.string().trim().min(1, 'SEO title is required'),
-    description: z.string().trim().min(1, 'SEO description is required'),
-    keywords: z.string().trim().min(1, 'SEO keywords is required'),
+    title: z.string().trim(),
+    description: z.string().trim(),
+    keywords: z.string().trim(),
   }),
 });
 

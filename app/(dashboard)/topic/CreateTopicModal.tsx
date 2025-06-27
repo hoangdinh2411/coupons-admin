@@ -30,12 +30,12 @@ export const schema = z.object({
   name: z.string().min(1, 'Topic name is required'),
   image: z.object({
     file_name: z.string(),
-    url: z.string().min(1, 'Need to upload image'),
+    url: z.string(),
     public_id: z.string(),
   }),
 });
 
-export const defaultValue = {
+export const defaultValues = {
   ...seoDefaultValues,
   name: '',
   image: {
@@ -52,6 +52,7 @@ export default function CreateTopicModal({
 }: CreateTopicModalPropsType) {
   const method = useForm<TopicFormData>({
     resolver: zodResolver(schema),
+    defaultValues,
   });
   const {
     register,
@@ -64,7 +65,7 @@ export default function CreateTopicModal({
   const { setTopics, topics } = UseAppStore((state) => state);
   useEffect(() => {
     if (!open) {
-      reset(defaultValue);
+      reset(defaultValues);
     }
   }, [open]);
   const onSubmit = async (data: TopicFormData) => {
@@ -81,8 +82,7 @@ export default function CreateTopicModal({
       success: (res) => {
         if (res.success && res.data) {
           setTopics([...topics, res.data]);
-          reset(defaultValue);
-
+          reset(defaultValues);
           return 'Created success';
         } else {
           throw res.message;
@@ -145,11 +145,6 @@ export default function CreateTopicModal({
                     )}
                   />
                 </Box>
-                {errors.image?.url && (
-                  <small className="text-danger">
-                    {errors.image?.url.message}
-                  </small>
-                )}
               </Box>
             </Box>
             <SeoForm />

@@ -133,11 +133,6 @@ function UpdateCategoryModal({
                     )}
                   />
                 </Box>
-                {errors.image?.url && (
-                  <small className="text-danger">
-                    {errors.image?.url.message}
-                  </small>
-                )}
               </Box>
             </Box>
             <SeoForm />

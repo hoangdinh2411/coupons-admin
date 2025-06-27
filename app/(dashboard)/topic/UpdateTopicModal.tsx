@@ -5,8 +5,6 @@ import { useForm, Controller, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Modal, Form, CloseButton } from 'react-bootstrap';
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
-import { generateImageBytesObjectFromBase64 } from '@/helper/image';
-import { ImageByte } from '@/helper/image';
 import { schema, TopicFormData } from './CreateTopicModal';
 import { Box } from '@mui/material';
 import UploadFile, {
@@ -34,7 +32,6 @@ function UpdateTopicModal({ item, open, onClose }: UpdateTopicModalProps) {
     register,
     handleSubmit,
     control,
-    setValue,
     reset,
     formState: { errors },
   } = method;
@@ -129,11 +126,6 @@ function UpdateTopicModal({ item, open, onClose }: UpdateTopicModalProps) {
                     )}
                   />
                 </Box>
-                {errors.image?.url && (
-                  <small className="text-danger">
-                    {errors.image?.url.message}
-                  </small>
-                )}
               </Box>
             </Box>
             <SeoForm />

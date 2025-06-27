@@ -1,7 +1,7 @@
 import { Box, Paper } from '@mui/material';
 import CreateForm from './CreateForm';
 
-export default async function CreatePostPage() {
+export default function CreatePostPage() {
   return (
     <Paper
       sx={{

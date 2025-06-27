@@ -9,7 +9,7 @@ export interface CouponPayload {
   code?: string;
   offer_detail?: string;
   store_id?: number;
-  category_id?: number;
+  categories?: number[];
   is_exclusive?: boolean;
   expire_date?: string;
   start_date?: string;
@@ -22,7 +22,6 @@ export interface CouponData extends TimestampedEntity {
   code: string;
   offer_detail: string;
   store_id: number;
-  category_id: number;
   is_exclusive: boolean;
   expire_date: string;
   start_date: string;
@@ -30,7 +29,7 @@ export interface CouponData extends TimestampedEntity {
   rating: number;
   id: number;
   store?: StoreData;
-  category?: CategoryData;
+  categories?: CategoryData[];
   // meta_data?: MetaData;
   added_by: number;
   user?: UserData;

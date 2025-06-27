@@ -1,6 +1,5 @@
 import { Box, Paper } from '@mui/material';
 import { notFound } from 'next/navigation';
-import { getCouponsById } from '@/services/coupon.service';
 import UpdateForm from './UpdateForm';
 import { getBlogBy } from '@/services/blog';
 

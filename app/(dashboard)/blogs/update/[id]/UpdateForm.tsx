@@ -9,7 +9,7 @@ import toast from 'react-hot-toast';
 import UseAppStore from '@/store/useAppStore';
 import 'react-datepicker/dist/react-datepicker.css';
 import dynamic from 'next/dynamic';
-import { createBlog, updateBlog } from '@/services/blog';
+import { updateBlog } from '@/services/blog';
 import { BlogData, BlogPayload } from '@/types/blog.type';
 import SeoForm from '@/shared/layouts-components/seo-form/SeoForm';
 import {
@@ -40,6 +40,7 @@ export default function UpdateForm({ item }: { item: BlogData }) {
     register,
     handleSubmit,
     control,
+    setValue,
     reset,
     formState: { errors, isSubmitSuccessful },
   } = method;
@@ -51,6 +52,7 @@ export default function UpdateForm({ item }: { item: BlogData }) {
     }
   }, [isSubmitSuccessful]);
   const handleChangeContent = (value: string) => {
+    setValue('content', value);
     setContent(value);
   };
   useEffect(() => {
@@ -123,9 +125,6 @@ export default function UpdateForm({ item }: { item: BlogData }) {
                 )}
               />
             </Box>
-            {errors.image?.url && (
-              <small className="text-danger">{errors.image?.url.message}</small>
-            )}
           </Box>
         </Box>
         <Box className="mb-3">

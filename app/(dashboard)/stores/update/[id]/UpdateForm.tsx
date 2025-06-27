@@ -2,7 +2,7 @@
 import React, { Fragment, useEffect } from 'react';
 import { useForm, Controller, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Box } from '@mui/material';
+import { Box, MenuItem, OutlinedInput, Select } from '@mui/material';
 import { Form } from 'react-bootstrap';
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
 
@@ -10,14 +10,22 @@ import UploadFile, {
   ImageType,
 } from '@/shared/layouts-components/uploadFile/UploadFile';
 import toast from 'react-hot-toast';
-import { createStore, updateStore } from '@/services/store.service';
+import { updateStore } from '@/services/store.service';
 import { StoreData, StorePayload } from '@/types/store.type';
 import UseAppStore from '@/store/useAppStore';
-import { generateImageBytesObjectFromBase64 } from '@/helper/image';
-import { defaultValue, schema, StoreFormData } from '../../create/CreateForm';
+import { defaultValues, schema, StoreFormData } from '../../create/CreateForm';
 import { getKeyWordsArray, getKeyWordsString } from '@/helper/keywords';
 import SeoForm from '@/shared/layouts-components/seo-form/SeoForm';
-
+import dynamic from 'next/dynamic';
+const RichTextEditor = dynamic(
+  () =>
+    import(
+      '../../../../../shared/layouts-components/richtext-editor/RickTextEditor'
+    ),
+  {
+    ssr: false,
+  },
+);
 type Props = {
   item: StoreData | null;
 };
@@ -31,14 +39,17 @@ export default function UpdateForm({ item }: Props) {
     register,
     handleSubmit,
     control,
+    setValue,
     reset,
     formState: { errors, isSubmitSuccessful },
   } = method;
 
   const { categories, setStores, stores } = UseAppStore((state) => state);
+  const [content, setContent] = React.useState<string>('');
+
   useEffect(() => {
     if (isSubmitSuccessful) {
-      reset(defaultValue);
+      reset(defaultValues);
     }
   }, [isSubmitSuccessful]);
 
@@ -46,6 +57,7 @@ export default function UpdateForm({ item }: Props) {
     if (item !== null) {
       reset({
         ...item,
+        categories: item.categories ? item.categories.map((c) => c.id) : [],
         max_discount_pct: Number(item.max_discount_pct),
         keywords: getKeyWordsString(item.keywords || []),
         meta_data: {
@@ -53,6 +65,7 @@ export default function UpdateForm({ item }: Props) {
           keywords: getKeyWordsString(item.meta_data?.keywords || []),
         },
       });
+      setContent(item.description);
     }
   }, [item]);
 
@@ -83,7 +96,10 @@ export default function UpdateForm({ item }: Props) {
       });
     }
   };
-
+  const handleChangeContent = (value: string) => {
+    setValue('description', value);
+    setContent(value);
+  };
   return (
     <FormProvider {...method}>
       <Form onSubmit={handleSubmit(onSubmit)}>
@@ -103,14 +119,12 @@ export default function UpdateForm({ item }: Props) {
         {/* Description */}
         <Box className="mb-3">
           <Form.Label className="text-default">Description</Form.Label>
-          <Form.Control
-            as="textarea"
-            placeholder="Enter Store description"
-            {...register('description')}
+          <RichTextEditor
+            onBlur={handleChangeContent}
+            content={content}
+            error={Boolean(errors.description)}
+            helpText={errors.description && errors.description.message}
           />
-          {errors.description && (
-            <small className="text-danger">{errors.description.message}</small>
-          )}
         </Box>
 
         {/* Max Discount */}
@@ -161,26 +175,34 @@ export default function UpdateForm({ item }: Props) {
           <Form.Label className="text-default">Category</Form.Label>
           <Controller
             control={control}
-            name="category_id"
-            render={({ field: { onChange, value, ref } }) => {
+            name="categories"
+            render={({ field }) => {
               return (
                 <Fragment>
-                  <Form.Select
-                    ref={ref}
-                    value={Number(value ?? 0)}
-                    onChange={(e) => onChange(Number(e.target.value))}
+                  <Select
+                    fullWidth
+                    size="small"
+                    labelId="demo-multiple-name-label"
+                    id="demo-multiple-name"
+                    multiple
+                    value={field.value ?? []}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      field.onChange(
+                        typeof value === 'string' ? value.split(',') : value,
+                      );
+                    }}
+                    input={<OutlinedInput placeholder="Select categories" />}
                   >
-                    <option value={0}>Select category</option>
-                    {categories &&
-                      categories.map((cat) => (
-                        <option key={cat.id} value={Number(cat.id)}>
-                          {cat.name}
-                        </option>
-                      ))}
-                  </Form.Select>
-                  {errors.category_id && (
+                    {categories.map((name) => (
+                      <MenuItem key={name.id} value={name.id}>
+                        {name.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  {errors.categories && (
                     <small className="text-danger">
-                      {errors.category_id.message}
+                      {errors.categories.message}
                     </small>
                   )}
                 </Fragment>
@@ -209,9 +231,6 @@ export default function UpdateForm({ item }: Props) {
                 )}
               />
             </Box>
-            {errors.image?.url && (
-              <small className="text-danger">{errors.image?.url.message}</small>
-            )}
           </Box>
         </Box>
         <SeoForm />

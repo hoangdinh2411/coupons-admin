@@ -15,7 +15,7 @@ import { deleteById, updateStore } from '@/services/store.service';
 import UseAppStore from '@/store/useAppStore';
 import CustomPagination from '@/shared/layouts-components/pagination/CustomPagination';
 import Filter from '@/shared/layouts-components/filter/Filter';
-import { Rating } from '@mui/material';
+import { Box, Chip, Rating } from '@mui/material';
 type Props = {
   data: StoreData[];
   total: number;
@@ -105,7 +105,9 @@ export default function StoreList({
                 <td>
                   <Image
                     src={
-                      store.image ? store.image.url : '/assets/images/empty.png'
+                      store.image?.url
+                        ? store.image.url
+                        : '/assets/images/empty.png'
                     }
                     alt={store.name}
                     width={40}
@@ -116,13 +118,25 @@ export default function StoreList({
                 <td>
                   {store.keywords
                     ? store.keywords.map((k: string, index: number) => (
-                        <span key={index} className="badge bg-dark me-1">
+                        <span key={index} className="badge bg-info me-1">
                           {k}
                         </span>
                       ))
                     : 'N/A'}
                 </td>
-                <td>{store.category?.name || 'N/A'}</td>
+                <td>
+                  {store.categories && store.categories.length > 0 ? (
+                    <Box display={'flex'} gap={1} flexWrap={'wrap'}>
+                      {store.categories.map((c) => (
+                        <span key={c.id} className="badge bg-primary me-1 ">
+                          {c.name}
+                        </span>
+                      ))}
+                    </Box>
+                  ) : (
+                    'N/A'
+                  )}
+                </td>
                 <td>
                   <Rating
                     key={store.id}

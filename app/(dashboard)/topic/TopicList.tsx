@@ -97,7 +97,7 @@ export default function TopicList({
                   <td>
                     <Image
                       src={
-                        topic?.image
+                        topic?.image.url
                           ? topic?.image?.url
                           : '/assets/images/empty.png'
                       }

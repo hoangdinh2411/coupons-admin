@@ -2,7 +2,15 @@
 import React, { Fragment, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Box, FormControlLabel, Radio, RadioGroup } from '@mui/material';
+import {
+  Box,
+  FormControlLabel,
+  MenuItem,
+  OutlinedInput,
+  Radio,
+  RadioGroup,
+  Select,
+} from '@mui/material';
 import { Col, Form, Row } from 'react-bootstrap';
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
 import toast from 'react-hot-toast';
@@ -34,6 +42,7 @@ export default function UpdateForm({ item }: { item: CouponData }) {
     if (item) {
       reset({
         ...item,
+        categories: item.categories ? item.categories.map((c) => c.id) : [],
         is_exclusive: item.is_exclusive,
         expire_date: new Date(item.expire_date),
         start_date: new Date(item.start_date),
@@ -202,26 +211,34 @@ export default function UpdateForm({ item }: { item: CouponData }) {
           <Form.Label className="text-default">Category</Form.Label>
           <Controller
             control={control}
-            name="category_id"
-            render={({ field: { onChange, value, ref } }) => {
+            name="categories"
+            render={({ field }) => {
               return (
                 <Fragment>
-                  <Form.Select
-                    ref={ref}
-                    value={Number(value ?? 0)}
-                    onChange={(e) => onChange(Number(e.target.value))}
+                  <Select
+                    fullWidth
+                    size="small"
+                    labelId="demo-multiple-name-label"
+                    id="demo-multiple-name"
+                    multiple
+                    value={field.value ?? []}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      field.onChange(
+                        typeof value === 'string' ? value.split(',') : value,
+                      );
+                    }}
+                    input={<OutlinedInput placeholder="Select categories" />}
                   >
-                    <option value={0}>Select category</option>
-                    {categories &&
-                      categories.map((cat) => (
-                        <option key={cat.id} value={Number(cat.id)}>
-                          {cat.name}
-                        </option>
-                      ))}
-                  </Form.Select>
-                  {errors.category_id && (
+                    {categories.map((name) => (
+                      <MenuItem key={name.id} value={name.id}>
+                        {name.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  {errors.categories && (
                     <small className="text-danger">
-                      {errors.category_id.message}
+                      {errors.categories.message}
                     </small>
                   )}
                 </Fragment>

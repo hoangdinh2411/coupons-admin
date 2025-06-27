@@ -1,6 +1,8 @@
 import { makeFilterData } from '@/helper/filter';
 import { getCategories } from '../../../services/category.service';
 import CategoryList from './CategoryList';
+import { Suspense } from 'react';
+import CustomLoading from '@/shared/layouts-components/custom-loading/CustomLoading';
 
 export default async function CategoryPage(props: {
   searchParams?: Promise<{
@@ -17,7 +19,7 @@ export default async function CategoryPage(props: {
     return { message: res.message };
   }
   return (
-    <>
+    <Suspense fallback={<CustomLoading />}>
       {res.data && (
         <CategoryList
           data={res.data?.results}
@@ -25,6 +27,6 @@ export default async function CategoryPage(props: {
           currentPage={page}
         />
       )}
-    </>
+    </Suspense>
   );
 }

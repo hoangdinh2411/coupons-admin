@@ -2,6 +2,8 @@ import { makeFilterData } from '@/helper/filter';
 import { getTopics } from '@/services/topic.service';
 import TopicList from './TopicList';
 import { notFound } from 'next/navigation';
+import { Suspense } from 'react';
+import CustomLoading from '@/shared/layouts-components/custom-loading/CustomLoading';
 
 export default async function TopicPage(props: {
   searchParams?: Promise<{
@@ -20,10 +22,12 @@ export default async function TopicPage(props: {
     return notFound();
   }
   return (
-    <TopicList
-      data={res.data?.results}
-      total={res.data?.total}
-      currentPage={page}
-    />
+    <Suspense fallback={<CustomLoading />}>
+      <TopicList
+        data={res.data?.results}
+        total={res.data?.total}
+        currentPage={page}
+      />
+    </Suspense>
   );
 }

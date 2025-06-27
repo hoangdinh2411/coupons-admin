@@ -3,7 +3,7 @@ import React, { Fragment, useEffect } from 'react';
 import { useForm, Controller, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Box } from '@mui/material';
+import { Box, MenuItem, OutlinedInput, Select } from '@mui/material';
 import { Form } from 'react-bootstrap';
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
 
@@ -19,33 +19,44 @@ import SeoForm, {
   seoDefaultValues,
 } from '@/shared/layouts-components/seo-form/SeoForm';
 import { getKeyWordsArray } from '@/helper/keywords';
-
+import dynamic from 'next/dynamic';
+const RichTextEditor = dynamic(
+  () =>
+    import(
+      '../../../../shared/layouts-components/richtext-editor/RickTextEditor'
+    ),
+  {
+    ssr: false,
+  },
+);
 export const schema = z.object({
   ...seoDataSchema.shape,
-  name: z.string().min(1, 'Store name is required'),
-  description: z.string().min(1, 'Description is required'),
+  name: z.string().min(1, 'Store name is required').trim(),
+  description: z.string().min(1, 'Description is required').trim(),
   max_discount_pct: z
     .number({ invalid_type_error: 'Must be a number' })
-    .min(0)
-    .max(100),
-  keywords: z.string(),
-  url: z.string().url('Invalid URL'),
-  category_id: z.number(),
+    .min(1, 'Min discount is 1')
+    .max(100, 'Max discount is 100'),
+  keywords: z.string().trim(),
+  url: z.string().url('Invalid URL').trim(),
+  categories: z
+    .array(z.number())
+    .min(1, 'Need to select at least one category'),
   image: z.object({
-    file_name: z.string(),
-    url: z.string().min(1, 'Need to upload image'),
-    public_id: z.string(),
+    file_name: z.string().trim(),
+    url: z.string().trim(),
+    public_id: z.string().trim(),
   }),
 });
 
-export const defaultValue: StoreFormData = {
+export const defaultValues: StoreFormData = {
   ...seoDefaultValues,
   name: '',
   description: '',
   max_discount_pct: 0,
   keywords: '',
   url: '',
-  category_id: 0,
+  categories: [],
   image: {
     file_name: '',
     url: '',
@@ -58,19 +69,22 @@ export default function CreateForm() {
   const method = useForm<StoreFormData>({
     resolver: zodResolver(schema),
     mode: 'onChange',
+    defaultValues,
   });
   const {
     register,
     handleSubmit,
     control,
     reset,
+    setValue,
     formState: { errors, isSubmitSuccessful },
   } = method;
+  const [content, setContent] = React.useState<string>('');
 
   const { categories, setStores, stores } = UseAppStore((state) => state);
   useEffect(() => {
     if (isSubmitSuccessful) {
-      reset(defaultValue);
+      reset(defaultValues);
     }
   }, [isSubmitSuccessful]);
 
@@ -83,12 +97,14 @@ export default function CreateForm() {
         keywords: getKeyWordsArray(data.meta_data.keywords),
       },
     };
-
+    console.log(payload);
     toast.promise(createStore(payload), {
       loading: 'Pending...!',
       success: (res) => {
         if (res.success && res.data) {
           setStores([...stores, res.data]);
+          reset(defaultValues);
+          setContent('');
           return 'Created success';
         }
 
@@ -97,7 +113,10 @@ export default function CreateForm() {
       error: (err) => err || 'Something wrong',
     });
   };
-
+  const handleChangeContent = (value: string) => {
+    setValue('description', value);
+    setContent(value);
+  };
   return (
     <FormProvider {...method}>
       <Form onSubmit={handleSubmit(onSubmit)}>
@@ -117,14 +136,12 @@ export default function CreateForm() {
         {/* Description */}
         <Box className="mb-3">
           <Form.Label className="text-default">Description</Form.Label>
-          <Form.Control
-            as="textarea"
-            placeholder="Enter Store description"
-            {...register('description')}
+          <RichTextEditor
+            onBlur={handleChangeContent}
+            content={content}
+            error={Boolean(errors.description)}
+            helpText={errors.description && errors.description.message}
           />
-          {errors.description && (
-            <small className="text-danger">{errors.description.message}</small>
-          )}
         </Box>
 
         {/* Max Discount */}
@@ -175,26 +192,34 @@ export default function CreateForm() {
           <Form.Label className="text-default">Category</Form.Label>
           <Controller
             control={control}
-            name="category_id"
-            render={({ field: { onChange, value, ref } }) => {
+            name="categories"
+            render={({ field }) => {
               return (
                 <Fragment>
-                  <Form.Select
-                    ref={ref}
-                    value={Number(value ?? 0)}
-                    onChange={(e) => onChange(Number(e.target.value))}
+                  <Select
+                    fullWidth
+                    size="small"
+                    labelId="demo-multiple-name-label"
+                    id="demo-multiple-name"
+                    multiple
+                    value={field.value ?? []}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      field.onChange(
+                        typeof value === 'string' ? value.split(',') : value,
+                      );
+                    }}
+                    input={<OutlinedInput placeholder="Select categories" />}
                   >
-                    <option value={0}>Select category</option>
-                    {categories &&
-                      categories.map((cat) => (
-                        <option key={cat.id} value={Number(cat.id)}>
-                          {cat.name}
-                        </option>
-                      ))}
-                  </Form.Select>
-                  {errors.category_id && (
+                    {categories.map((name) => (
+                      <MenuItem key={name.id} value={name.id}>
+                        {name.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  {errors.categories && (
                     <small className="text-danger">
-                      {errors.category_id.message}
+                      {errors.categories.message}
                     </small>
                   )}
                 </Fragment>
@@ -223,12 +248,6 @@ export default function CreateForm() {
                 )}
               />
             </Box>
-            {errors.image?.message && (
-              <small className="text-danger">{errors.image.message}</small>
-            )}
-            {errors.image?.url && (
-              <small className="text-danger">{errors.image?.url.message}</small>
-            )}
           </Box>
         </Box>
         <SeoForm />

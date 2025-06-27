@@ -27,15 +27,15 @@ interface CreateCategoryModalPropsType {
 
 export const schema = z.object({
   ...seoDataSchema.shape,
-  name: z.string().min(1, 'Category name is required'),
+  name: z.string().min(1, 'Category name is required').trim(),
   image: z.object({
-    file_name: z.string(),
-    url: z.string().min(1, 'Need to upload image'),
-    public_id: z.string(),
+    file_name: z.string().trim(),
+    url: z.string().trim(),
+    public_id: z.string().trim(),
   }),
 });
 
-export const defaultValue = {
+export const defaultValues = {
   ...seoDefaultValues,
   name: '',
   image: {
@@ -52,6 +52,7 @@ export default function CreateCategoryModal({
 }: CreateCategoryModalPropsType) {
   const method = useForm<CategoryFormData>({
     resolver: zodResolver(schema),
+    defaultValues,
   });
   const {
     register,
@@ -65,7 +66,7 @@ export default function CreateCategoryModal({
   const { setCategory, categories } = UseAppStore((state) => state);
   useEffect(() => {
     if (!open) {
-      reset(defaultValue);
+      reset(defaultValues);
     }
   }, [open]);
   const onSubmit = async (data: CategoryFormData) => {
@@ -82,6 +83,7 @@ export default function CreateCategoryModal({
       success: (res) => {
         if (res.success && res.data) {
           setCategory([...categories, res.data]);
+          reset(defaultValues);
           return 'Created success';
         } else {
           throw res.message;
@@ -149,11 +151,6 @@ export default function CreateCategoryModal({
                     )}
                   />
                 </Box>
-                {errors.image?.url && (
-                  <small className="text-danger">
-                    {errors.image?.url.message}
-                  </small>
-                )}
               </Box>
             </Box>
             <SeoForm />

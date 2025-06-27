@@ -104,7 +104,9 @@ export default function CategoryList({
                   <td>
                     <Image
                       src={
-                        cat?.image ? cat?.image.url : '/assets/images/empty.png'
+                        cat?.image.url
+                          ? cat?.image.url
+                          : '/assets/images/empty.png'
                       }
                       alt={cat.name}
                       width={40}

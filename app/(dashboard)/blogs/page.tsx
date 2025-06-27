@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import BlogList from './BlogList';
-import { filterCoupon } from '@/services/coupon.service';
 import { makeFilterData } from '@/helper/filter';
 import { filterBlog } from '@/services/blog';
+import CustomLoading from '@/shared/layouts-components/custom-loading/CustomLoading';
 
 export default async function PostManagementPage(props: {
   searchParams?: Promise<Record<string, string>>;
@@ -21,7 +21,7 @@ export default async function PostManagementPage(props: {
     return res.message;
   }
   return (
-    <>
+    <Suspense fallback={<CustomLoading />}>
       {res.data && (
         <BlogList
           data={res.data?.results}
@@ -29,6 +29,6 @@ export default async function PostManagementPage(props: {
           currentPage={page}
         />
       )}
-    </>
+    </Suspense>
   );
 }

@@ -29,7 +29,7 @@ import {
   MenuButtonBulletedList,
   MenuButtonOrderedList,
 } from 'mui-tiptap';
-
+import Placeholder from '@tiptap/extension-placeholder';
 import { useRef, useState } from 'react';
 import { extensions } from './extensions';
 import { Box } from '@mui/system';
@@ -37,9 +37,13 @@ import { Box } from '@mui/system';
 function RickTextEditor({
   content,
   onBlur,
+  error = false,
+  helpText = '',
 }: {
   content: string;
   onBlur: (value: string) => void;
+  error?: boolean;
+  helpText?: string;
 }) {
   const rteRef = useRef<RichTextEditorRef>(null);
   const [color, setColor] = useState('');
@@ -83,7 +87,13 @@ function RickTextEditor({
       <RichTextEditor
         ref={rteRef}
         onBlur={handleBlur}
-        extensions={extensions} // Or any Tiptap extensions you wish!
+        extensions={[
+          ...extensions,
+          Placeholder.configure({
+            // Use a placeholder:
+            placeholder: 'Write something …',
+          }),
+        ]} // Or any Tiptap extensions you wish!
         content={content} // Initial content for the editor
         // Optionally include `renderControls` for a menu-bar atop the editor:
         renderControls={() => (
@@ -178,7 +188,7 @@ function RickTextEditor({
           </MenuControlsContainer>
         )}
       />
-
+      {error && <div className="text-danger">{helpText}</div>}
       {/* <Button onClick={() => console.log(rteRef.current?.editor?.getHTML())}>
         Log HTML
       </Button> */}

@@ -2,7 +2,7 @@ import { Box, Paper } from '@mui/material';
 import Breadcrumb from '../Breadcrumb';
 import CreateForm from './CreateForm';
 
-export default async function CreateStorePage() {
+export default function CreateStorePage() {
   return (
     <Paper
       sx={{
