@@ -33,3 +33,8 @@ export async function verify(payload: VerifyRequestPayload) {
     body: JSON.stringify(payload),
   });
 }
+export async function signOut() {
+  return await fetch(`/api/sign-out`, {
+    method: 'DELETE',
+  });
+}
