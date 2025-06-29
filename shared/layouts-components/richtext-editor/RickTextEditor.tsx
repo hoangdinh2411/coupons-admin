@@ -28,11 +28,16 @@ import {
   MenuButtonTaskList,
   MenuButtonBulletedList,
   MenuButtonOrderedList,
+  ImageNodeAttributes,
 } from 'mui-tiptap';
 import Placeholder from '@tiptap/extension-placeholder';
 import { useRef, useState } from 'react';
 import { extensions } from './extensions';
 import { Box } from '@mui/system';
+import { uploadFile } from '@/services/file.service';
+import toast from 'react-hot-toast';
+import { ImageType } from '../uploadFile/UploadFile';
+import { filterUsedImageForEditor } from '@/helper/file';
 
 function RickTextEditor({
   content,
@@ -47,16 +52,92 @@ function RickTextEditor({
 }) {
   const rteRef = useRef<RichTextEditorRef>(null);
   const [color, setColor] = useState('');
+  const [uploadedImages, setUploadedImages] = useState<ImageType[]>([]);
 
   const handleColorChange = (newColor: string) => {
     setColor(newColor);
     rteRef.current?.editor?.chain().focus().setColor(newColor).run(); // <- apply to selection
   };
 
-  const handleBlur = () => {
+  const handleBlur = async () => {
     const value = rteRef.current?.editor?.getHTML() || '';
-    console.log(value);
-    onBlur(value);
+    const cleanedAllUnusedImages = await filterUsedImageForEditor(
+      content,
+      uploadedImages,
+    );
+    if (cleanedAllUnusedImages) {
+      onBlur(value);
+    }
+  };
+
+  const handleUploadImage = async (files: File[]) => {
+    const editor = rteRef.current?.editor;
+    const insertedImages: ImageNodeAttributes[] = [];
+    if (editor) {
+      const formData = new FormData();
+      for (let index = 0; index < files.length; index++) {
+        formData.append('files', files[index]);
+      }
+      formData.append('folder', 'blogs');
+      const loading_id = 'loading';
+      try {
+        toast.loading('Uploading...', {
+          id: loading_id,
+        });
+        const res = await uploadFile(formData);
+        toast.dismiss(loading_id);
+        toast.success('Uploaded');
+        if (!res.success && res.message) {
+          throw res.message;
+        } else {
+          if (res.data) {
+            res.data.forEach((image) => {
+              const img = {
+                src: image.url,
+                alt: image.file_name,
+                title: image.public_id,
+                width: '300px', // ✅ optionally set width
+                height: 'auto',
+              };
+              insertedImages.push(img);
+              setUploadedImages &&
+                setUploadedImages((prev) => [...prev, image]);
+              editor?.commands.insertContent({
+                type: 'image',
+                attrs: img,
+              });
+            });
+            // Add a paragraph after the last image
+            editor?.commands.insertContent({
+              type: 'paragraph',
+              content: [],
+            });
+            setTimeout(() => {
+              const doc = editor.state.doc;
+              let paragraphPos: number | null = null;
+
+              doc.descendants((node, pos) => {
+                if (node.type.name === 'paragraph' && node.content.size === 0) {
+                  paragraphPos = pos;
+                }
+              });
+
+              if (paragraphPos !== null) {
+                editor
+                  .chain()
+                  .setTextSelection(paragraphPos + 1)
+                  .focus()
+                  .run();
+              }
+            }, 0);
+          }
+        }
+      } catch (err: any) {
+        toast.dismiss(loading_id);
+        toast.error(typeof err === 'string' ? err : 'Image upload failed');
+      }
+    }
+    return insertedImages;
   };
 
   return (
@@ -80,6 +161,9 @@ function RickTextEditor({
             minHeight: 300,
             maxHeight: 800,
             overflowY: 'scroll',
+          },
+          '& .tiptap.ProseMirror': {
+            height: '100% !important',
           },
         },
       }}
@@ -159,6 +243,12 @@ function RickTextEditor({
             <MenuButtonCodeBlock />
             <MenuDivider />
             {/*  */}
+            <MenuButtonImageUpload
+              onUploadFiles={handleUploadImage}
+              inputProps={{
+                multiple: false,
+              }}
+            />
             <MenuButtonColorPicker
               tooltipLabel="Text color"
               value={color}

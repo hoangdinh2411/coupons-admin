@@ -1,5 +1,5 @@
 'use client';
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { useForm, Controller, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -20,6 +20,8 @@ import { getKeyWordsArray } from '@/helper/keywords';
 import UploadFile, {
   ImageType,
 } from '@/shared/layouts-components/uploadFile/UploadFile';
+import { deleteFile } from '@/services/file.service';
+import { filterUsedImageForEditor } from '@/helper/file';
 const RichTextEditor = dynamic(
   () =>
     import(
@@ -86,8 +88,7 @@ export default function CreateForm() {
     setValue('content', value);
     setContent(value);
   };
-  console.log(errors);
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: BlogFormData) => {
     const payload: BlogPayload = {
       ...data,
       content,

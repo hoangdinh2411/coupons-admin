@@ -12,7 +12,7 @@ import { BulletList } from '@tiptap/extension-bullet-list';
 import { OrderedList } from '@tiptap/extension-ordered-list';
 import { ListItem } from '@tiptap/extension-list-item';
 import StarterKit from '@tiptap/starter-kit';
-import { FontSize, LinkBubbleMenuHandler } from 'mui-tiptap';
+import { FontSize, LinkBubbleMenuHandler, ResizableImage } from 'mui-tiptap';
 import { Extensions } from '@tiptap/core';
 
 export const extensions: Extensions = [
@@ -23,6 +23,11 @@ export const extensions: Extensions = [
   Underline,
   CodeBlock,
   Link,
+  ResizableImage.configure({
+    HTMLAttributes: {
+      class: 'editor-image',
+    },
+  }),
   LinkBubbleMenuHandler,
   Color,
   TextAlign,

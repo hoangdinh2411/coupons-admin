@@ -23,8 +23,9 @@ import SearchBar from './SearchBar';
 import { getAllStores } from '@/services/store.service';
 import { getCategories } from '@/services/category.service';
 import { getProfile } from '@/services/user.service';
-import { SignOutAction } from '@/app/actions/sign-out.action';
+
 import { getTopics } from '@/services/topic.service';
+import { signOut } from '@/services/auth.service';
 
 const Header = () => {
   const { setProfile, profile, setTopics, setCategory, setStores } =
@@ -33,13 +34,21 @@ const Header = () => {
   // Fullscreen Function
 
   const handleSignOut = async () => {
-    await SignOutAction();
-    toast.success('See you again');
-    setProfile(null);
-    setStores([]);
-    setTopics([]);
-    setCategory([]);
-    router.push(APP_ROUTE.SIGN_IN);
+    toast.promise(signOut, {
+      loading: 'Signing out...',
+      success: (res) => {
+        if (res.ok) {
+          setProfile(null);
+          setStores([]);
+          setTopics([]);
+          setCategory([]);
+          router.push(APP_ROUTE.SIGN_IN);
+          return 'See you again';
+        }
+        throw res.text;
+      },
+      error: (err) => err,
+    });
   };
   const [isFullscreen, setIsFullscreen] = useState(false);
 
@@ -64,9 +73,7 @@ const Header = () => {
   useEffect(() => {
     const handleFetchProfile = async () => {
       const profileRes = await getProfile();
-      console.log(profile);
       if (!profileRes.success) {
-        toast.error('Your session has expired. Please log in again. ');
         handleSignOut();
         return;
       }
