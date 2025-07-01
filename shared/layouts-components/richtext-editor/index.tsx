@@ -10,10 +10,12 @@ import useExtensions from './useExtensions';
 const CustomRichTextEditor = forwardRef(
   (
     {
+      imageFolder,
       onBlur,
       error = false,
       helpText = '',
     }: {
+      imageFolder: string;
       onBlur: (value: string) => void;
       error?: boolean;
       helpText?: string;
@@ -103,6 +105,7 @@ const CustomRichTextEditor = forwardRef(
               editor={rteRef.current && rteRef.current?.editor}
               setUploadedImages={setUploadedImages}
               uploadedImages={uploadedImages}
+              imageFolder={imageFolder}
             />
           )}
         />

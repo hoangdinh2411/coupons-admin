@@ -33,10 +33,12 @@ type Props = {
   editor: Editor | null;
   uploadedImages: ImageType[];
   setUploadedImages: React.Dispatch<React.SetStateAction<ImageType[]>>;
+  imageFolder: string;
 };
 
 export default function EditorMenuController({
   editor,
+  imageFolder,
   uploadedImages,
   setUploadedImages,
 }: Props) {
@@ -76,6 +78,7 @@ export default function EditorMenuController({
       {/*  */}
       <CustomUploadImageButton
         uploadedImages={uploadedImages}
+        imageFolder={imageFolder}
         setUploadedImages={setUploadedImages}
       />
       <MenuButtonColorPicker

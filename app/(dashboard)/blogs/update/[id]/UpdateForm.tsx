@@ -22,12 +22,7 @@ import UploadFile, {
   ImageType,
 } from '@/shared/layouts-components/uploadFile/UploadFile';
 import useRickTextEditor from '@/hooks/useRickTextEditor';
-const RichTextEditor = dynamic(
-  () => import('../../../../../shared/layouts-components/richtext-editor'),
-  {
-    ssr: false,
-  },
-);
+import CustomRichTextEditor from '../../../../../shared/layouts-components/richtext-editor';
 
 export default function UpdateForm({ item }: { item: BlogData }) {
   const method = useForm<BlogFormData>({
@@ -127,7 +122,13 @@ export default function UpdateForm({ item }: { item: BlogData }) {
         </Box>
         <Box className="mb-3">
           <Form.Label className="">Post content</Form.Label>
-          <RichTextEditor onBlur={handleChangeContent} />
+          <CustomRichTextEditor
+            imageFolder="blogs"
+            ref={rteRef}
+            onBlur={handleChangeContent}
+            error={Boolean(errors.content)}
+            helpText={errors.content?.message}
+          />
         </Box>
         {/* Keywords */}
         <Box className="mb-3">

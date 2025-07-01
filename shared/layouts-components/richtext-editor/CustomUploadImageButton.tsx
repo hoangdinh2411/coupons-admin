@@ -7,8 +7,10 @@ import { ImageType } from '../uploadFile/UploadFile';
 export default function CustomUploadImageButton({
   uploadedImages,
   setUploadedImages,
+  imageFolder,
 }: {
   uploadedImages: ImageType[];
+  imageFolder: string;
   setUploadedImages: React.Dispatch<React.SetStateAction<ImageType[]>>;
 }) {
   const handleUploadImage = async (files: File[]) => {
@@ -16,7 +18,7 @@ export default function CustomUploadImageButton({
     for (let index = 0; index < files.length; index++) {
       formData.append('files', files[index]);
     }
-    formData.append('folder', 'blogs');
+    formData.append('folder', imageFolder);
 
     const res = await uploadFile(formData);
     if (!res.success && res.message) {

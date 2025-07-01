@@ -127,6 +127,7 @@ export default function CreateForm() {
         <Box className="mb-3">
           <Form.Label className="text-default">Description</Form.Label>
           <CustomRichTextEditor
+            imageFolder="stores"
             ref={rteRef}
             onBlur={handleChangeContent}
             error={Boolean(errors.description)}
