@@ -14,6 +14,17 @@ export default function CustomUploadImageButton({
   imageFolder: string;
   setUploadedImages: React.Dispatch<React.SetStateAction<ImageType[]>>;
 }) {
+  function getAltFromImageName(fileName: string) {
+    const words = fileName
+      .toLowerCase()
+      .split('.')[0]
+      .split(/[-_\s]+/);
+    if (words.length > 0) {
+      words[0] =
+        words[0].charAt(0).toUpperCase() + words[0].slice(1).toLowerCase();
+    }
+    return words.join(' ');
+  }
   const handleUploadImage = async (files: File[]) => {
     const formData = new FormData();
     let isValid;
@@ -34,7 +45,7 @@ export default function CustomUploadImageButton({
       return res?.data
         ? res?.data.map((image) => ({
             src: image.url,
-            alt: image.file_name,
+            alt: getAltFromImageName(image.file_name),
             width: '300px', // ✅ optionally set width
             height: 'auto',
           }))
