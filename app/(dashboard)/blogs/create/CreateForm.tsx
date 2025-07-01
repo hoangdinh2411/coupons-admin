@@ -1,15 +1,14 @@
 'use client';
-import React, { Fragment, useEffect, useRef, useState } from 'react';
+import React, { Fragment } from 'react';
 import { useForm, Controller, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Box } from '@mui/material';
-import { Col, Form, Row } from 'react-bootstrap';
+import { Form } from 'react-bootstrap';
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
 import toast from 'react-hot-toast';
 import UseAppStore from '@/store/useAppStore';
 import 'react-datepicker/dist/react-datepicker.css';
-import dynamic from 'next/dynamic';
 import { createBlog } from '@/services/blog';
 import { BlogPayload } from '@/types/blog.type';
 import SeoForm, {
@@ -20,10 +19,7 @@ import { getKeyWordsArray } from '@/helper/keywords';
 import UploadFile, {
   ImageType,
 } from '@/shared/layouts-components/uploadFile/UploadFile';
-import { deleteFile } from '@/services/file.service';
-import { filterUsedImageForEditor } from '@/helper/file';
 import CustomRichTextEditor from '@/shared/layouts-components/richtext-editor';
-import { Editor } from '@tiptap/core';
 import useRickTextEditor from '@/hooks/useRickTextEditor';
 export const blogSchema = z.object({
   ...seoDataSchema.shape,
@@ -72,15 +68,15 @@ export default function CreateForm() {
   } = method;
   const { topics } = UseAppStore((state) => state);
   const { getContent, rteRef, clearAll } = useRickTextEditor();
-  const handleChangeContent = () => {
-    const content = getContent();
-    setValue('content', content);
+  const handleChangeContent = (value: string) => {
+    setValue('content', value);
   };
 
   const onSubmit = async (data: BlogFormData) => {
+    const content = await getContent();
     const payload: BlogPayload = {
       ...data,
-      content: getContent(),
+      content,
       keywords: getKeyWordsArray(data.keywords),
       meta_data: {
         ...data.meta_data,

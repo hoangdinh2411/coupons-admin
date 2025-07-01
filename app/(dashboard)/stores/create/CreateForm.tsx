@@ -77,14 +77,15 @@ export default function CreateForm() {
   const { categories, setStores, stores } = UseAppStore((state) => state);
   const { getContent, rteRef, clearAll } = useRickTextEditor();
 
-  const handleChangeContent = () => {
-    const content = getContent();
-    setValue('description', content);
+  const handleChangeContent = (value: string) => {
+    setValue('description', value);
   };
   const onSubmit = async (data: StoreFormData) => {
+    const description = await getContent();
+
     const payload: StorePayload = {
       ...data,
-      description: getContent(),
+      description,
       keywords: getKeyWordsArray(data.keywords),
       meta_data: {
         ...data.meta_data,

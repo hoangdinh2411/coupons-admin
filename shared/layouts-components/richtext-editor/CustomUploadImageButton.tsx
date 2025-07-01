@@ -3,6 +3,7 @@ import { uploadFile } from '@/services/file.service';
 import { MenuButtonImageUpload } from 'mui-tiptap';
 import React from 'react';
 import { ImageType } from '../uploadFile/UploadFile';
+import { validateFile } from '@/helper/file';
 
 export default function CustomUploadImageButton({
   uploadedImages,
@@ -15,26 +16,31 @@ export default function CustomUploadImageButton({
 }) {
   const handleUploadImage = async (files: File[]) => {
     const formData = new FormData();
+    let isValid;
     for (let index = 0; index < files.length; index++) {
+      isValid = validateFile(files[index]);
       formData.append('files', files[index]);
     }
-    formData.append('folder', imageFolder);
 
-    const res = await uploadFile(formData);
-    if (!res.success && res.message) {
-      return [];
+    if (isValid) {
+      formData.append('folder', imageFolder);
+      const res = await uploadFile(formData);
+      if (!res.success && res.message) {
+        return [];
+      }
+      if (res.data && res.data.length > 0) {
+        setUploadedImages([...uploadedImages, ...res.data]);
+      }
+      return res?.data
+        ? res?.data.map((image) => ({
+            src: image.url,
+            alt: image.file_name,
+            width: '300px', // ✅ optionally set width
+            height: 'auto',
+          }))
+        : [];
     }
-    if (res.data && res.data.length > 0) {
-      setUploadedImages([...uploadedImages, ...res.data]);
-    }
-    return res?.data
-      ? res?.data.map((image) => ({
-          src: image.url,
-          alt: image.file_name,
-          width: '300px', // ✅ optionally set width
-          height: 'auto',
-        }))
-      : [];
+    return [];
   };
   return (
     <MenuButtonImageUpload

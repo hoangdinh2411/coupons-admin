@@ -1,5 +1,3 @@
-const { loadComponents } = require('next/dist/server/load-components');
-
 /**@type {import('next').NextConfig} */
 const nextConfig = {
   typescript: {
@@ -14,8 +12,11 @@ const nextConfig = {
         pathname: '/**',
       },
     ],
-
-    // [new URL('https://res.cloudinary.com/**')],
+  },
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '3mb',
+    },
   },
 };
 

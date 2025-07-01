@@ -1,6 +1,7 @@
 'use client';
-import { deleteFile, uploadFile } from '@/services/file.service';
-import React, { Fragment, useState } from 'react';
+import { validateFile } from '@/helper/file';
+import { deleteFiles, uploadFile } from '@/services/file.service';
+import React from 'react';
 import toast from 'react-hot-toast';
 
 export type ImageType = {
@@ -26,25 +27,35 @@ export default function UploadFile({
   const handleSelectFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files && e.target.files;
     if (files) {
-      const formData = new FormData();
-      for (let index = 0; index < files.length; index++) {
-        formData.append('files', files[index]);
+      let isValid;
+      if (multiple) {
+        for (const f of files) {
+          isValid = validateFile(f);
+        }
+      } else {
+        isValid = validateFile(files[0]);
       }
-      formData.append('folder', folder);
-      toast.promise(uploadFile(formData), {
-        loading: 'Uploading image...!',
-        success: (res) => {
-          if (!res.success && res.message) {
-            throw res.message;
-          }
-          if (!res.data) {
-            throw 'Missing data on respose';
-          }
-          onUploadFile(res.data);
-          return 'Uploaded success';
-        },
-        error: (err) => err,
-      });
+      if (isValid) {
+        const formData = new FormData();
+        for (let index = 0; index < files.length; index++) {
+          formData.append('files', files[index]);
+        }
+        formData.append('folder', folder);
+        toast.promise(uploadFile(formData), {
+          loading: 'Uploading image...!',
+          success: (res) => {
+            if (!res.success && res.message) {
+              throw res.message;
+            }
+            if (!res.data) {
+              throw 'Missing data on respose';
+            }
+            onUploadFile(res.data);
+            return 'Uploaded success';
+          },
+          error: (err) => err,
+        });
+      }
 
       // try {
       //   const encodedFile = await encodeFileToBase64(file);
@@ -72,7 +83,7 @@ export default function UploadFile({
 
   const handleDeleteSelectedFile = async () => {
     if (newFile.public_id) {
-      toast.promise(deleteFile(newFile.public_id), {
+      toast.promise(deleteFiles([newFile.public_id]), {
         loading: 'Deleting image...!',
         success: (res) => {
           if (!res.success && res.message) {

@@ -8,8 +8,12 @@ export async function uploadFile(payload: FormData) {
     body: payload,
   });
 }
-export async function deleteFile(public_id: string) {
-  return await customFetchWithToken(`/files?public_id=${public_id}`, {
-    method: 'DELETE',
+export async function deleteFiles(public_ids: string[]) {
+  return await customFetchWithToken(`/files`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(public_ids),
   });
 }

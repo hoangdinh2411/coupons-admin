@@ -41,14 +41,12 @@ export default function UpdateForm({ item }: { item: BlogData }) {
   const { getContent, rteRef, setContent } = useRickTextEditor();
 
   const handleChangeContent = (value: string) => {
-    const content = getContent();
-    setValue('content', content);
+    setValue('content', value);
   };
   useEffect(() => {
     if (item) {
       reset({
         ...item,
-        content: getContent(),
         keywords: getKeyWordsString(item.keywords || []),
         meta_data: {
           ...item.meta_data,
@@ -63,9 +61,11 @@ export default function UpdateForm({ item }: { item: BlogData }) {
     }
   }, [rteRef.current, item]);
   const onSubmit = async (data: BlogFormData) => {
+    const content = await getContent();
+
     const payload: BlogPayload = {
       ...data,
-      content: getContent(),
+      content,
       keywords: getKeyWordsArray(data.keywords),
       meta_data: {
         ...data.meta_data,

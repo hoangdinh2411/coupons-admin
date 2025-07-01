@@ -7,7 +7,7 @@ export default function useRickTextEditor() {
     editor: Editor | null;
     clearIfEmpty: () => void;
     clearAll: () => void;
-    getContent: () => string;
+    getContent: () => Promise<string>;
     setContent: (html: string) => void;
   }>(null);
   return {

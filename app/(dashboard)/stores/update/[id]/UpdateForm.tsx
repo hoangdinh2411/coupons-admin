@@ -35,7 +35,7 @@ export default function UpdateForm({ item }: Props) {
     control,
     setValue,
     reset,
-    formState: { errors, isSubmitSuccessful },
+    formState: { errors },
   } = method;
   const { getContent, rteRef, setContent } = useRickTextEditor();
 
@@ -47,11 +47,27 @@ export default function UpdateForm({ item }: Props) {
     }
   }, [item, rteRef.current]);
 
+  useEffect(() => {
+    if (item) {
+      reset({
+        ...item,
+        categories: item.categories ? item.categories.map((c) => c.id) : [],
+        keywords: getKeyWordsString(item.keywords || []),
+        meta_data: {
+          ...item.meta_data,
+          keywords: getKeyWordsString(item.meta_data?.keywords || []),
+        },
+      });
+    }
+  }, [item]);
+
   const onSubmit = async (data: StoreFormData) => {
+    const description = await getContent();
+
     if (item) {
       const payload: StorePayload = {
         ...data,
-        description: getContent(),
+        description,
         keywords: getKeyWordsArray(data.keywords),
         meta_data: {
           ...data.meta_data,
@@ -75,9 +91,8 @@ export default function UpdateForm({ item }: Props) {
       });
     }
   };
-  const handleChangeContent = () => {
-    const content = getContent();
-    setValue('description', content);
+  const handleChangeContent = (value: string) => {
+    setValue('description', value);
   };
   return (
     <FormProvider {...method}>

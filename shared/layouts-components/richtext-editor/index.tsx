@@ -24,16 +24,9 @@ const CustomRichTextEditor = forwardRef(
   ) => {
     const [uploadedImages, setUploadedImages] = useState<ImageType[]>([]);
     const rteRef = useRef<RichTextEditorRef>(null);
-    const handleBlur = async () => {
+    const handleBlur = () => {
       const value = rteRef.current?.editor?.getHTML() || '';
-      const cleanedAllUnusedImages = await filterUsedImageForEditor(
-        value,
-        uploadedImages,
-      );
-      if (cleanedAllUnusedImages) {
-        setUploadedImages([]);
-        onBlur(value);
-      }
+      onBlur(value);
     };
     useImperativeHandle(ref, () => ({
       editor: rteRef.current?.editor,
@@ -61,8 +54,17 @@ const CustomRichTextEditor = forwardRef(
           editor.commands.clearContent();
         }
       },
-      getContent: () => {
-        return rteRef.current?.editor?.getHTML() ?? '';
+      getContent: async () => {
+        const value = rteRef.current?.editor?.getHTML() || '';
+        const cleanedAllUnusedImages = await filterUsedImageForEditor(
+          value,
+          uploadedImages,
+        );
+        if (cleanedAllUnusedImages) {
+          setUploadedImages([]);
+          return rteRef.current?.editor?.getHTML() ?? '';
+        }
+        return '';
       },
     }));
     return (
