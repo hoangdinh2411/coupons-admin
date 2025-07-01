@@ -20,15 +20,9 @@ import SeoForm, {
 } from '@/shared/layouts-components/seo-form/SeoForm';
 import { getKeyWordsArray } from '@/helper/keywords';
 import dynamic from 'next/dynamic';
-const RichTextEditor = dynamic(
-  () =>
-    import(
-      '../../../../shared/layouts-components/richtext-editor/RickTextEditor'
-    ),
-  {
-    ssr: false,
-  },
-);
+import CustomRichTextEditor from '../../../../shared/layouts-components/richtext-editor';
+import useRickTextEditor from '@/hooks/useRickTextEditor';
+
 export const schema = z.object({
   ...seoDataSchema.shape,
   name: z.string().min(1, 'Store name is required').trim(),
@@ -77,34 +71,33 @@ export default function CreateForm() {
     control,
     reset,
     setValue,
-    formState: { errors, isSubmitSuccessful },
+    formState: { errors },
   } = method;
-  const [content, setContent] = React.useState<string>('');
 
   const { categories, setStores, stores } = UseAppStore((state) => state);
-  useEffect(() => {
-    if (isSubmitSuccessful) {
-      reset(defaultValues);
-    }
-  }, [isSubmitSuccessful]);
+  const { getContent, rteRef, clearAll } = useRickTextEditor();
 
+  const handleChangeContent = () => {
+    const content = getContent();
+    setValue('description', content);
+  };
   const onSubmit = async (data: StoreFormData) => {
     const payload: StorePayload = {
       ...data,
+      description: getContent(),
       keywords: getKeyWordsArray(data.keywords),
       meta_data: {
         ...data.meta_data,
         keywords: getKeyWordsArray(data.meta_data.keywords),
       },
     };
-    console.log(payload);
     toast.promise(createStore(payload), {
       loading: 'Pending...!',
       success: (res) => {
         if (res.success && res.data) {
           setStores([...stores, res.data]);
           reset(defaultValues);
-          setContent('');
+          clearAll();
           return 'Created success';
         }
 
@@ -113,10 +106,7 @@ export default function CreateForm() {
       error: (err) => err || 'Something wrong',
     });
   };
-  const handleChangeContent = (value: string) => {
-    setValue('description', value);
-    setContent(value);
-  };
+
   return (
     <FormProvider {...method}>
       <Form onSubmit={handleSubmit(onSubmit)}>
@@ -136,11 +126,11 @@ export default function CreateForm() {
         {/* Description */}
         <Box className="mb-3">
           <Form.Label className="text-default">Description</Form.Label>
-          <RichTextEditor
+          <CustomRichTextEditor
+            ref={rteRef}
             onBlur={handleChangeContent}
-            content={content}
             error={Boolean(errors.description)}
-            helpText={errors.description && errors.description.message}
+            helpText={errors.description?.message}
           />
         </Box>
 

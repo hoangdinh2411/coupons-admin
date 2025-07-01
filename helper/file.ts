@@ -8,11 +8,13 @@ export const filterUsedImageForEditor = async (
 ) => {
   let isDone = true;
   if (uploadedImages.length > 0) {
+    console.log(content);
     // get all image url from HTML content
     const usedImages: string[] = Array.from(
       content.matchAll(/<img [^>]*src="([^"]+)"[^>]*>/g),
     ).map((match) => match[1]); // match[1] là URL
 
+    console.log(usedImages);
     let imagesShouldBeDeleted: string[] = [];
     if (uploadedImages.length !== usedImages.length) {
       //

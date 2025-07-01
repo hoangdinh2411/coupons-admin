@@ -83,11 +83,6 @@ export default function CreateForm() {
   });
 
   const { categories, stores } = UseAppStore((state) => state);
-  useEffect(() => {
-    if (isSubmitSuccessful) {
-      reset(defaultValues);
-    }
-  }, [isSubmitSuccessful]);
 
   const onSubmit = async (data: CouponFormData) => {
     const payload: CouponPayload = {

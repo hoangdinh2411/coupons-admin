@@ -1,5 +1,5 @@
 'use client';
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useRef, useState } from 'react';
 import { useForm, Controller, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -22,15 +22,9 @@ import UploadFile, {
 } from '@/shared/layouts-components/uploadFile/UploadFile';
 import { deleteFile } from '@/services/file.service';
 import { filterUsedImageForEditor } from '@/helper/file';
-const RichTextEditor = dynamic(
-  () =>
-    import(
-      '../../../../shared/layouts-components/richtext-editor/RickTextEditor'
-    ),
-  {
-    ssr: false,
-  },
-);
+import CustomRichTextEditor from '@/shared/layouts-components/richtext-editor';
+import { Editor } from '@tiptap/core';
+import useRickTextEditor from '@/hooks/useRickTextEditor';
 export const blogSchema = z.object({
   ...seoDataSchema.shape,
   title: z.string().min(1, 'Coupon title is required'),
@@ -76,22 +70,17 @@ export default function CreateForm() {
     reset,
     formState: { errors, isSubmitSuccessful },
   } = method;
-  const [content, setContent] = React.useState<string>('');
   const { topics } = UseAppStore((state) => state);
-  useEffect(() => {
-    if (isSubmitSuccessful) {
-      reset(defaultValues);
-    }
-  }, [isSubmitSuccessful]);
-
-  const handleChangeContent = (value: string) => {
-    setValue('content', value);
-    setContent(value);
+  const { getContent, rteRef, clearAll } = useRickTextEditor();
+  const handleChangeContent = () => {
+    const content = getContent();
+    setValue('content', content);
   };
+
   const onSubmit = async (data: BlogFormData) => {
     const payload: BlogPayload = {
       ...data,
-      content,
+      content: getContent(),
       keywords: getKeyWordsArray(data.keywords),
       meta_data: {
         ...data.meta_data,
@@ -103,7 +92,9 @@ export default function CreateForm() {
       success: (res) => {
         if (res.success && res.data) {
           reset(defaultValues);
-          setContent('');
+          clearAll();
+          reset(defaultValues);
+
           return 'Created successfully';
         }
         throw res.message;
@@ -150,13 +141,11 @@ export default function CreateForm() {
         </Box>
         <Box className="mb-3">
           <Form.Label className="">Blog content</Form.Label>
-          <RichTextEditor
-            content={content}
+          <CustomRichTextEditor
+            ref={rteRef}
             onBlur={handleChangeContent}
             error={Boolean(errors.content)}
             helpText={errors.content?.message}
-            // onChange={handleChangeContent}
-            // placeholder="Write blog content here"
           />
         </Box>
         {/* Keywords */}

@@ -17,15 +17,9 @@ import { defaultValues, schema, StoreFormData } from '../../create/CreateForm';
 import { getKeyWordsArray, getKeyWordsString } from '@/helper/keywords';
 import SeoForm from '@/shared/layouts-components/seo-form/SeoForm';
 import dynamic from 'next/dynamic';
-const RichTextEditor = dynamic(
-  () =>
-    import(
-      '../../../../../shared/layouts-components/richtext-editor/RickTextEditor'
-    ),
-  {
-    ssr: false,
-  },
-);
+import CustomRichTextEditor from '../../../../../shared/layouts-components/richtext-editor';
+import useRickTextEditor from '@/hooks/useRickTextEditor';
+
 type Props = {
   item: StoreData | null;
 };
@@ -43,36 +37,21 @@ export default function UpdateForm({ item }: Props) {
     reset,
     formState: { errors, isSubmitSuccessful },
   } = method;
+  const { getContent, rteRef, setContent } = useRickTextEditor();
 
   const { categories, setStores, stores } = UseAppStore((state) => state);
-  const [content, setContent] = React.useState<string>('');
 
   useEffect(() => {
-    if (isSubmitSuccessful) {
-      reset(defaultValues);
-    }
-  }, [isSubmitSuccessful]);
-
-  useEffect(() => {
-    if (item !== null) {
-      reset({
-        ...item,
-        categories: item.categories ? item.categories.map((c) => c.id) : [],
-        max_discount_pct: Number(item.max_discount_pct),
-        keywords: getKeyWordsString(item.keywords || []),
-        meta_data: {
-          ...item.meta_data,
-          keywords: getKeyWordsString(item.meta_data?.keywords || []),
-        },
-      });
+    if (item && rteRef.current) {
       setContent(item.description);
     }
-  }, [item]);
+  }, [item, rteRef.current]);
 
   const onSubmit = async (data: StoreFormData) => {
     if (item) {
       const payload: StorePayload = {
         ...data,
+        description: getContent(),
         keywords: getKeyWordsArray(data.keywords),
         meta_data: {
           ...data.meta_data,
@@ -96,9 +75,9 @@ export default function UpdateForm({ item }: Props) {
       });
     }
   };
-  const handleChangeContent = (value: string) => {
-    setValue('description', value);
-    setContent(value);
+  const handleChangeContent = () => {
+    const content = getContent();
+    setValue('description', content);
   };
   return (
     <FormProvider {...method}>
@@ -119,11 +98,13 @@ export default function UpdateForm({ item }: Props) {
         {/* Description */}
         <Box className="mb-3">
           <Form.Label className="text-default">Description</Form.Label>
-          <RichTextEditor
+          <CustomRichTextEditor
+            ref={rteRef}
             onBlur={handleChangeContent}
-            content={content}
             error={Boolean(errors.description)}
-            helpText={errors.description && errors.description.message}
+            helpText={errors.description?.message}
+            // onChange={handleChangeContent}
+            // placeholder="Write blog content here"
           />
         </Box>
 

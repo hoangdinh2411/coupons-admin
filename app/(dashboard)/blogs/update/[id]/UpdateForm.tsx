@@ -21,11 +21,9 @@ import { getKeyWordsArray, getKeyWordsString } from '@/helper/keywords';
 import UploadFile, {
   ImageType,
 } from '@/shared/layouts-components/uploadFile/UploadFile';
+import useRickTextEditor from '@/hooks/useRickTextEditor';
 const RichTextEditor = dynamic(
-  () =>
-    import(
-      '../../../../../shared/layouts-components/richtext-editor/RickTextEditor'
-    ),
+  () => import('../../../../../shared/layouts-components/richtext-editor'),
   {
     ssr: false,
   },
@@ -42,37 +40,37 @@ export default function UpdateForm({ item }: { item: BlogData }) {
     control,
     setValue,
     reset,
-    formState: { errors, isSubmitSuccessful },
+    formState: { errors },
   } = method;
-  const [content, setContent] = React.useState<string>('');
   const { topics } = UseAppStore((state) => state);
-  useEffect(() => {
-    if (isSubmitSuccessful) {
-      reset(defaultValues);
-    }
-  }, [isSubmitSuccessful]);
+  const { getContent, rteRef, setContent } = useRickTextEditor();
+
   const handleChangeContent = (value: string) => {
-    setValue('content', value);
-    setContent(value);
+    const content = getContent();
+    setValue('content', content);
   };
   useEffect(() => {
     if (item) {
       reset({
         ...item,
+        content: getContent(),
         keywords: getKeyWordsString(item.keywords || []),
         meta_data: {
           ...item.meta_data,
           keywords: getKeyWordsString(item.meta_data?.keywords || []),
         },
       });
-      setContent(item.content);
     }
   }, [item]);
-
+  useEffect(() => {
+    if (item && rteRef.current) {
+      setContent(item.content);
+    }
+  }, [rteRef.current, item]);
   const onSubmit = async (data: BlogFormData) => {
     const payload: BlogPayload = {
       ...data,
-      content,
+      content: getContent(),
       keywords: getKeyWordsArray(data.keywords),
       meta_data: {
         ...data.meta_data,
@@ -129,7 +127,7 @@ export default function UpdateForm({ item }: { item: BlogData }) {
         </Box>
         <Box className="mb-3">
           <Form.Label className="">Post content</Form.Label>
-          <RichTextEditor onBlur={handleChangeContent} content={content} />
+          <RichTextEditor onBlur={handleChangeContent} />
         </Box>
         {/* Keywords */}
         <Box className="mb-3">
