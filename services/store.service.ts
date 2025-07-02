@@ -1,19 +1,21 @@
 'use server';
-import customFetch from './customFetch';
 import { revalidateTag } from 'next/cache';
-import { IResponse, IResponseWithTotal } from '@/types/share.type';
+import { IResponseWithTotal } from '@/types/share.type';
 import { StoreData, StorePayload } from '@/types/store.type';
 import customFetchWithToken from './customFetchWithToken';
 import { FilterPayload } from '@/types/filter.type';
 
 export async function filterStore(data: FilterPayload) {
-  return await customFetch<IResponseWithTotal<StoreData[]>>(`/stores/filter`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
+  return await customFetchWithToken<IResponseWithTotal<StoreData[]>>(
+    `/stores/filter`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
     },
-    body: JSON.stringify(data),
-  });
+  );
 }
 export async function getAllStores(
   page?: number,
@@ -21,18 +23,21 @@ export async function getAllStores(
   search_text: string = '',
 ) {
   const query = `?page=${page ?? ''}&limit=${limit ?? ''}&search_text=${search_text ?? ''}`;
-  return await customFetch<IResponseWithTotal<StoreData[]>>(`/stores${query}`, {
-    method: 'GET',
-    next: {
-      tags: ['stores-data'],
+  return await customFetchWithToken<IResponseWithTotal<StoreData[]>>(
+    `/stores${query}`,
+    {
+      method: 'GET',
+      next: {
+        tags: ['stores-data'],
+      },
     },
-  });
+  );
 }
-export async function getStoreBySlug(slug: string) {
-  return await customFetch<StoreData>(`/stores/${slug}`, {
+export async function getStoreById(id: string) {
+  return await customFetchWithToken<StoreData>(`/stores/${id}`, {
     method: 'GET',
     next: {
-      tags: [`store-${slug}`],
+      tags: [`store-${id}`],
     },
   });
 }
@@ -46,7 +51,6 @@ export async function updateStore(id: number, payload: StorePayload) {
   });
   if (res.success) {
     revalidateTag('stores-data');
-    revalidateTag('category-' + res.data?.slug);
   }
   return res;
 }

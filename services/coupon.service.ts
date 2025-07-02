@@ -1,13 +1,12 @@
 'use server';
-import customFetch from './customFetch';
 import { revalidateTag } from 'next/cache';
-import { IResponse, IResponseWithTotal } from '@/types/share.type';
+import { IResponseWithTotal } from '@/types/share.type';
 import customFetchWithToken from './customFetchWithToken';
 import { CouponData, CouponPayload } from '@/types/coupon.type';
 import { FilterPayload } from '@/types/filter.type';
 
 export async function filterCoupon(data: FilterPayload) {
-  return await customFetch<IResponseWithTotal<CouponData[]>>(
+  return await customFetchWithToken<IResponseWithTotal<CouponData[]>>(
     `/coupons/filter`,
     {
       method: 'POST',
@@ -18,40 +17,9 @@ export async function filterCoupon(data: FilterPayload) {
     },
   );
 }
-export async function getAllCoupons(
-  page?: number,
-  limit?: number,
-  search_text: string = '',
-) {
-  const query = `?page=${page ?? ''}&limit=${limit ?? ''}&search_text=${search_text ?? ''}`;
-  return await customFetch<IResponseWithTotal<CouponData[]>>(
-    `/coupons${query}`,
-    {
-      method: 'GET',
-      next: {
-        tags: ['coupons-data'],
-      },
-    },
-  );
-}
-export async function getUnverifiedCoupons(
-  page?: number,
-  limit?: number,
-  search_text: string = '',
-) {
-  const query = `?page=${page ?? ''}&limit=${limit ?? ''}&search_text=${search_text ?? ''}`;
-  return await customFetchWithToken<IResponseWithTotal<CouponData[]>>(
-    `/coupons/submit${query}`,
-    {
-      method: 'GET',
-      next: {
-        tags: ['coupons-submit-data'],
-      },
-    },
-  );
-}
+
 export async function getCouponsById(id: string) {
-  return await customFetch<CouponData>(`/coupons/${id}`, {
+  return await customFetchWithToken<CouponData>(`/coupons/${id}`, {
     method: 'GET',
     next: {
       tags: [`coupon-${id}`],

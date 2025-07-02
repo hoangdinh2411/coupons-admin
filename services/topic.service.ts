@@ -7,12 +7,15 @@ import { TopicData, TopicPayload } from '@/types/topic.type';
 
 export async function getTopics(page?: number, search_text: string = '') {
   const query = `?page=${page}&search_text=${search_text}`;
-  return await customFetch<IResponseWithTotal<TopicData[]>>(`/topic${query}`, {
-    method: 'GET',
-    next: {
-      tags: ['topic-data'],
+  return await customFetchWithToken<IResponseWithTotal<TopicData[]>>(
+    `/topic${query}`,
+    {
+      method: 'GET',
+      next: {
+        tags: ['topic-data'],
+      },
     },
-  });
+  );
 }
 export async function updateTopic(id: number, payload: TopicPayload) {
   const res = await customFetchWithToken<TopicData>(`/topic/${id}`, {
@@ -24,7 +27,6 @@ export async function updateTopic(id: number, payload: TopicPayload) {
   });
   if (res.success) {
     revalidateTag('topic-data');
-    revalidateTag('topic-' + id);
   }
   return res;
 }

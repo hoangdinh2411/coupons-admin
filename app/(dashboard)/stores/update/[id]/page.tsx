@@ -1,5 +1,5 @@
 import { Box, Paper } from '@mui/material';
-import { getStoreBySlug } from '@/services/store.service';
+import { getStoreById } from '@/services/store.service';
 import { notFound } from 'next/navigation';
 import Breadcrumb from '../../Breadcrumb';
 import UpdateForm from './UpdateForm';
@@ -14,7 +14,7 @@ export default async function StoreFormPage({
   if (!id) {
     return notFound();
   }
-  let res = await getStoreBySlug(id);
+  let res = await getStoreById(id);
   if (res.success && res.data) {
     return (
       <Paper

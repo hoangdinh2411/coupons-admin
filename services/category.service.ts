@@ -1,6 +1,5 @@
 'use server';
 import { CategoryData, CategoryPayload } from '@/types/category.type';
-import customFetch from './customFetch';
 import { revalidateTag } from 'next/cache';
 import { IResponseWithTotal } from '@/types/share.type';
 import customFetchWithToken from './customFetchWithToken';
@@ -11,7 +10,7 @@ export async function getCategories(
   search_text: string = '',
 ) {
   const query = `?page=${page}&limit=${limit}&search_text=${search_text}`;
-  return await customFetch<IResponseWithTotal<CategoryData[]>>(
+  return await customFetchWithToken<IResponseWithTotal<CategoryData[]>>(
     `/categories${query}`,
     {
       method: 'GET',
@@ -31,7 +30,6 @@ export async function updateCategory(id: number, payload: CategoryPayload) {
   });
   if (res.success) {
     revalidateTag('categories-data');
-    revalidateTag('category-' + id);
   }
   return res;
 }
