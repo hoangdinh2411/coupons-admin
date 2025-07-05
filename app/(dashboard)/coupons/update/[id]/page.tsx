@@ -2,6 +2,8 @@ import { Box, Paper } from '@mui/material';
 import { notFound } from 'next/navigation';
 import UpdateForm from './UpdateForm';
 import { getCouponsById } from '@/services/coupon.service';
+import { Suspense } from 'react';
+import CustomLoading from '@/shared/layouts-components/custom-loading/CustomLoading';
 
 export default async function StoreFormPage({
   params,
@@ -14,8 +16,11 @@ export default async function StoreFormPage({
     return notFound();
   }
   let res = await getCouponsById(id);
-  if (res.success && res.data) {
-    return (
+  if (!res.success || !res.data) {
+    notFound();
+  }
+  return (
+    <Suspense fallback={<CustomLoading />}>
       <Paper
         sx={{
           p: 4,
@@ -26,6 +31,6 @@ export default async function StoreFormPage({
         </Box>
         <UpdateForm item={res.data} />
       </Paper>
-    );
-  }
+    </Suspense>
+  );
 }

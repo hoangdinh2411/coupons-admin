@@ -2,6 +2,8 @@ import { Box, Paper } from '@mui/material';
 import { notFound } from 'next/navigation';
 import UpdateForm from './UpdateForm';
 import { getBlogBy } from '@/services/blog';
+import { Suspense } from 'react';
+import CustomLoading from '@/shared/layouts-components/custom-loading/CustomLoading';
 
 export default async function StoreFormPage({
   params,
@@ -18,15 +20,17 @@ export default async function StoreFormPage({
     notFound();
   }
   return (
-    <Paper
-      sx={{
-        p: 4,
-      }}
-    >
-      <Box display={'flex'} mb={1} justifyContent={'space-between'}>
-        <h6>Update store</h6>
-      </Box>
-      <UpdateForm item={res.data} />
-    </Paper>
+    <Suspense fallback={<CustomLoading />}>
+      <Paper
+        sx={{
+          p: 4,
+        }}
+      >
+        <Box display={'flex'} mb={1} justifyContent={'space-between'}>
+          <h6>Update store</h6>
+        </Box>
+        <UpdateForm item={res.data} />
+      </Paper>
+    </Suspense>
   );
 }

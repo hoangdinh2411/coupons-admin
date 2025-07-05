@@ -18,13 +18,11 @@ export default async function CouponPage(props: {
   }
   return (
     <Suspense fallback={<CustomLoading />}>
-      {res.data && (
-        <CouponList
-          data={res.data?.results}
-          total={res.data?.total}
-          currentPage={data.page}
-        />
-      )}
+      <CouponList
+        data={res.data?.results ?? []}
+        total={res.data?.total ?? 0}
+        currentPage={data.page}
+      />
     </Suspense>
   );
 }

@@ -12,6 +12,7 @@ export interface StorePayload {
   categories?: number[];
   rating?: number;
   meta_data?: MetaData;
+  slug: string;
 }
 export interface StoreData extends TimestampedEntity {
   name: string;

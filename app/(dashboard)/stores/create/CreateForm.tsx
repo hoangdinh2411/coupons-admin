@@ -19,9 +19,9 @@ import SeoForm, {
   seoDefaultValues,
 } from '@/shared/layouts-components/seo-form/SeoForm';
 import { getKeyWordsArray } from '@/helper/keywords';
-import dynamic from 'next/dynamic';
 import CustomRichTextEditor from '../../../../shared/layouts-components/richtext-editor';
 import useRickTextEditor from '@/hooks/useRickTextEditor';
+import { generateSlug } from '@/helper/generateSlug';
 
 export const schema = z.object({
   ...seoDataSchema.shape,
@@ -41,6 +41,7 @@ export const schema = z.object({
     url: z.string().trim(),
     public_id: z.string().trim(),
   }),
+  slug: z.string().min(1, 'Slug is required'),
 });
 
 export const defaultValues: StoreFormData = {
@@ -56,6 +57,7 @@ export const defaultValues: StoreFormData = {
     url: '',
     public_id: '',
   },
+  slug: '',
 };
 export type StoreFormData = z.infer<typeof schema>;
 
@@ -70,6 +72,7 @@ export default function CreateForm() {
     handleSubmit,
     control,
     reset,
+    watch,
     setValue,
     formState: { errors },
   } = method;
@@ -77,6 +80,11 @@ export default function CreateForm() {
   const { categories, setStores, stores } = UseAppStore((state) => state);
   const { getContent, rteRef, clearAll } = useRickTextEditor();
 
+  const watchName = watch('name');
+
+  useEffect(() => {
+    setValue('slug', generateSlug(watchName));
+  }, [watchName]);
   const handleChangeContent = (value: string) => {
     setValue('description', value);
   };
@@ -121,6 +129,17 @@ export default function CreateForm() {
           />
           {errors.name && (
             <small className="text-danger">{errors.name.message}</small>
+          )}
+        </Box>
+        <Box className="mb-3">
+          <Form.Label className="text-default">Store Slug</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Slug for store"
+            {...register('slug')}
+          />
+          {errors.slug && (
+            <small className="text-danger">{errors.slug.message}</small>
           )}
         </Box>
 

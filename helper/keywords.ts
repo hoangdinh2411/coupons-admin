@@ -3,7 +3,7 @@ export const getKeyWordsArray = (keywords: string): string[] => {
 };
 
 export const getKeyWordsString = (keywords: string[]): string => {
-  return keywords.length > 0
-    ? keywords.map((item) => item.trim()).join(', ')
+  return Array.isArray(keywords)
+    ? keywords?.map((item) => item.trim()).join(', ')
     : '';
 };

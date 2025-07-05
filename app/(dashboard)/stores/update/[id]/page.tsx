@@ -3,6 +3,8 @@ import { getStoreById } from '@/services/store.service';
 import { notFound } from 'next/navigation';
 import Breadcrumb from '../../Breadcrumb';
 import UpdateForm from './UpdateForm';
+import CustomLoading from '@/shared/layouts-components/custom-loading/CustomLoading';
+import { Suspense } from 'react';
 
 export default async function StoreFormPage({
   params,
@@ -15,8 +17,11 @@ export default async function StoreFormPage({
     return notFound();
   }
   let res = await getStoreById(id);
-  if (res.success && res.data) {
-    return (
+  if (!res.success || !res.data) {
+    notFound();
+  }
+  return (
+    <Suspense fallback={<CustomLoading />}>
       <Paper
         sx={{
           p: 4,
@@ -28,6 +33,6 @@ export default async function StoreFormPage({
         </Box>
         <UpdateForm item={res.data} />
       </Paper>
-    );
-  }
+    </Suspense>
+  );
 }

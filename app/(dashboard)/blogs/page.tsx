@@ -22,13 +22,11 @@ export default async function PostManagementPage(props: {
   }
   return (
     <Suspense fallback={<CustomLoading />}>
-      {res.data && (
-        <BlogList
-          data={res.data?.results}
-          total={res.data?.total}
-          currentPage={page}
-        />
-      )}
+      <BlogList
+        data={res.data?.results ?? []}
+        total={res.data?.total ?? 0}
+        currentPage={page}
+      />
     </Suspense>
   );
 }

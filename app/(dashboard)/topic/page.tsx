@@ -24,8 +24,8 @@ export default async function TopicPage(props: {
   return (
     <Suspense fallback={<CustomLoading />}>
       <TopicList
-        data={res.data?.results}
-        total={res.data?.total}
+        data={res.data?.results ?? []}
+        total={res.data?.total ?? 0}
         currentPage={page}
       />
     </Suspense>

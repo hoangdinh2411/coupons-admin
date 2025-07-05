@@ -20,13 +20,11 @@ export default async function CategoryPage(props: {
   }
   return (
     <Suspense fallback={<CustomLoading />}>
-      {res.data && (
-        <CategoryList
-          data={res.data?.results}
-          total={res.data?.total}
-          currentPage={page}
-        />
-      )}
+      <CategoryList
+        data={res.data?.results ?? []}
+        total={res.data?.total ?? 0}
+        currentPage={page}
+      />
     </Suspense>
   );
 }

@@ -19,6 +19,7 @@ import SeoForm from '@/shared/layouts-components/seo-form/SeoForm';
 import dynamic from 'next/dynamic';
 import CustomRichTextEditor from '../../../../../shared/layouts-components/richtext-editor';
 import useRickTextEditor from '@/hooks/useRickTextEditor';
+import { generateSlug } from '@/helper/generateSlug';
 
 type Props = {
   item: StoreData | null;
@@ -35,6 +36,7 @@ export default function UpdateForm({ item }: Props) {
     control,
     setValue,
     reset,
+    watch,
     formState: { errors },
   } = method;
   const { getContent, rteRef, setContent } = useRickTextEditor();
@@ -109,7 +111,17 @@ export default function UpdateForm({ item }: Props) {
             <small className="text-danger">{errors.name.message}</small>
           )}
         </Box>
-
+        <Box className="mb-3">
+          <Form.Label className="text-default">Store Slug</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Slug for store"
+            {...register('slug')}
+          />
+          {errors.slug && (
+            <small className="text-danger">{errors.slug.message}</small>
+          )}
+        </Box>
         {/* Description */}
         <Box className="mb-3">
           <Form.Label className="text-default">Description</Form.Label>
