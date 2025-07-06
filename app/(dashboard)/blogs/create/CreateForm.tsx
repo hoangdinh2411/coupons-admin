@@ -1,5 +1,5 @@
 'use client';
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import { useForm, Controller, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -21,6 +21,7 @@ import UploadFile, {
 } from '@/shared/layouts-components/uploadFile/UploadFile';
 import CustomRichTextEditor from '@/shared/layouts-components/richtext-editor';
 import useRickTextEditor from '@/hooks/useRickTextEditor';
+import { generateSlug } from '@/helper/generateSlug';
 export const blogSchema = z.object({
   ...seoDataSchema.shape,
   title: z.string().min(1, 'Coupon title is required'),
@@ -36,6 +37,7 @@ export const blogSchema = z.object({
     url: z.string(),
     public_id: z.string(),
   }),
+  slug: z.string().min(1, 'Slug is required'),
 });
 
 export const defaultValues: BlogFormData = {
@@ -49,6 +51,7 @@ export const defaultValues: BlogFormData = {
     url: '',
     public_id: '',
   },
+  slug: '',
 };
 export type BlogFormData = z.infer<typeof blogSchema>;
 
@@ -64,14 +67,19 @@ export default function CreateForm() {
     setValue,
     control,
     reset,
-    formState: { errors, isSubmitSuccessful },
+    watch,
+    formState: { errors },
   } = method;
   const { topics } = UseAppStore((state) => state);
   const { getContent, rteRef, clearAll } = useRickTextEditor();
   const handleChangeContent = (value: string) => {
     setValue('content', value);
   };
+  const watchName = watch('title');
 
+  useEffect(() => {
+    setValue('slug', generateSlug(watchName));
+  }, [watchName]);
   const onSubmit = async (data: BlogFormData) => {
     const content = await getContent();
     const payload: BlogPayload = {
@@ -114,6 +122,18 @@ export default function CreateForm() {
             <small className="text-danger">{errors.title.message}</small>
           )}
         </Box>
+        <Box className="mb-3">
+          <Form.Label className="text-default">Blog Slug</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Slug for blog"
+            {...register('slug')}
+          />
+          {errors.slug && (
+            <small className="text-danger">{errors.slug.message}</small>
+          )}
+        </Box>
+
         <Box mb={2}>
           <Form.Label className="fw-bold text-default">Image</Form.Label>
           <Box display="flex" alignItems="flex-start" flexDirection={'column'}>

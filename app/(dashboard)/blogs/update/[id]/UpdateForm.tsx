@@ -76,7 +76,7 @@ export default function UpdateForm({ item }: { item: BlogData }) {
       loading: 'Pending...!',
       success: (res) => {
         if (res.success && res.data) {
-          return 'Created successfully';
+          return 'Updated successfully';
         }
         throw res.message;
       },
@@ -97,6 +97,17 @@ export default function UpdateForm({ item }: { item: BlogData }) {
           />
           {errors.title && (
             <small className="text-danger">{errors.title.message}</small>
+          )}
+        </Box>
+        <Box className="mb-3">
+          <Form.Label className="text-default">Blog Slug</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Slug for blog"
+            {...register('slug')}
+          />
+          {errors.slug && (
+            <small className="text-danger">{errors.slug.message}</small>
           )}
         </Box>
         <Box mb={2}>
