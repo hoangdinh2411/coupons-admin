@@ -12,6 +12,7 @@ import {
   Radio,
   RadioGroup,
   Select,
+  SelectChangeEvent,
 } from '@mui/material';
 import { Col, Form, FormControl, Row } from 'react-bootstrap';
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
@@ -28,7 +29,7 @@ const types = Object.values(CouponType);
 export const schema = z
   .object({
     title: z.string().min(1, 'Coupon title is required').trim(),
-    code: z.string().min(1, 'Code is required').trim(),
+    code: z.string().trim(),
     offer_detail: z.string().min(1, 'Offer detail is required').trim(),
     is_exclusive: z.boolean(),
     expire_date: z.date({
@@ -43,12 +44,8 @@ export const schema = z
     store_id: z.number({
       message: 'Select store',
     }),
-    offer_link: z.string().optional(),
-    type: z
-      .string({
-        message: 'Coupon type is required',
-      })
-      .trim(),
+    offer_link: z.string().trim().optional(),
+    type: z.enum(Object.values(CouponType) as [string, ...string[]]),
   })
   .refine((data) => dayjs(data.expire_date).isAfter(dayjs(data.start_date)), {
     message: 'Expire date must be after start date',
@@ -75,7 +72,9 @@ export default function CreateForm() {
     handleSubmit,
     control,
     reset,
-    formState: { errors, isSubmitSuccessful },
+    setValue,
+    watch,
+    formState: { errors },
   } = useForm<CouponFormData>({
     resolver: zodResolver(schema),
     defaultValues,
@@ -106,7 +105,28 @@ export default function CreateForm() {
     });
   };
 
-  console.log(errors);
+  const type = watch('type');
+
+  const handleChange = (
+    e: SelectChangeEvent,
+    onChange: (...event: any[]) => void,
+  ) => {
+    const selectedType = e.target.value;
+
+    // Gọi onChange để cập nhật 'type' trong form state
+    onChange(e);
+
+    // Xử lý logic liên quan
+    if (selectedType === CouponType.CODE) {
+      setValue('offer_link', '');
+    } else if (selectedType === CouponType.ONLINE_AND_IN_STORE) {
+      setValue('code', '');
+    } else {
+      setValue('code', '');
+      setValue('offer_link', '');
+    }
+  };
+
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
       <Box sx={{ my: 3 }}>
@@ -155,16 +175,65 @@ export default function CreateForm() {
         )}
       </Box>
       <Box className="mb-3">
-        <Form.Label className="text-default">Offer link</Form.Label>
-        <Form.Control
-          type="text"
-          placeholder="Enter offer link"
-          {...register('offer_link')}
+        <Form.Label className="text-default">Coupon type</Form.Label>
+        <Controller
+          control={control}
+          name="type"
+          render={({ field: { onChange, value, ref } }) => {
+            return (
+              <Fragment>
+                <Select
+                  fullWidth
+                  size="small"
+                  id="coupon-type"
+                  ref={ref}
+                  value={value}
+                  onChange={(e) => handleChange(e, onChange)}
+                >
+                  <MenuItem disabled>
+                    <em>Select type</em>
+                  </MenuItem>
+                  {types &&
+                    types.map((t: string, idx: number) => (
+                      <MenuItem key={idx} value={t}>
+                        {t}
+                      </MenuItem>
+                    ))}
+                </Select>
+                {errors.type && (
+                  <small className="text-danger">{errors.type.message}</small>
+                )}
+              </Fragment>
+            );
+          }}
         />
-        {errors.offer_link && (
-          <small className="text-danger">{errors.offer_link.message}</small>
-        )}
       </Box>
+      {type === CouponType.ONLINE_AND_IN_STORE && (
+        <Box className="mb-3">
+          <Form.Label className="text-default">Offer link</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Enter offer link"
+            {...register('offer_link')}
+          />
+          {errors.offer_link && (
+            <small className="text-danger">{errors.offer_link.message}</small>
+          )}
+        </Box>
+      )}
+      {type === CouponType.CODE && (
+        <Box className="mb-3">
+          <Form.Label className="text-default">Code</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Enter coupon title"
+            {...register('code')}
+          />
+          {errors.code && (
+            <small className="text-danger">{errors.code.message}</small>
+          )}
+        </Box>
+      )}
 
       {/* Description */}
       <Box className="mb-3">
@@ -177,19 +246,6 @@ export default function CreateForm() {
         />
         {errors.offer_detail && (
           <small className="text-danger">{errors.offer_detail.message}</small>
-        )}
-      </Box>
-
-      {/* Code */}
-      <Box className="mb-3">
-        <Form.Label className="text-default">Code</Form.Label>
-        <Form.Control
-          type="text"
-          placeholder="Enter coupon title"
-          {...register('code')}
-        />
-        {errors.code && (
-          <small className="text-danger">{errors.code.message}</small>
         )}
       </Box>
 
@@ -248,40 +304,6 @@ export default function CreateForm() {
           )}
         </Col>
 
-        <Col xl={6}>
-          <Form.Label className="text-default">Coupon type</Form.Label>
-          <Controller
-            control={control}
-            name="type"
-            render={({ field: { onChange, value, ref } }) => {
-              return (
-                <Fragment>
-                  <Select
-                    fullWidth
-                    size="small"
-                    id="coupon-type"
-                    ref={ref}
-                    value={value}
-                    onChange={onChange}
-                  >
-                    <MenuItem disabled value={''}>
-                      <em>Select type</em>
-                    </MenuItem>
-                    {types &&
-                      types.map((t: string, idx: number) => (
-                        <MenuItem key={idx} value={t}>
-                          {t}
-                        </MenuItem>
-                      ))}
-                  </Select>
-                  {errors.type && (
-                    <small className="text-danger">{errors.type.message}</small>
-                  )}
-                </Fragment>
-              );
-            }}
-          />
-        </Col>
         {/* Category */}
 
         {/* Store select */}
@@ -307,7 +329,7 @@ export default function CreateForm() {
                     }}
                     input={<OutlinedInput placeholder="Select categories" />}
                   >
-                    <MenuItem disabled value={''}>
+                    <MenuItem disabled value={[]}>
                       <em>Select multi categories</em>
                     </MenuItem>
                     {categories.map((name) => (

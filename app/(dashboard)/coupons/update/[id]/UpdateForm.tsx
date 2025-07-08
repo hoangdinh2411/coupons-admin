@@ -10,6 +10,7 @@ import {
   Radio,
   RadioGroup,
   Select,
+  SelectChangeEvent,
 } from '@mui/material';
 import { Col, Form, Row } from 'react-bootstrap';
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
@@ -30,6 +31,8 @@ export default function UpdateForm({ item }: { item: CouponData }) {
     handleSubmit,
     control,
     reset,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm<CouponFormData>({
     resolver: zodResolver(schema),
@@ -71,214 +74,29 @@ export default function UpdateForm({ item }: { item: CouponData }) {
     });
   };
 
-  console.log(errors);
+  const type = watch('type');
+
+  const handleChange = (
+    e: SelectChangeEvent,
+    onChange: (...event: any[]) => void,
+  ) => {
+    const selectedType = e.target.value;
+
+    // Gọi onChange để cập nhật 'type' trong form state
+    onChange(e);
+
+    // Xử lý logic liên quan
+    if (selectedType === CouponType.CODE) {
+      setValue('offer_link', item.offer_link ?? '');
+    } else if (selectedType === CouponType.ONLINE_AND_IN_STORE) {
+      setValue('code', item.code ?? '');
+    } else {
+      setValue('code', item.code ?? '');
+      setValue('offer_link', item.offer_link ?? '');
+    }
+  };
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
-      {/* Store Name */}
-      <Box className="mb-3">
-        <Form.Label className="text-default">Title</Form.Label>
-        <Form.Control
-          type="text"
-          placeholder="Enter coupon title"
-          {...register('title')}
-        />
-        {errors.title && (
-          <small className="text-danger">{errors.title.message}</small>
-        )}
-      </Box>
-      <Box className="mb-3">
-        <Form.Label className="text-default">Offer link</Form.Label>
-        <Form.Control
-          type="text"
-          placeholder="Enter offer link"
-          {...register('offer_link')}
-        />
-        {errors.offer_link && (
-          <small className="text-danger">{errors.offer_link.message}</small>
-        )}
-      </Box>
-      {/* Description */}
-      <Box className="mb-3">
-        <Form.Label className="text-default">Offer detail</Form.Label>
-        <Form.Control
-          as="textarea"
-          rows={5}
-          placeholder="Enter Store description"
-          {...register('offer_detail')}
-        />
-        {errors.offer_detail && (
-          <small className="text-danger">{errors.offer_detail.message}</small>
-        )}
-      </Box>
-
-      {/* Code */}
-      <Box className="mb-3">
-        <Form.Label className="text-default">Code</Form.Label>
-        <Form.Control
-          type="text"
-          placeholder="Enter coupon title"
-          {...register('code')}
-        />
-        {errors.code && (
-          <small className="text-danger">{errors.code.message}</small>
-        )}
-      </Box>
-
-      <Row className="g-3">
-        <Col xl={6}>
-          <Form.Label className="text-default">Start Date</Form.Label>
-          <Controller
-            control={control}
-            name="start_date"
-            render={({ field }) => (
-              <div className="custom-date-picker">
-                <DatePicker
-                  timeIntervals={30}
-                  isClearable
-                  dateFormat="YYYY/MM/dd"
-                  onChange={(date) => {
-                    field.onChange(date);
-                  }}
-                  placeholderText="Select start date"
-                  className="form-control flatpickr-input"
-                  selected={field.value ? field.value : null}
-                />
-              </div>
-            )}
-          />
-
-          {errors.start_date && (
-            <small className="text-danger">{errors.start_date.message}</small>
-          )}
-        </Col>
-        {/* Expired date */}
-        <Col xl={6}>
-          <Form.Label className="text-default">Expire Date</Form.Label>
-          <Controller
-            control={control}
-            name="expire_date"
-            render={({ field }) => (
-              <div className="custom-date-picker">
-                <DatePicker
-                  timeIntervals={30}
-                  isClearable
-                  dateFormat="YYYY/MM/dd"
-                  onChange={(date) => {
-                    field.onChange(date);
-                  }}
-                  placeholderText="Select expire date"
-                  className="form-control flatpickr-input"
-                  selected={field.value ? field.value : null}
-                />
-              </div>
-            )}
-          />
-
-          {errors.expire_date && (
-            <small className="text-danger">{errors.expire_date.message}</small>
-          )}
-        </Col>
-
-        <Col xl={6}>
-          <Form.Label className="text-default">Coupon type</Form.Label>
-          <Controller
-            control={control}
-            name="type"
-            render={({ field: { onChange, value, ref } }) => {
-              return (
-                <Fragment>
-                  <Form.Select ref={ref} value={value} onChange={onChange}>
-                    <option value={''}>Select type</option>
-                    {types &&
-                      types.map((t: string, idx: number) => (
-                        <option key={idx} value={t}>
-                          {t}
-                        </option>
-                      ))}
-                  </Form.Select>
-                  {errors.type && (
-                    <small className="text-danger">{errors.type.message}</small>
-                  )}
-                </Fragment>
-              );
-            }}
-          />
-        </Col>
-        {/* Category */}
-
-        {/* Store select */}
-        <Col xl={6}>
-          <Form.Label className="text-default">Category</Form.Label>
-          <Controller
-            control={control}
-            name="categories"
-            render={({ field }) => {
-              return (
-                <Fragment>
-                  <Select
-                    fullWidth
-                    size="small"
-                    labelId="demo-multiple-name-label"
-                    id="demo-multiple-name"
-                    multiple
-                    value={field.value ?? []}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      field.onChange(
-                        typeof value === 'string' ? value.split(',') : value,
-                      );
-                    }}
-                    input={<OutlinedInput placeholder="Select categories" />}
-                  >
-                    {categories.map((name) => (
-                      <MenuItem key={name.id} value={name.id}>
-                        {name.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                  {errors.categories && (
-                    <small className="text-danger">
-                      {errors.categories.message}
-                    </small>
-                  )}
-                </Fragment>
-              );
-            }}
-          />
-        </Col>
-        <Col xl={6}>
-          <Form.Label className="text-default">Store</Form.Label>
-          <Controller
-            control={control}
-            name="store_id"
-            render={({ field: { onChange, value, ref } }) => {
-              return (
-                <Fragment>
-                  <Form.Select
-                    ref={ref}
-                    value={Number(value ?? 0)}
-                    onChange={(e) => onChange(Number(e.target.value))}
-                  >
-                    <option value={0}>Select store</option>
-                    {stores &&
-                      stores.map((cat) => (
-                        <option key={cat.id} value={Number(cat.id)}>
-                          {cat.name}
-                        </option>
-                      ))}
-                  </Form.Select>
-                  {errors.store_id && (
-                    <small className="text-danger">
-                      {errors.store_id.message}
-                    </small>
-                  )}
-                </Fragment>
-              );
-            }}
-          />
-        </Col>
-        {/* Type select */}
-      </Row>
       <Box sx={{ my: 3 }}>
         <Form.Label id="demo-radio-buttons-group-label">
           Is the coupon exclusive?
@@ -312,10 +130,235 @@ export default function UpdateForm({ item }: { item: CouponData }) {
           <small className="text-danger">{errors.is_exclusive.message}</small>
         )}
       </Box>
+      {/* Store Name */}
+      <Box className="mb-3">
+        <Form.Label className="text-default">Title</Form.Label>
+        <Form.Control
+          type="text"
+          placeholder="Enter coupon title"
+          {...register('title')}
+        />
+        {errors.title && (
+          <small className="text-danger">{errors.title.message}</small>
+        )}
+      </Box>
+      <Box className="mb-3">
+        <Form.Label className="text-default">Coupon type</Form.Label>
+        <Controller
+          control={control}
+          name="type"
+          render={({ field: { onChange, value, ref } }) => {
+            return (
+              <Fragment>
+                <Select
+                  fullWidth
+                  size="small"
+                  id="coupon-type"
+                  ref={ref}
+                  value={value}
+                  onChange={(e) => handleChange(e, onChange)}
+                >
+                  <MenuItem disabled>
+                    <em>Select type</em>
+                  </MenuItem>
+                  {types &&
+                    types.map((t: string, idx: number) => (
+                      <MenuItem key={idx} value={t}>
+                        {t}
+                      </MenuItem>
+                    ))}
+                </Select>
+                {errors.type && (
+                  <small className="text-danger">{errors.type.message}</small>
+                )}
+              </Fragment>
+            );
+          }}
+        />
+      </Box>
+      {type === CouponType.ONLINE_AND_IN_STORE && (
+        <Box className="mb-3">
+          <Form.Label className="text-default">Offer link</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Enter offer link"
+            {...register('offer_link')}
+          />
+          {errors.offer_link && (
+            <small className="text-danger">{errors.offer_link.message}</small>
+          )}
+        </Box>
+      )}
+      {type === CouponType.CODE && (
+        <Box className="mb-3">
+          <Form.Label className="text-default">Code</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Enter coupon title"
+            {...register('code')}
+          />
+          {errors.code && (
+            <small className="text-danger">{errors.code.message}</small>
+          )}
+        </Box>
+      )}
+
+      {/* Description */}
+      <Box className="mb-3">
+        <Form.Label className="text-default">Offer detail</Form.Label>
+        <Form.Control
+          as="textarea"
+          rows={5}
+          placeholder="Enter Store description"
+          {...register('offer_detail')}
+        />
+        {errors.offer_detail && (
+          <small className="text-danger">{errors.offer_detail.message}</small>
+        )}
+      </Box>
+
+      <Row className="g-3">
+        {/* Expired date */}
+        <Col xl={6}>
+          <Form.Label className="text-default">Start Date</Form.Label>
+          <Controller
+            control={control}
+            name="start_date"
+            render={({ field }) => (
+              <div className="custom-date-picker">
+                <DatePicker
+                  timeIntervals={30}
+                  isClearable
+                  dateFormat="YYYY/MM/dd"
+                  onChange={(date) => {
+                    field.onChange(date);
+                  }}
+                  placeholderText="Select start date"
+                  className="form-control flatpickr-input"
+                  selected={field.value ? field.value : null}
+                />
+              </div>
+            )}
+          />
+
+          {errors.start_date && (
+            <small className="text-danger">{errors.start_date.message}</small>
+          )}
+        </Col>
+        <Col xl={6}>
+          <Form.Label className="text-default">Expire Date</Form.Label>
+          <Controller
+            control={control}
+            name="expire_date"
+            render={({ field }) => (
+              <div className="custom-date-picker">
+                <DatePicker
+                  timeIntervals={30}
+                  isClearable
+                  dateFormat="YYYY/MM/dd"
+                  onChange={(date) => {
+                    field.onChange(date);
+                  }}
+                  placeholderText="Select expire date"
+                  className="form-control flatpickr-input"
+                  selected={field.value ? field.value : null}
+                />
+              </div>
+            )}
+          />
+
+          {errors.expire_date && (
+            <small className="text-danger">{errors.expire_date.message}</small>
+          )}
+        </Col>
+
+        {/* Category */}
+
+        {/* Store select */}
+        <Col xl={6}>
+          <Form.Label className="text-default">Categories</Form.Label>
+          <Controller
+            control={control}
+            name="categories"
+            render={({ field }) => {
+              return (
+                <div>
+                  <Select
+                    fullWidth
+                    size="small"
+                    id="demo-multiple-name"
+                    multiple
+                    value={field.value ?? []}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      field.onChange(
+                        typeof value === 'string' ? value.split(',') : value,
+                      );
+                    }}
+                    input={<OutlinedInput placeholder="Select categories" />}
+                  >
+                    <MenuItem disabled value={''}>
+                      <em>Select multi categories</em>
+                    </MenuItem>
+                    {categories.map((name) => (
+                      <MenuItem key={name.id} value={name.id}>
+                        {name.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  {errors.categories && (
+                    <small className="text-danger">
+                      {errors.categories.message}
+                    </small>
+                  )}
+                </div>
+              );
+            }}
+          />
+        </Col>
+        <Col xl={6}>
+          <Form.Label className="text-default">Store</Form.Label>
+          <Controller
+            control={control}
+            name="store_id"
+            render={({ field: { onChange, value, ref } }) => {
+              return (
+                <Fragment>
+                  <Select
+                    fullWidth
+                    size="small"
+                    id="coupon-store"
+                    ref={ref}
+                    value={Number(value ?? 0)}
+                    onChange={onChange}
+                  >
+                    <MenuItem disabled value={Number('-1')}>
+                      <em>Select store</em>
+                    </MenuItem>
+                    {stores &&
+                      stores.map((store) => (
+                        <MenuItem key={store.id} value={store.id}>
+                          {store.name}
+                        </MenuItem>
+                      ))}
+                  </Select>
+                  {errors.store_id && (
+                    <small className="text-danger">
+                      {errors.store_id.message}
+                    </small>
+                  )}
+                </Fragment>
+              );
+            }}
+          />
+        </Col>
+        {/* Type select */}
+      </Row>
+
       {/* Submit */}
       <Box display="flex" justifyContent="end" mt={4} gap={1}>
         <SpkButton Buttonvariant="primary" Buttontype="submit">
-          Create Coupon
+          Update Coupon
         </SpkButton>
       </Box>
     </Form>

@@ -21,7 +21,6 @@ type Props = {
 };
 const HEADER = [
   { title: 'Title' },
-  { title: 'Code' },
   { title: 'Store' },
   { title: 'Category' },
   { title: 'Start Date' },
@@ -98,7 +97,6 @@ export default function CouponList({
             {data.map((coupon: CouponData) => (
               <tr key={coupon.id}>
                 <td>{coupon.title}</td>
-                <td>{coupon.code}</td>
                 <td>{coupon.store?.name || 'N/A'}</td>
                 <td>
                   {' '}
