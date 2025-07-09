@@ -117,13 +117,8 @@ export default function CreateForm() {
     onChange(e);
 
     // Xử lý logic liên quan
-    if (selectedType === CouponType.CODE) {
-      setValue('offer_link', '');
-    } else if (selectedType === CouponType.ONLINE_AND_IN_STORE) {
+    if (selectedType !== CouponType.CODE) {
       setValue('code', '');
-    } else {
-      setValue('code', '');
-      setValue('offer_link', '');
     }
   };
 
@@ -190,7 +185,7 @@ export default function CreateForm() {
                   value={value}
                   onChange={(e) => handleChange(e, onChange)}
                 >
-                  <MenuItem disabled>
+                  <MenuItem value={''} disabled>
                     <em>Select type</em>
                   </MenuItem>
                   {types &&
@@ -208,19 +203,6 @@ export default function CreateForm() {
           }}
         />
       </Box>
-      {type === CouponType.ONLINE_AND_IN_STORE && (
-        <Box className="mb-3">
-          <Form.Label className="text-default">Offer link</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Enter offer link"
-            {...register('offer_link')}
-          />
-          {errors.offer_link && (
-            <small className="text-danger">{errors.offer_link.message}</small>
-          )}
-        </Box>
-      )}
       {type === CouponType.CODE && (
         <Box className="mb-3">
           <Form.Label className="text-default">Code</Form.Label>
@@ -234,6 +216,17 @@ export default function CreateForm() {
           )}
         </Box>
       )}
+      <Box className="mb-3">
+        <Form.Label className="text-default">Offer link</Form.Label>
+        <Form.Control
+          type="text"
+          placeholder="Enter offer link"
+          {...register('offer_link')}
+        />
+        {errors.offer_link && (
+          <small className="text-danger">{errors.offer_link.message}</small>
+        )}
+      </Box>
 
       {/* Description */}
       <Box className="mb-3">

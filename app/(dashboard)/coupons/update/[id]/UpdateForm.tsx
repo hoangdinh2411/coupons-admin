@@ -86,13 +86,8 @@ export default function UpdateForm({ item }: { item: CouponData }) {
     onChange(e);
 
     // Xử lý logic liên quan
-    if (selectedType === CouponType.CODE) {
-      setValue('offer_link', item.offer_link ?? '');
-    } else if (selectedType === CouponType.ONLINE_AND_IN_STORE) {
+    if (selectedType !== CouponType.CODE) {
       setValue('code', item.code ?? '');
-    } else {
-      setValue('code', item.code ?? '');
-      setValue('offer_link', item.offer_link ?? '');
     }
   };
   return (
@@ -158,7 +153,7 @@ export default function UpdateForm({ item }: { item: CouponData }) {
                   value={value}
                   onChange={(e) => handleChange(e, onChange)}
                 >
-                  <MenuItem disabled>
+                  <MenuItem value="" disabled>
                     <em>Select type</em>
                   </MenuItem>
                   {types &&
@@ -176,19 +171,6 @@ export default function UpdateForm({ item }: { item: CouponData }) {
           }}
         />
       </Box>
-      {type === CouponType.ONLINE_AND_IN_STORE && (
-        <Box className="mb-3">
-          <Form.Label className="text-default">Offer link</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Enter offer link"
-            {...register('offer_link')}
-          />
-          {errors.offer_link && (
-            <small className="text-danger">{errors.offer_link.message}</small>
-          )}
-        </Box>
-      )}
       {type === CouponType.CODE && (
         <Box className="mb-3">
           <Form.Label className="text-default">Code</Form.Label>
@@ -202,6 +184,17 @@ export default function UpdateForm({ item }: { item: CouponData }) {
           )}
         </Box>
       )}
+      <Box className="mb-3">
+        <Form.Label className="text-default">Offer link</Form.Label>
+        <Form.Control
+          type="text"
+          placeholder="Enter offer link"
+          {...register('offer_link')}
+        />
+        {errors.offer_link && (
+          <small className="text-danger">{errors.offer_link.message}</small>
+        )}
+      </Box>
 
       {/* Description */}
       <Box className="mb-3">
