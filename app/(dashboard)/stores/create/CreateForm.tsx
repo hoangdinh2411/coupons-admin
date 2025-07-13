@@ -1,10 +1,10 @@
 'use client';
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment, useEffect, useRef, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Box, Paper } from '@mui/material';
-import { Form } from 'react-bootstrap';
+import { Box, Paper, Typography } from '@mui/material';
+import { Accordion, Button, Form } from 'react-bootstrap';
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
 
 import UploadFile, {
@@ -16,6 +16,20 @@ import { StoreData, StorePayload } from '@/types/store.type';
 import UseAppStore from '@/store/useAppStore';
 import { generateImageBytesObjectFromBase64 } from '@/helper/image';
 import { useRouter } from 'next/navigation';
+import AccordionFAQ from './AccordionFAQ';
+export interface FAQItem {
+  id: number;
+  ques: string;
+  answ: string;
+}
+
+export interface AccordionFAQProps {
+  eventKey: number;
+  ques: string;
+  answ: string;
+  handleSetFAQ: (updatedItem: FAQItem) => void;
+  onRemoveAccordion: (index: number) => void;
+}
 
 export const schema = z.object({
   name: z.string().min(1, 'Store name is required'),
@@ -94,6 +108,32 @@ export default function CreateForm() {
   const handleUploadFile = (data: ImageByte) => {
     setValue('image', data);
   };
+
+  const [faqList, setFaqList] = useState<FAQItem[]>([]);
+  const [isFaqInvalid, setIsFaqInvalid] = useState(false);
+  useEffect(() => {
+    const hasEmptyFAQ =
+      faqList.length > 0 &&
+      faqList.some((faq) => faq.ques.trim() === '' || faq.answ.trim() === '');
+
+    setIsFaqInvalid(hasEmptyFAQ);
+  }, [faqList]);
+
+  const onCreateAccordion = () => {
+    const randomId = () => Date.now() + Math.floor(Math.random() * 1000);
+
+    setFaqList((prev) => [...prev, { id: randomId(), ques: '', answ: '' }]);
+  };
+  const onRemoveAccordion = (id: number) => {
+    setFaqList((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  const handleSetFAQItem = (id: number, updatedItem: Omit<FAQItem, 'id'>) => {
+    setFaqList((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, ...updatedItem } : item)),
+    );
+  };
+  console.log('💲💲💲 ~ CreateForm ~ faqList:', faqList);
 
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
@@ -215,6 +255,56 @@ export default function CreateForm() {
         />
         {errors.image?.message && (
           <small className="text-danger">Image required</small>
+        )}
+      </Box>
+      <Box
+        sx={{
+          p: 2,
+          border: '1px solid',
+          borderColor: 'grey.100',
+          borderRadius: 2,
+          mt: 2,
+          mb: 2,
+        }}
+      >
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          mb={2}
+        >
+          <Form.Label className="text-default mb-0">
+            FAQS List {` ${faqList ? faqList.length : ''}`}
+          </Form.Label>
+          <SpkButton
+            Buttonvariant="success"
+            Buttontype="button"
+            onClickfunc={onCreateAccordion}
+            Disabled={isFaqInvalid}
+          >
+            + Add FAQ
+          </SpkButton>
+        </Box>
+
+        {faqList.length === 0 ? (
+          <Typography variant="body2" color="text.secondary">
+            No FAQ added yet.
+          </Typography>
+        ) : (
+          <Accordion defaultActiveKey="0">
+            {faqList.map((item) => (
+              <AccordionFAQ
+                key={item.id}
+                eventKey={item.id}
+                ques={item.ques}
+                answ={item.answ}
+                handleSetFAQ={(updatedItem) =>
+                  handleSetFAQItem(item.id, updatedItem)
+                }
+                onRemoveAccordion={() => onRemoveAccordion(item.id)}
+              />
+            ))}
+          </Accordion>
         )}
       </Box>
 
