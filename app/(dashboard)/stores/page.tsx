@@ -12,10 +12,10 @@ export default async function StorePage(props: {
   }>;
 }) {
   const searchParams = await props.searchParams;
-  const { categories, rating, search_text, page } = makeFilterData(
+  const { categories, rating, search_text, page, limit } = makeFilterData(
     searchParams || {},
   );
-  const res = await filterStore({ categories, rating, search_text, page });
+  const res = await filterStore({ categories, rating, search_text, page, limit });
   if (!res.success || (res.success && !res.data)) {
     return res.message;
   }

@@ -98,10 +98,9 @@ export default function CouponList({
               <tr key={coupon.id}>
                 <td>{coupon.title}</td>
                 <td>{coupon.store?.name || 'N/A'}</td>
-                <td>
-                  {' '}
+                <td >
                   {coupon.categories && coupon.categories.length > 0 ? (
-                    <Box display={'flex'} gap={1} flexWrap={'wrap'}>
+                    <Box display={'flex'} gap={1} flexWrap={'wrap'} width={200} >
                       {coupon.categories.map((c) => (
                         <span key={c.id} className="badge bg-primary me-1 ">
                           {c.name}

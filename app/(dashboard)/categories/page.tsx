@@ -12,12 +12,13 @@ export default async function CategoryPage(props: {
   }>;
 }) {
   const searchParams = await props.searchParams;
-  const limit = 20;
   const { search_text, page } = makeFilterData(searchParams || {});
-  const res = await getCategories(page, limit, search_text);
+  const res = await getCategories(page, search_text);
   if (!res.success || (res.success && !res.data)) {
     return { message: res.message };
   }
+
+  console.log(res.data?.results.length, res.data?.total)
   return (
     <Suspense fallback={<CustomLoading />}>
       <CategoryList

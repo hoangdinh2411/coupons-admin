@@ -7,4 +7,5 @@ export interface FilterPayload {
   page: number;
   is_verified?: boolean;
   rating?: number;
+  limit?: number;
 }

@@ -1,5 +1,8 @@
+import { LIMIT_DEFAULT } from '@/constants/variants';
+
 export const makeFilterData = (searchParams: { [key: string]: string }) => {
   const page = Number(searchParams?.page || 1);
+  const limit = Number(searchParams?.limit || LIMIT_DEFAULT);
   const search_text = searchParams?.search_text || '';
   const categories =
     searchParams?.categories?.split(',').map((i) => Number(i)) || [];
@@ -15,5 +18,6 @@ export const makeFilterData = (searchParams: { [key: string]: string }) => {
     page,
     rating,
     topics,
+    limit,
   };
 };

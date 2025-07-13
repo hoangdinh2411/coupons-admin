@@ -4,6 +4,7 @@ import { IResponseWithTotal } from '@/types/share.type';
 import { StoreData, StorePayload } from '@/types/store.type';
 import customFetchWithToken from './customFetchWithToken';
 import { FilterPayload } from '@/types/filter.type';
+import { LIMIT_DEFAULT } from '@/constants/variants';
 
 export async function filterStore(data: FilterPayload) {
   return await customFetchWithToken<IResponseWithTotal<StoreData[]>>(
@@ -17,12 +18,8 @@ export async function filterStore(data: FilterPayload) {
     },
   );
 }
-export async function getAllStores(
-  page?: number,
-  limit?: number,
-  search_text: string = '',
-) {
-  const query = `?page=${page ?? ''}&limit=${limit ?? ''}&search_text=${search_text ?? ''}`;
+export async function getAllStores(page?: number, search_text?: string) {
+  const query = `?page=${page}&limit=${LIMIT_DEFAULT}&search_text=${search_text}`;
   return await customFetchWithToken<IResponseWithTotal<StoreData[]>>(
     `/stores${query}`,
     {

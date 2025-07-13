@@ -3,13 +3,10 @@ import { CategoryData, CategoryPayload } from '@/types/category.type';
 import { revalidateTag } from 'next/cache';
 import { IResponseWithTotal } from '@/types/share.type';
 import customFetchWithToken from './customFetchWithToken';
+import { LIMIT_DEFAULT } from '@/constants/variants';
 
-export async function getCategories(
-  page?: number,
-  limit?: number,
-  search_text: string = '',
-) {
-  const query = `?page=${page}&limit=${limit}&search_text=${search_text}`;
+export async function getCategories(page?: number, search_text: string = '') {
+  const query = `?page=${page}&limit=${LIMIT_DEFAULT}&search_text=${search_text}`;
   return await customFetchWithToken<IResponseWithTotal<CategoryData[]>>(
     `/categories${query}`,
     {

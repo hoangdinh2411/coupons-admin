@@ -28,6 +28,7 @@ export default function CategoryList({
   total = 1,
   currentPage = 1,
 }: Props) {
+  console.log(data)
   const [categoryModal, setCategoryModal] = useState<{
     isOpen: boolean;
     item: CategoryData | null;
