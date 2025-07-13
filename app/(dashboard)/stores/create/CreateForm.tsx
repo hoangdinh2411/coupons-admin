@@ -3,22 +3,21 @@ import React, { Fragment, useEffect, useRef, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Box, Paper, Typography } from '@mui/material';
-import { Accordion, Button, Form } from 'react-bootstrap';
+import { Box, Typography } from '@mui/material';
+import { Accordion, Form } from 'react-bootstrap';
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
 
 import UploadFile, {
   ImageByte,
 } from '@/shared/layouts-components/uploadFile/UploadFile';
 import toast from 'react-hot-toast';
-import { createStore, updateStore } from '@/services/store.service';
-import { StoreData, StorePayload } from '@/types/store.type';
+import { createStore } from '@/services/store.service';
+import { StorePayload } from '@/types/store.type';
 import UseAppStore from '@/store/useAppStore';
-import { generateImageBytesObjectFromBase64 } from '@/helper/image';
 import { useRouter } from 'next/navigation';
 import AccordionFAQ from './AccordionFAQ';
 export interface FAQItem {
-  id: number;
+  id?: number;
   ques: string;
   answ: string;
 }
@@ -295,13 +294,13 @@ export default function CreateForm() {
             {faqList.map((item) => (
               <AccordionFAQ
                 key={item.id}
-                eventKey={item.id}
+                eventKey={item.id ?? 0}
                 ques={item.ques}
                 answ={item.answ}
                 handleSetFAQ={(updatedItem) =>
-                  handleSetFAQItem(item.id, updatedItem)
+                  handleSetFAQItem(item?.id ?? 0, updatedItem)
                 }
-                onRemoveAccordion={() => onRemoveAccordion(item.id)}
+                onRemoveAccordion={() => onRemoveAccordion(item.id ?? 0)}
               />
             ))}
           </Accordion>

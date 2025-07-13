@@ -2,7 +2,7 @@ import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk
 import { Box, Typography } from '@mui/material';
 import React, { useRef, useState } from 'react';
 import { Accordion, Form } from 'react-bootstrap';
-import { AccordionFAQProps, FAQItem } from './CreateForm';
+import { AccordionFAQProps, FAQItem } from '../../create/CreateForm';
 
 const AccordionFAQ: React.FC<AccordionFAQProps> = ({
   eventKey,
