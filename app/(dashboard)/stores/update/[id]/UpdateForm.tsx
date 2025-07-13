@@ -20,7 +20,7 @@ type Props = {
   item: StoreData | null;
 };
 
-export default function UpdateForm({ item }: Props) {
+export default functionUpdateForm({ item }: Props) {
   const {
     register,
     handleSubmit,
