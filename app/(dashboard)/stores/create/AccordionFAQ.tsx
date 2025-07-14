@@ -35,34 +35,39 @@ const AccordionFAQ: React.FC<AccordionFAQProps> = ({
         eventKey={eventKey.toString()}
         className={error ? 'border border-danger rounded' : ''}
       >
-        <Accordion.Header>
-          <Form.Control
-            maxLength={200}
-            defaultValue={ques}
-            onBlur={validateAndUpdate}
-            onChange={(e) => {
-              FAQItemRef.current.ques = e.target.value;
-              if (touched) validateAndUpdate();
-            }}
-            style={{
-              fontWeight: 600,
-              color: '#333',
-              borderColor:
-                error && FAQItemRef.current.ques.trim() === ''
-                  ? 'red'
-                  : undefined,
-            }}
-            placeholder="Enter question..."
-          />
-          <Box sx={{ mx: 1 }}>
-            <SpkButton
-              Buttontype="button"
-              onClickfunc={() => onRemoveAccordion(eventKey)}
-            >
-              <i className="bi bi-trash3"></i>
-            </SpkButton>
-          </Box>
-        </Accordion.Header>
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="space-between"
+          pr={2}
+        >
+          <Accordion.Header style={{ flex: 1 }}>
+            <Form.Control
+              maxLength={200}
+              defaultValue={ques}
+              onBlur={validateAndUpdate}
+              onChange={(e) => {
+                FAQItemRef.current.ques = e.target.value;
+                if (touched) validateAndUpdate();
+              }}
+              style={{
+                fontWeight: 600,
+                color: '#333',
+                borderColor:
+                  error && FAQItemRef.current.ques.trim() === ''
+                    ? 'red'
+                    : undefined,
+              }}
+              placeholder="Enter question..."
+            />
+          </Accordion.Header>
+          <SpkButton
+            Buttontype="button"
+            onClickfunc={() => onRemoveAccordion(eventKey)}
+          >
+            <i className="bi bi-trash3"></i>
+          </SpkButton>
+        </Box>
 
         <Accordion.Body>
           <Form.Control
@@ -84,6 +89,7 @@ const AccordionFAQ: React.FC<AccordionFAQProps> = ({
           />
         </Accordion.Body>
       </Accordion.Item>
+
       {error && (
         <Typography variant="caption" mt={2} className="text-danger">
           Question and Answer cannot be empty.

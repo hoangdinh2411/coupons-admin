@@ -1,12 +1,12 @@
 'use client';
-import React, { Fragment, useEffect, useRef, useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import React, { Fragment, useEffect, useState } from 'react';
+import { useForm, Controller, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Box, Typography } from '@mui/material';
+import { Box, MenuItem, OutlinedInput, Select, Typography } from '@mui/material';
 import { Accordion, Form } from 'react-bootstrap';
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
-
+import AccordionFAQ from './AccordionFAQ';
 import UploadFile, {
   ImageType,
 } from '@/shared/layouts-components/uploadFile/UploadFile';
@@ -14,8 +14,6 @@ import toast from 'react-hot-toast';
 import { createStore } from '@/services/store.service';
 import { StorePayload } from '@/types/store.type';
 import UseAppStore from '@/store/useAppStore';
-import { useRouter } from 'next/navigation';
-import AccordionFAQ from './AccordionFAQ';
 import SeoForm, {
   seoDataSchema,
   seoDefaultValues,
@@ -129,7 +127,6 @@ export default function CreateForm() {
       error: (err) => err || 'Something wrong',
     });
   };
-
 
   const handleUploadFile = (data: ImageByte) => {
     setValue('image', data);
@@ -301,87 +298,68 @@ export default function CreateForm() {
                     id="create-store"
                   />
                 )}
-              </Fragment>
-            );
-          }}
-        />
-      </Box>
-
-      {/* Image Upload */}
-      <Box mb={2}>
-        <Form.Label className="text-default">Image</Form.Label>
-        <Controller
-          control={control}
-          name="image"
-          render={({ field }) => (
-            <UploadFile
-              id="create-file-input"
-              filename={field.value?.filename}
-              onUploadFile={handleUploadFile}
-            />
-          )}
-        />
-        {errors.image?.message && (
-          <small className="text-danger">Image required</small>
-        )}
-      </Box>
-      <Box
-        sx={{
-          p: 2,
-          border: '1px solid',
-          borderColor: 'grey.100',
-          borderRadius: 2,
-          mt: 2,
-          mb: 2,
-        }}
-      >
+              />
+            </Box>
+          </Box>
+        </Box>
         <Box
-          display="flex"
-          justifyContent="space-between"
-          alignItems="center"
-          mb={2}
+          sx={{
+            p: 2,
+            border: '1px solid',
+            borderColor: 'grey.100',
+            borderRadius: 2,
+            mt: 2,
+            mb: 2,
+          }}
         >
-          <Form.Label className="text-default mb-0">
-            FAQS List {` ${faqList ? faqList.length : ''}`}
-          </Form.Label>
-          <SpkButton
-            Buttonvariant="success"
-            Buttontype="button"
-            onClickfunc={onCreateAccordion}
-            Disabled={isFaqInvalid}
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+            mb={2}
           >
-            + Add FAQ
+            <Form.Label className="text-default mb-0">
+              FAQS List {` ${faqList ? faqList.length : ''}`}
+            </Form.Label>
+            <SpkButton
+              Buttonvariant="success"
+              Buttontype="button"
+              onClickfunc={onCreateAccordion}
+              Disabled={isFaqInvalid}
+            >
+              + Add FAQ
+            </SpkButton>
+          </Box>
+
+          {faqList.length === 0 ? (
+            <Typography variant="body2" color="text.secondary">
+              No FAQ added yet.
+            </Typography>
+          ) : (
+            <Accordion defaultActiveKey="0">
+              {faqList.map((item) => (
+                <AccordionFAQ
+                  key={item.id}
+                  eventKey={item.id ?? 0}
+                  ques={item.ques}
+                  answ={item.answ}
+                  handleSetFAQ={(updatedItem) =>
+                    handleSetFAQItem(item?.id ?? 0, updatedItem)
+                  }
+                  onRemoveAccordion={() => onRemoveAccordion(item.id ?? 0)}
+                />
+              ))}
+            </Accordion>
+          )}
+        </Box>
+        <SeoForm />
+        {/* Submit */}
+        <Box display="flex" justifyContent="end" mt={4} gap={1}>
+          <SpkButton Buttonvariant="primary" Buttontype="submit">
+            Create Store
           </SpkButton>
         </Box>
-
-        {faqList.length === 0 ? (
-          <Typography variant="body2" color="text.secondary">
-            No FAQ added yet.
-          </Typography>
-        ) : (
-          <Accordion defaultActiveKey="0">
-            {faqList.map((item) => (
-              <AccordionFAQ
-                key={item.id}
-                eventKey={item.id ?? 0}
-                ques={item.ques}
-                answ={item.answ}
-                handleSetFAQ={(updatedItem) =>
-                  handleSetFAQItem(item?.id ?? 0, updatedItem)
-                }
-                onRemoveAccordion={() => onRemoveAccordion(item.id ?? 0)}
-              />
-            ))}
-          </Accordion>
-        )}
-      </Box>
-
-      {/* Submit */}
-      <Box display="flex" justifyContent="end" mt={4} gap={1}>
-        <SpkButton Buttonvariant="primary" Buttontype="submit">
-          Create Store
-        </SpkButton>
-      </Box>
-    </Form>
+      </Form>
+    </FormProvider>
   );
 }
