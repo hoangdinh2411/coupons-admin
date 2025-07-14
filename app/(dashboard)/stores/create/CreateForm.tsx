@@ -1,5 +1,5 @@
 'use client';
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { useForm, Controller, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -88,6 +88,7 @@ export default function CreateForm() {
   const { categories, setStores, stores } = UseAppStore((state) => state);
   const { getContent, rteRef, clearAll } = useRickTextEditor();
 
+  const [faqList, setFaqList] = useState<FAQItem[]>([]);
   const watchName = watch('name');
 
   useEffect(() => {
@@ -96,9 +97,18 @@ export default function CreateForm() {
   const handleChangeContent = (value: string) => {
     setValue('description', value);
   };
+  const validFaq = useMemo(() => {
+
+    return faqList.length > 0 ?
+      faqList.every((faq) => faq.question.trim() !== '' && faq.answer.trim() !== '') : true;
+  }, [faqList])
+
   const onSubmit = async (data: StoreFormData) => {
     const description = await getContent();
-
+    if (!validFaq) {
+      toast.error('Please fill all faqs ')
+      return
+    }
     const payload: StorePayload = {
       ...data,
       description,
@@ -116,6 +126,7 @@ export default function CreateForm() {
           setStores([...stores, res.data]);
           reset(defaultValues);
           clearAll();
+          setFaqList([])
           return 'Created success';
         }
 
@@ -126,15 +137,7 @@ export default function CreateForm() {
   };
 
 
-  const [faqList, setFaqList] = useState<FAQItem[]>([]);
-  const [isFaqInvalid, setIsFaqInvalid] = useState(false);
-  useEffect(() => {
-    const inValid =
-      faqList.length > 0 &&
-      faqList.some((faq) => faq.question.trim() === '' && faq.answer.trim() === '');
 
-    setIsFaqInvalid(inValid);
-  }, [faqList]);
 
   const onCreateAccordion = () => {
     const randomId = () => Date.now() + Math.floor(Math.random() * 1000);
@@ -317,7 +320,7 @@ export default function CreateForm() {
               Buttonvariant="success"
               Buttontype="button"
               onClickfunc={onCreateAccordion}
-              Disabled={isFaqInvalid}
+              Disabled={!validFaq}
             >
               + Add FAQ
             </SpkButton>

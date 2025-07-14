@@ -1,5 +1,5 @@
 'use client';
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { useForm, Controller, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Box, MenuItem, OutlinedInput, Select, Typography } from '@mui/material';
@@ -44,14 +44,11 @@ export default function UpdateForm({ item }: Props) {
 
   const { categories, setStores, stores } = UseAppStore((state) => state);
   const [faqList, setFaqList] = useState<FAQItem[]>([]);
-  const [isFaqInvalid, setIsFaqInvalid] = useState(false);
-  useEffect(() => {
-    const hasEmptyFAQ =
-      faqList.length > 0 &&
-      faqList.some((faq) => faq.question.trim() === '' && faq.answer.trim() === '');
+  const validFaq = useMemo(() => {
 
-    setIsFaqInvalid(hasEmptyFAQ);
-  }, [faqList]);
+    return faqList.length > 0 ?
+      faqList.every((faq) => faq.question.trim() !== '' && faq.answer.trim() !== '') : true;
+  }, [faqList])
   // useEffect(() => {
   //   setValue('slug', generateSlug(watchName));
   // }, [watchName]);
@@ -85,6 +82,10 @@ export default function UpdateForm({ item }: Props) {
     const description = await getContent();
 
     if (item) {
+      if (!validFaq) {
+        toast.error('Please fill all faqs ')
+        return
+      }
       const payload: StorePayload = {
         ...data,
         description,
@@ -300,7 +301,7 @@ export default function UpdateForm({ item }: Props) {
               Buttonvariant="success"
               Buttontype="button"
               onClickfunc={onCreateAccordion}
-              Disabled={isFaqInvalid}
+              Disabled={!validFaq}
             >
               + Add FAQ
             </SpkButton>
