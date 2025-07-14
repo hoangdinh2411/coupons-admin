@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import { Button, Card, Col, Row } from 'react-bootstrap';
 
@@ -11,9 +11,11 @@ import Link from 'next/link';
 import { APP_ROUTE } from '@/constants/route';
 import SearchBar from '@/shared/layouts-components/searchbar/SearchBar';
 import toast from 'react-hot-toast';
-import { deleteById } from '@/services/store.service';
+import { deleteById, updateStore } from '@/services/store.service';
 import UseAppStore from '@/store/useAppStore';
 import CustomPagination from '@/shared/layouts-components/pagination/CustomPagination';
+import Filter from '@/shared/layouts-components/filter/Filter';
+import { Box, Chip, Rating } from '@mui/material';
 type Props = {
   data: StoreData[];
   total: number;
@@ -25,6 +27,7 @@ const HEADER = [
   { title: 'Image' },
   { title: 'keywords' },
   { title: 'Category' },
+  { title: 'Rating' },
   { title: 'Actions' },
 ];
 export default function StoreList({
@@ -36,7 +39,18 @@ export default function StoreList({
   const pathname = usePathname();
 
   const { setStores, stores } = UseAppStore((state) => state);
-
+  const handleRatingChange = (id: number, value: number) => {
+    toast.promise(updateStore(id, { rating: value }), {
+      loading: 'Updating...',
+      success: (res) => {
+        if (res.success) {
+          return 'Updated rating success';
+        }
+        throw res.message;
+      },
+      error: (err) => err,
+    });
+  };
   //TODO: handle modal
   const handleOpenUpdateStore = (storeId: number) => {
     router.push(`${pathname}/update/${storeId}`);
@@ -63,6 +77,9 @@ export default function StoreList({
 
       <Card.Body>
         <Row className="align-items-center g-2 flex-wrap">
+          <Col xs="12">
+            <Filter byCategory byRating />
+          </Col>
           <Col xs="12" md>
             <div className="d-flex justify-content-between align-items-center gap-2 flex-wrap">
               <SearchBar placeholder="Search store..." />
@@ -87,7 +104,11 @@ export default function StoreList({
                 <td>{store.name}</td>
                 <td>
                   <Image
-                    src={store.image_bytes || '/assets/images/empty.png'}
+                    src={
+                      store.image?.url
+                        ? store.image.url
+                        : '/assets/images/empty.png'
+                    }
                     alt={store.name}
                     width={40}
                     height={40}
@@ -95,13 +116,39 @@ export default function StoreList({
                   />{' '}
                 </td>
                 <td>
-                  {store.keywords?.map((k: string, index: number) => (
-                    <span key={index} className="badge bg-primary me-1">
-                      {k}
-                    </span>
-                  ))}
+                  {store.keywords
+                    ? store.keywords.map((k: string, index: number) => (
+                      <span key={index} className="badge bg-info me-1">
+                        {k}
+                      </span>
+                    ))
+                    : 'N/A'}
                 </td>
-                <td>{store.category?.name || 'N/A'}</td>
+                <td>
+                  {store.categories && store.categories.length > 0 ? (
+                    <Box display={'flex'} gap={1} flexWrap={'wrap'}>
+                      {store.categories.map((c) => (
+                        <span key={c.id} className="badge bg-primary me-1 ">
+                          {c.name}
+                        </span>
+                      ))}
+                    </Box>
+                  ) : (
+                    'N/A'
+                  )}
+                </td>
+                <td>
+                  <Rating
+                    key={store.id}
+                    size="small"
+                    value={store.rating || null}
+                    onChange={(_, newValue: number | null) => {
+                      if (newValue !== null) {
+                        handleRatingChange(store.id, newValue);
+                      }
+                    }}
+                  />
+                </td>
                 <td>
                   <Button
                     variant="success-light"

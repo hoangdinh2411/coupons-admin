@@ -3,8 +3,18 @@ import React, { Fragment, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Box, FormControlLabel, Radio, RadioGroup } from '@mui/material';
-import { Col, Form, Row } from 'react-bootstrap';
+import {
+  Box,
+  FormControlLabel,
+  InputLabel,
+  MenuItem,
+  OutlinedInput,
+  Radio,
+  RadioGroup,
+  Select,
+  SelectChangeEvent,
+} from '@mui/material';
+import { Col, Form, FormControl, Row } from 'react-bootstrap';
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
 import toast from 'react-hot-toast';
 import UseAppStore from '@/store/useAppStore';
@@ -18,29 +28,24 @@ const types = Object.values(CouponType);
 
 export const schema = z
   .object({
-    title: z.string().min(1, 'Coupon title is required'),
-    code: z.string().min(1, 'Code is required'),
-    offer_detail: z.string().min(1, 'Offer detail is required'),
+    title: z.string().min(1, 'Coupon title is required').trim(),
+    code: z.string().trim(),
+    offer_detail: z.string().min(1, 'Offer detail is required').trim(),
     is_exclusive: z.boolean(),
-    expire_date: z
-      .date({
-        message: 'Expire date is required',
-      })
-      .refine((data) => dayjs(data).isAfter(dayjs()), {
-        message: 'Expire date must be after today',
-      }),
+    expire_date: z.date({
+      message: 'Expire date is required',
+    }),
     start_date: z.date({
       message: 'Start date is required',
     }),
-    category_id: z.number({
-      message: 'Select category',
-    }),
+    categories: z
+      .array(z.number())
+      .min(1, 'Need to select at least one category'),
     store_id: z.number({
       message: 'Select store',
     }),
-    type: z.string({
-      message: 'Coupon type is required',
-    }),
+    offer_link: z.string().trim().optional(),
+    type: z.enum(Object.values(CouponType) as [string, ...string[]]),
   })
   .refine((data) => dayjs(data.expire_date).isAfter(dayjs(data.start_date)), {
     message: 'Expire date must be after start date',
@@ -54,9 +59,10 @@ export const defaultValues: CouponFormData = {
   is_exclusive: false,
   start_date: new Date(),
   expire_date: new Date(),
-  category_id: 0,
-  store_id: 0,
+  categories: [],
+  store_id: -1,
   type: '',
+  offer_link: '',
 };
 export type CouponFormData = z.infer<typeof schema>;
 
@@ -66,7 +72,9 @@ export default function CreateForm() {
     handleSubmit,
     control,
     reset,
-    formState: { errors, isSubmitSuccessful },
+    setValue,
+    watch,
+    formState: { errors },
   } = useForm<CouponFormData>({
     resolver: zodResolver(schema),
     defaultValues,
@@ -74,11 +82,6 @@ export default function CreateForm() {
   });
 
   const { categories, stores } = UseAppStore((state) => state);
-  useEffect(() => {
-    if (isSubmitSuccessful) {
-      reset(defaultValues);
-    }
-  }, [isSubmitSuccessful]);
 
   const onSubmit = async (data: CouponFormData) => {
     const payload: CouponPayload = {
@@ -92,6 +95,7 @@ export default function CreateForm() {
       loading: 'Pending...!',
       success: (res) => {
         if (res.success && res.data) {
+          reset(defaultValues);
           return 'Created success';
         }
 
@@ -101,7 +105,23 @@ export default function CreateForm() {
     });
   };
 
-  console.log(errors);
+  const type = watch('type');
+
+  const handleChange = (
+    e: SelectChangeEvent,
+    onChange: (...event: any[]) => void,
+  ) => {
+    const selectedType = e.target.value;
+
+    // Gọi onChange để cập nhật 'type' trong form state
+    onChange(e);
+
+    // Xử lý logic liên quan
+    if (selectedType !== CouponType.CODE) {
+      setValue('code', '');
+    }
+  };
+
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
       <Box sx={{ my: 3 }}>
@@ -149,6 +169,64 @@ export default function CreateForm() {
           <small className="text-danger">{errors.title.message}</small>
         )}
       </Box>
+      <Box className="mb-3">
+        <Form.Label className="text-default">Coupon type</Form.Label>
+        <Controller
+          control={control}
+          name="type"
+          render={({ field: { onChange, value, ref } }) => {
+            return (
+              <Fragment>
+                <Select
+                  fullWidth
+                  size="small"
+                  id="coupon-type"
+                  ref={ref}
+                  value={value}
+                  onChange={(e) => handleChange(e, onChange)}
+                >
+                  <MenuItem value={''} disabled>
+                    <em>Select type</em>
+                  </MenuItem>
+                  {types &&
+                    types.map((t: string, idx: number) => (
+                      <MenuItem key={idx} value={t}>
+                        {t}
+                      </MenuItem>
+                    ))}
+                </Select>
+                {errors.type && (
+                  <small className="text-danger">{errors.type.message}</small>
+                )}
+              </Fragment>
+            );
+          }}
+        />
+      </Box>
+      {type === CouponType.CODE && (
+        <Box className="mb-3">
+          <Form.Label className="text-default">Code</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Enter coupon title"
+            {...register('code')}
+          />
+          {errors.code && (
+            <small className="text-danger">{errors.code.message}</small>
+          )}
+        </Box>
+      )}
+      <Box className="mb-3">
+        <Form.Label className="text-default">Offer link</Form.Label>
+        <Form.Control
+          type="text"
+          placeholder="Enter offer link"
+          {...register('offer_link')}
+        />
+        {errors.offer_link && (
+          <small className="text-danger">{errors.offer_link.message}</small>
+        )}
+      </Box>
 
       {/* Description */}
       <Box className="mb-3">
@@ -161,19 +239,6 @@ export default function CreateForm() {
         />
         {errors.offer_detail && (
           <small className="text-danger">{errors.offer_detail.message}</small>
-        )}
-      </Box>
-
-      {/* Code */}
-      <Box className="mb-3">
-        <Form.Label className="text-default">Code</Form.Label>
-        <Form.Control
-          type="text"
-          placeholder="Enter coupon title"
-          {...register('code')}
-        />
-        {errors.code && (
-          <small className="text-danger">{errors.code.message}</small>
         )}
       </Box>
 
@@ -232,61 +297,46 @@ export default function CreateForm() {
           )}
         </Col>
 
-        <Col xl={6}>
-          <Form.Label className="text-default">Coupon type</Form.Label>
-          <Controller
-            control={control}
-            name="type"
-            render={({ field: { onChange, value, ref } }) => {
-              return (
-                <Fragment>
-                  <Form.Select ref={ref} value={value} onChange={onChange}>
-                    <option value={''}>Select type</option>
-                    {types &&
-                      types.map((t: string, idx: number) => (
-                        <option key={idx} value={t}>
-                          {t}
-                        </option>
-                      ))}
-                  </Form.Select>
-                  {errors.type && (
-                    <small className="text-danger">{errors.type.message}</small>
-                  )}
-                </Fragment>
-              );
-            }}
-          />
-        </Col>
         {/* Category */}
 
         {/* Store select */}
         <Col xl={6}>
-          <Form.Label className="text-default">Category</Form.Label>
+          <Form.Label className="text-default">Categories</Form.Label>
           <Controller
             control={control}
-            name="category_id"
-            render={({ field: { onChange, value, ref } }) => {
+            name="categories"
+            render={({ field }) => {
               return (
-                <Fragment>
-                  <Form.Select
-                    ref={ref}
-                    value={Number(value ?? 0)}
-                    onChange={(e) => onChange(Number(e.target.value))}
+                <div>
+                  <Select
+                    fullWidth
+                    size="small"
+                    id="demo-multiple-name"
+                    multiple
+                    value={field.value ?? []}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      field.onChange(
+                        typeof value === 'string' ? value.split(',') : value,
+                      );
+                    }}
+                    input={<OutlinedInput placeholder="Select categories" />}
                   >
-                    <option value={0}>Select category</option>
-                    {categories &&
-                      categories.map((cat) => (
-                        <option key={cat.id} value={Number(cat.id)}>
-                          {cat.name}
-                        </option>
-                      ))}
-                  </Form.Select>
-                  {errors.category_id && (
+                    <MenuItem disabled value={[]}>
+                      <em>Select multi categories</em>
+                    </MenuItem>
+                    {categories.map((name) => (
+                      <MenuItem key={name.id} value={name.id}>
+                        {name.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  {errors.categories && (
                     <small className="text-danger">
-                      {errors.category_id.message}
+                      {errors.categories.message}
                     </small>
                   )}
-                </Fragment>
+                </div>
               );
             }}
           />
@@ -299,19 +349,24 @@ export default function CreateForm() {
             render={({ field: { onChange, value, ref } }) => {
               return (
                 <Fragment>
-                  <Form.Select
+                  <Select
+                    fullWidth
+                    size="small"
+                    id="coupon-store"
                     ref={ref}
                     value={Number(value ?? 0)}
-                    onChange={(e) => onChange(Number(e.target.value))}
+                    onChange={onChange}
                   >
-                    <option value={0}>Select store</option>
+                    <MenuItem disabled value={Number('-1')}>
+                      <em>Select store</em>
+                    </MenuItem>
                     {stores &&
-                      stores.map((cat) => (
-                        <option key={cat.id} value={Number(cat.id)}>
-                          {cat.name}
-                        </option>
+                      stores.map((store) => (
+                        <MenuItem key={store.id} value={store.id}>
+                          {store.name}
+                        </MenuItem>
                       ))}
-                  </Form.Select>
+                  </Select>
                   {errors.store_id && (
                     <small className="text-danger">
                       {errors.store_id.message}

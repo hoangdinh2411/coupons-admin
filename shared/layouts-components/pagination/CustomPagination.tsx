@@ -1,4 +1,5 @@
 'use client';
+import { LIMIT_DEFAULT } from '@/constants/variants';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect } from 'react';
 import { Pagination } from 'react-bootstrap';
@@ -27,14 +28,16 @@ export default function CustomPagination({ total, currentPage }: Props) {
     }
   }, [pathname, searchParams]);
   const pagination =
-    total && total > 20
-      ? [...Array(Math.floor(total / 20))].map((_, i) => i + 1)
+    total && total > LIMIT_DEFAULT
+      ? [...Array(Math.ceil(total / LIMIT_DEFAULT))].map((_, i) => i + 1)
       : [1];
   const handleChangePage = (selectedPage: number) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set('page', selectedPage.toString());
     router.push(`${pathname}?${params.toString()}`);
   };
+
+  const lastPage = pagination[pagination.length - 1]
   return (
     <Pagination className="mb-0">
       <Pagination.Item
@@ -53,7 +56,7 @@ export default function CustomPagination({ total, currentPage }: Props) {
         </Pagination.Item>
       ))}
       <Pagination.Item
-        disabled={currentPage === total}
+        disabled={currentPage === lastPage}
         onClick={() => handleChangePage(currentPage + 1)}
       >
         Next

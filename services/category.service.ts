@@ -1,22 +1,13 @@
 'use server';
 import { CategoryData, CategoryPayload } from '@/types/category.type';
-import customFetch from './customFetch';
 import { revalidateTag } from 'next/cache';
-import { IResponseWithTotal } from '@/types/request.type';
+import { IResponseWithTotal } from '@/types/share.type';
 import customFetchWithToken from './customFetchWithToken';
+import { LIMIT_DEFAULT } from '@/constants/variants';
 
-export async function searchCategory(text: string) {
-  return await customFetch<CategoryData>(`/categories/search?name=${text}`, {
-    method: 'GET',
-  });
-}
-export async function getCategories(
-  page?: number,
-  limit?: number,
-  search_text: string = '',
-) {
-  const query = `?page=${page}&limit=${limit}&search_text=${search_text}`;
-  return await customFetch<IResponseWithTotal<CategoryData[]>>(
+export async function getCategories(page?: number, search_text: string = '') {
+  const query = `?page=${page}&limit=${LIMIT_DEFAULT}&search_text=${search_text}`;
+  return await customFetchWithToken<IResponseWithTotal<CategoryData[]>>(
     `/categories${query}`,
     {
       method: 'GET',
@@ -27,20 +18,20 @@ export async function getCategories(
   );
 }
 export async function updateCategory(id: number, payload: CategoryPayload) {
-  const param = `/${id}`;
-  const res = await customFetchWithToken<CategoryData>(`/categories${param}`, {
+  const res = await customFetchWithToken<CategoryData>(`/categories/${id}`, {
     method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify(payload),
   });
   if (res.success) {
     revalidateTag('categories-data');
-    revalidateTag('category-' + id);
   }
   return res;
 }
 export async function deleteById(id: number) {
-  const param = `/${id}`;
-  const res = await customFetchWithToken<CategoryData>(`/categories${param}`, {
+  const res = await customFetchWithToken<CategoryData>(`/categories/${id}`, {
     method: 'DELETE',
   });
   if (res.success) {
@@ -52,6 +43,9 @@ export async function deleteById(id: number) {
 export async function createCategory(payload: CategoryPayload) {
   const res = await customFetchWithToken<CategoryData>(`/categories`, {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify(payload),
   });
 

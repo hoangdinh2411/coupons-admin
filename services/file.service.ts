@@ -1,0 +1,19 @@
+'use server';
+import { ImageType } from '@/shared/layouts-components/uploadFile/UploadFile';
+import customFetchWithToken from './customFetchWithToken';
+
+export async function uploadFile(payload: FormData) {
+  return await customFetchWithToken<ImageType[]>(`/files`, {
+    method: 'POST',
+    body: payload,
+  });
+}
+export async function deleteFiles(public_ids: string[]) {
+  return await customFetchWithToken(`/files`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(public_ids),
+  });
+}

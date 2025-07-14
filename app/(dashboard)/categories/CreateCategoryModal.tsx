@@ -1,19 +1,24 @@
 'use client';
 
-import React, { useEffect, useTransition } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import React, { useEffect } from 'react';
+import { useForm, Controller, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import { set, z } from 'zod';
 import { Box, Paper } from '@mui/material';
 import { Modal, Form } from 'react-bootstrap';
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
 
 import UploadFile, {
-  ImageByte,
+  ImageType,
 } from '@/shared/layouts-components/uploadFile/UploadFile';
 import toast from 'react-hot-toast';
-import { createCategory, updateCategory } from '@/services/category.service';
+import { createCategory } from '@/services/category.service';
 import UseAppStore from '@/store/useAppStore';
+import SeoForm, {
+  seoDataSchema,
+  seoDefaultValues,
+} from '@/shared/layouts-components/seo-form/SeoForm';
+import { getKeyWordsArray } from '@/helper/keywords';
 
 interface CreateCategoryModalPropsType {
   open: boolean;
@@ -21,20 +26,22 @@ interface CreateCategoryModalPropsType {
 }
 
 export const schema = z.object({
-  name: z.string().min(1, 'Category name is required'),
+  ...seoDataSchema.shape,
+  name: z.string().min(1, 'Category name is required').trim(),
   image: z.object({
-    filename: z.string(),
-    data: z.string(),
-    type: z.string(),
+    file_name: z.string().trim(),
+    url: z.string().trim(),
+    public_id: z.string().trim(),
   }),
 });
 
-export const defaultValue = {
+export const defaultValues = {
+  ...seoDefaultValues,
   name: '',
   image: {
-    filename: '',
-    data: '',
-    type: '',
+    file_name: '',
+    url: '',
+    public_id: '',
   },
 };
 export type CategoryFormData = z.infer<typeof schema>;
@@ -43,27 +50,32 @@ export default function CreateCategoryModal({
   open,
   onClose,
 }: CreateCategoryModalPropsType) {
+  const method = useForm<CategoryFormData>({
+    resolver: zodResolver(schema),
+    defaultValues,
+  });
   const {
     register,
     handleSubmit,
     control,
     reset,
     setValue,
-    formState: { errors, isSubmitSuccessful },
-  } = useForm<CategoryFormData>({
-    resolver: zodResolver(schema),
-  });
+    formState: { errors },
+  } = method;
 
   const { setCategory, categories } = UseAppStore((state) => state);
   useEffect(() => {
-    if (isSubmitSuccessful || !open) {
-      reset(defaultValue);
+    if (!open) {
+      reset(defaultValues);
     }
-  }, [isSubmitSuccessful, open]);
+  }, [open]);
   const onSubmit = async (data: CategoryFormData) => {
     const payload = {
-      name: data.name,
-      image_bytes: data.image.data,
+      ...data,
+      meta_data: {
+        ...data.meta_data,
+        keywords: getKeyWordsArray(data.meta_data.keywords),
+      },
     };
 
     toast.promise(createCategory(payload), {
@@ -71,6 +83,7 @@ export default function CreateCategoryModal({
       success: (res) => {
         if (res.success && res.data) {
           setCategory([...categories, res.data]);
+          reset(defaultValues);
           return 'Created success';
         } else {
           throw res.message;
@@ -80,10 +93,11 @@ export default function CreateCategoryModal({
     });
   };
 
-  const handleUploadFile = (data: ImageByte) => {
-    console.log(data);
-    setValue('image', data);
-  };
+  // const handleUploadFile = (data: ImageType) => {
+  //   console.log(data);
+  //   setValue('image', data);
+  // };
+
   return (
     <Modal
       centered
@@ -98,7 +112,7 @@ export default function CreateCategoryModal({
         <Modal.Title as="h6">Create Category</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Paper>
+        <FormProvider {...method}>
           <Form onSubmit={handleSubmit(onSubmit)}>
             <Box className="mb-3">
               <Form.Label className="fw-bold text-default">
@@ -116,15 +130,22 @@ export default function CreateCategoryModal({
 
             <Box mb={2}>
               <Form.Label className="fw-bold text-default">Image</Form.Label>
-              <Box display="flex" alignItems="center" gap={2}>
-                <Box position="relative" flex={1}>
+              <Box
+                display="flex"
+                alignItems="flex-start"
+                flexDirection={'column'}
+              >
+                <Box position="relative" flex={1} width={'100%'}>
                   <Controller
                     control={control}
                     name="image"
                     render={({ field }) => (
                       <UploadFile
-                        filename={field.value?.filename}
-                        onUploadFile={handleUploadFile}
+                        folder="categories"
+                        newFile={field.value}
+                        onUploadFile={(data: ImageType[]) =>
+                          field.onChange(data[0])
+                        }
                         id="create-category"
                       />
                     )}
@@ -132,14 +153,14 @@ export default function CreateCategoryModal({
                 </Box>
               </Box>
             </Box>
-
+            <SeoForm />
             <Box display="flex" justifyContent="end" mt={4} gap={1}>
               <SpkButton Buttonvariant="primary" Buttontype="submit">
-                Create Category
+                Create
               </SpkButton>
             </Box>
           </Form>
-        </Paper>
+        </FormProvider>
       </Modal.Body>
     </Modal>
   );

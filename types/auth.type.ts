@@ -19,3 +19,8 @@ export interface VerifyRequestPayload {
   email: string;
   code: string;
 }
+
+export interface UserRequestPayload {
+  first_name: string;
+  last_name: string;
+}

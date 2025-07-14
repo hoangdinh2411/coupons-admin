@@ -1,51 +1,58 @@
 'use server';
-import customFetch from './customFetch';
 import { revalidateTag } from 'next/cache';
-import { IResponse, IResponseWithTotal } from '@/types/request.type';
+import { IResponseWithTotal } from '@/types/share.type';
 import { StoreData, StorePayload } from '@/types/store.type';
 import customFetchWithToken from './customFetchWithToken';
+import { FilterPayload } from '@/types/filter.type';
+import { LIMIT_DEFAULT } from '@/constants/variants';
 
-export async function searchStore(text: string) {
-  return await customFetch<StoreData>(`/stores/search?name=${text}`, {
-    method: 'GET',
-  });
-}
-export async function getAllStores(
-  page?: number,
-  limit?: number,
-  search_text: string = '',
-) {
-  const query = `?page=${page ?? ''}&limit=${limit ?? ''}&search_text=${search_text ?? ''}`;
-  return await customFetch<IResponseWithTotal<StoreData[]>>(`/stores${query}`, {
-    method: 'GET',
-    next: {
-      tags: ['stores-data'],
+export async function filterStore(data: FilterPayload) {
+  return await customFetchWithToken<IResponseWithTotal<StoreData[]>>(
+    `/stores/filter`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
     },
-  });
+  );
 }
-export async function getStoreBySlug(slug: string) {
-  return await customFetch<StoreData>(`/stores/${slug}`, {
+export async function getAllStores(page?: number, search_text?: string) {
+  const query = `?page=${page}&limit=${LIMIT_DEFAULT}&search_text=${search_text}`;
+  return await customFetchWithToken<IResponseWithTotal<StoreData[]>>(
+    `/stores${query}`,
+    {
+      method: 'GET',
+      next: {
+        tags: ['stores-data'],
+      },
+    },
+  );
+}
+export async function getStoreById(id: string) {
+  return await customFetchWithToken<StoreData>(`/stores/${id}`, {
     method: 'GET',
     next: {
-      tags: [`store-${slug}`],
+      tags: [`store-${id}`],
     },
   });
 }
 export async function updateStore(id: number, payload: StorePayload) {
-  const param = `/${id}`;
-  const res = await customFetchWithToken<StoreData>(`/stores${param}`, {
+  const res = await customFetchWithToken<StoreData>(`/stores/${id}`, {
     method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify(payload),
   });
   if (res.success) {
     revalidateTag('stores-data');
-    revalidateTag('category-' + res.data?.slug);
   }
   return res;
 }
 export async function deleteById(id: number) {
-  const param = `/${id}`;
-  const res = await customFetchWithToken<StoreData>(`/stores${param}`, {
+  const res = await customFetchWithToken<StoreData>(`/stores/${id}`, {
     method: 'DELETE',
   });
   if (res.success) {
@@ -57,6 +64,9 @@ export async function deleteById(id: number) {
 export async function createStore(payload: StorePayload) {
   const res = await customFetchWithToken<StoreData>(`/stores`, {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify(payload),
   });
 

@@ -1,58 +1,110 @@
 'use client';
-import { decodeBase64, encodeFileToBase64 } from '@/helper/image';
-import React, { Fragment, useState } from 'react';
+import { validateFile } from '@/helper/file';
+import { deleteFiles, uploadFile } from '@/services/file.service';
+import React from 'react';
+import toast from 'react-hot-toast';
 
-export type ImageByte = {
-  filename: string;
-  type: string;
-  data: string;
+export type ImageType = {
+  file_name: string;
+  url: string;
+  public_id: string;
 };
 type Props = {
-  onUploadFile: (data: ImageByte) => void;
-  filename: string;
+  onUploadFile: (data: ImageType[]) => void;
+  newFile: ImageType;
   id: string;
+  folder: string;
+  multiple?: boolean;
 };
 
-export default function UploadFile({ onUploadFile, filename, id }: Props) {
-  const [error, setError] = useState('');
+export default function UploadFile({
+  onUploadFile,
+  newFile,
+  id,
+  multiple = false,
+  folder = 'default',
+}: Props) {
   const handleSelectFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files && e.target.files[0];
-    if (file) {
-      try {
-        const encodedFile = await encodeFileToBase64(file);
-        if (error) {
-          setError('');
+    const files = e.target.files && e.target.files;
+    if (files) {
+      let isValid;
+      if (multiple) {
+        for (const f of files) {
+          isValid = validateFile(f);
         }
-
-        const data = {
-          filename: file.name,
-          type: file.type,
-          data: encodedFile,
-        };
-        onUploadFile({
-          ...data,
-          data: decodeBase64(data),
-        });
-        e.target.value = '';
-      } catch (error) {
-        if (typeof error === 'string') {
-          setError(error as string);
-        }
-        console.log(error);
+      } else {
+        isValid = validateFile(files[0]);
       }
+      if (isValid) {
+        const formData = new FormData();
+        for (let index = 0; index < files.length; index++) {
+          formData.append('files', files[index]);
+        }
+        formData.append('folder', folder);
+        toast.promise(uploadFile(formData), {
+          loading: 'Uploading image...!',
+          success: (res) => {
+            if (!res.success && res.message) {
+              throw res.message;
+            }
+            if (!res.data) {
+              throw 'Missing data on respose';
+            }
+            onUploadFile(res.data);
+            return 'Uploaded success';
+          },
+          error: (err) => err,
+        });
+      }
+
+      // try {
+      //   const encodedFile = await encodeFileToBase64(file);
+      //   if (error) {
+      //     setError('');
+      //   }
+      //   const data = {
+      //     filename: file.name,
+      //     type: file.type,
+      //     data: encodedFile,
+      //   };
+      //   onUploadFile({
+      //     ...data,
+      //     data: decodeBase64(data),
+      //   });
+      //   e.target.value = '';
+      // } catch (error) {
+      //   if (typeof error === 'string') {
+      //     setError(error as string);
+      //   }
+      //   console.log(error);
+      // }
     }
   };
 
-  const handleDeleteSelectedFile = () => {
-    onUploadFile({
-      filename: '',
-      type: '',
-      data: '',
-    });
+  const handleDeleteSelectedFile = async () => {
+    if (newFile.public_id) {
+      toast.promise(deleteFiles([newFile.public_id]), {
+        loading: 'Deleting image...!',
+        success: (res) => {
+          if (!res.success && res.message) {
+            throw res.message;
+          }
+          onUploadFile([
+            {
+              file_name: '',
+              url: '',
+              public_id: '',
+            },
+          ]);
+          return 'Deleted success';
+        },
+        error: (err) => err,
+      });
+    }
   };
 
   return (
-    <Fragment>
+    <div className="d-flex flex-column gap-2 w-100">
       <label
         htmlFor={id}
         className="form-control text-muted mar my-2 "
@@ -64,6 +116,7 @@ export default function UploadFile({ onUploadFile, filename, id }: Props) {
           accept="image/*"
           id={id}
           hidden
+          multiple={multiple}
           onChange={handleSelectFile}
           style={{
             opacity: 0,
@@ -74,7 +127,7 @@ export default function UploadFile({ onUploadFile, filename, id }: Props) {
           }}
         />
       </label>
-      {!error && filename && (
+      {newFile && newFile.file_name && (
         <span>
           <small
             className="text-danger mx-2"
@@ -83,10 +136,9 @@ export default function UploadFile({ onUploadFile, filename, id }: Props) {
           >
             X
           </small>
-          {filename}{' '}
+          {newFile.file_name}{' '}
         </span>
       )}
-      {error && <span className="text-danger">{error}</span>}
-    </Fragment>
+    </div>
   );
 }

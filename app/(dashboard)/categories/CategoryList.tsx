@@ -11,6 +11,7 @@ import { deleteById } from '@/services/category.service';
 import Image from 'next/image';
 import SearchBar from '@/shared/layouts-components/searchbar/SearchBar';
 import CustomPagination from '@/shared/layouts-components/pagination/CustomPagination';
+import UseAppStore from '@/store/useAppStore';
 type Props = {
   data: CategoryData[];
   total: number;
@@ -27,6 +28,7 @@ export default function CategoryList({
   total = 1,
   currentPage = 1,
 }: Props) {
+  console.log(data)
   const [categoryModal, setCategoryModal] = useState<{
     isOpen: boolean;
     item: CategoryData | null;
@@ -34,6 +36,7 @@ export default function CategoryList({
     isOpen: false,
     item: null,
   });
+  const { categories, setCategory } = UseAppStore((state) => state);
 
   const handleOpenUpdateCategory = (category: CategoryData) => {
     setCategoryModal({
@@ -54,6 +57,7 @@ export default function CategoryList({
       loading: 'Deleting...!',
       success: (res) => {
         if (res.success) {
+          setCategory(categories.filter((c) => c.id !== id));
           return 'Deleted success';
         }
         throw res.message;
@@ -101,8 +105,8 @@ export default function CategoryList({
                   <td>
                     <Image
                       src={
-                        cat?.image_bytes
-                          ? cat?.image_bytes
+                        cat?.image.url
+                          ? cat?.image.url
                           : '/assets/images/empty.png'
                       }
                       alt={cat.name}

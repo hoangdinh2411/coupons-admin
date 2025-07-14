@@ -2,6 +2,7 @@
 import { UserData } from '@/types/auth.type';
 import { CategoryData } from '@/types/category.type';
 import { StoreData } from '@/types/store.type';
+import { TopicData } from '@/types/topic.type';
 import { createStore, useStore } from 'zustand';
 
 export type StateAppStoredType = {
@@ -9,6 +10,7 @@ export type StateAppStoredType = {
   profile: UserData | null;
   categories: CategoryData[];
   stores: StoreData[];
+  topics: TopicData[];
 };
 
 export type ActionAppStoredType = {
@@ -16,6 +18,7 @@ export type ActionAppStoredType = {
   setProfile: (profile: UserData | null) => void;
   setCategory: (categories: CategoryData[]) => void;
   setStores: (stores: StoreData[]) => void;
+  setTopics: (topics: TopicData[]) => void;
 };
 
 const initStore: StateAppStoredType = Object.seal({
@@ -23,6 +26,7 @@ const initStore: StateAppStoredType = Object.seal({
   profile: null,
   categories: [],
   stores: [],
+  topics: [],
 });
 
 const AppStore = createStore<StateAppStoredType & ActionAppStoredType>()(
@@ -32,6 +36,7 @@ const AppStore = createStore<StateAppStoredType & ActionAppStoredType>()(
     setProfile: (profile: UserData | null) => set({ profile }),
     setCategory: (categories: CategoryData[]) => set({ categories }),
     setStores: (stores: StoreData[]) => set({ stores }),
+    setTopics: (topics: TopicData[]) => set({ topics }),
   }),
 );
 

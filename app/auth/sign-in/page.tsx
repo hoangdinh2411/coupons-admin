@@ -10,25 +10,21 @@ import React, { useActionState, useEffect, useState } from 'react';
 import { Card, Col, Form, Row } from 'react-bootstrap';
 import toast from 'react-hot-toast';
 import { z } from 'zod';
-import { loginAction } from './actions';
+import { loginAction } from '../../actions/sign-in.actions';
 import { signinSchema } from '@/helper/schemas/auth.schema';
+import { ROLES } from '@/types/enum';
 
 export type AuthLoginSchemaType = z.infer<typeof signinSchema>;
 function SignInPage() {
   const [state, actions, isPending] = useActionState(loginAction, {});
   const [passwordShow, setPasswordShow] = useState(false);
   const router = useRouter();
-
   useEffect(() => {
     if (state.error) {
       toast.error(state.error);
     }
     if (state.data) {
       const result: UserData = state.data;
-      if (result && !result.email_verified) {
-        router.push(APP_ROUTE.VERIFY);
-        return;
-      }
       toast.success('Welcome back!');
       router.push(APP_ROUTE.DASHBOARD);
     }

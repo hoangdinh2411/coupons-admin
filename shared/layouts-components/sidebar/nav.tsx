@@ -15,18 +15,18 @@ const Dashboardicon = (
   </svg>
 );
 
-const NestedmenuIcon = (
+const BlogIcon = (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    className="side-menu__icon"
-    height="24px"
-    viewBox="0 0 24 24"
-    width="24px"
-    fill="#5f6368"
+    width="16"
+    height="16"
+    fill="currentColor"
+    className="bi bi-journal-richtext side-menu__icon"
+    viewBox="0 0 16 16"
   >
-    <path d="M0 0h24v24H0V0z" fill="none"></path>
-    <path d="M6.26 9L12 13.47 17.74 9 12 4.53z" opacity=".3"></path>
-    <path d="M19.37 12.8l-7.38 5.74-7.37-5.73L3 14.07l9 7 9-7zM12 2L3 9l1.63 1.27L12 16l7.36-5.73L21 9l-9-7zm0 11.47L6.26 9 12 4.53 17.74 9 12 13.47z"></path>
+    <path d="M7.5 3.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0m-.861 1.542 1.33.886 1.854-1.855a.25.25 0 0 1 .289-.047L11 4.75V7a.5.5 0 0 1-.5.5h-5A.5.5 0 0 1 5 7v-.5s1.54-1.274 1.639-1.208M5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5" />
+    <path d="M3 0h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-1h1v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v1H1V2a2 2 0 0 1 2-2" />
+    <path d="M1 5v-.5a.5.5 0 0 1 1 0V5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1zm0 3v-.5a.5.5 0 0 1 1 0V8h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1zm0 3v-.5a.5.5 0 0 1 1 0v.5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1z" />
   </svg>
 );
 const StoreIcon = (
@@ -37,7 +37,7 @@ const StoreIcon = (
     width="24"
     fill="#5f6368"
   >
-    <path d="M20 6H4l-2 4v2h20v-2l-2-4zM4 18v2h5v-2h6v2h5v-2H4z" />
+    <path d="M21 5H3v14h18V5zm-2 12H5V7h14v10zM7 9h2v2H7zm0 4h2v2H7zm4-4h6v1h-6zm0 4h6v1h-6z" />
   </svg>
 );
 
@@ -56,24 +56,14 @@ const CategoryIcon = (
 const CouponIcon = (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    className="side-menu__icon"
-    height="24"
-    width="24"
-    fill="#5f6368"
+    width="16"
+    height="16"
+    fill="currentColor"
+    className="bi bi-code-square side-menu__icon"
+    viewBox="0 0 16 16"
   >
-    <path d="M21 5H3v14h18V5zm-2 12H5V7h14v10zM7 9h2v2H7zm0 4h2v2H7zm4-4h6v1h-6zm0 4h6v1h-6z" />
-  </svg>
-);
-
-const PostIcon = (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    className="side-menu__icon"
-    height="24"
-    width="24"
-    fill="#5f6368"
-  >
-    <path d="M4 4h16v2H4zm0 4h10v2H4zm0 4h16v2H4zm0 4h10v2H4z" />
+    <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z" />
+    <path d="M6.854 4.646a.5.5 0 0 1 0 .708L4.207 8l2.647 2.646a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 0 1 .708 0m2.292 0a.5.5 0 0 0 0 .708L11.793 8l-2.647 2.646a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708 0" />
   </svg>
 );
 
@@ -88,6 +78,14 @@ export const MENUITEMS: any = [
     path: APP_ROUTE.DASHBOARD,
   },
   {
+    title: 'Category',
+    icon: CategoryIcon,
+    active: false,
+    dirchange: false,
+    type: 'link',
+    path: APP_ROUTE.CATEGORY,
+  },
+  {
     title: 'Store',
     icon: StoreIcon,
     type: 'sub',
@@ -100,7 +98,6 @@ export const MENUITEMS: any = [
         type: 'link',
         active: false,
         dirchange: false,
-        children: [],
         path: APP_ROUTE.STORES,
       },
       {
@@ -108,7 +105,6 @@ export const MENUITEMS: any = [
         type: 'link',
         active: false,
         dirchange: false,
-        children: [],
         path: APP_ROUTE.ADD_STORE,
       },
     ],
@@ -127,7 +123,6 @@ export const MENUITEMS: any = [
         type: 'link',
         active: false,
         dirchange: false,
-        children: [],
         path: APP_ROUTE.COUPONS,
       },
       {
@@ -135,7 +130,6 @@ export const MENUITEMS: any = [
         type: 'link',
         active: false,
         dirchange: false,
-        children: [],
         path: APP_ROUTE.SUBMIT_COUPON,
       },
       {
@@ -143,25 +137,40 @@ export const MENUITEMS: any = [
         type: 'link',
         active: false,
         dirchange: false,
-        children: [],
         path: APP_ROUTE.ADD_COUPON,
       },
     ],
   },
+
   {
-    title: 'Post',
-    icon: PostIcon,
-    type: 'link',
+    title: 'Blogs',
+    icon: BlogIcon,
+    type: 'sub',
     active: false,
     dirchange: false,
-    path: '/posts',
-  },
-  {
-    title: 'Category',
-    icon: CategoryIcon,
-    active: false,
-    dirchange: false,
-    type: 'link',
-    path: '/categories',
+    path: APP_ROUTE.BLOG,
+    children: [
+      {
+        title: 'List',
+        type: 'link',
+        active: false,
+        dirchange: false,
+        path: APP_ROUTE.BLOG,
+      },
+      {
+        title: 'Create blog',
+        type: 'link',
+        active: false,
+        dirchange: false,
+        path: APP_ROUTE.CREATE_BLOG,
+      },
+      {
+        title: 'Topic',
+        active: false,
+        dirchange: false,
+        type: 'link',
+        path: APP_ROUTE.TOPIC,
+      },
+    ],
   },
 ];

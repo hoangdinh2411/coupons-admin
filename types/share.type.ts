@@ -17,9 +17,7 @@ export interface TimestampedEntity {
 }
 
 export interface MetaData {
-  image: string;
-  keywords: string[];
-  description: string;
-  slug: string;
-  title: string;
+  title?: string;
+  description?: string;
+  keywords?: string[];
 }

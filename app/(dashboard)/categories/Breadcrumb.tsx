@@ -1,6 +1,6 @@
-import SpkBreadcrumb from "@/shared/@spk-reusable-components/reusable-uiElements/spk-breadcrumb";
-import React from "react";
-import { BreadcrumbItem } from "react-bootstrap";
+import SpkBreadcrumb from '@/shared/@spk-reusable-components/reusable-uiElements/spk-breadcrumb';
+import React from 'react';
+import { BreadcrumbItem } from 'react-bootstrap';
 
 function Breadcrumb() {
   return (

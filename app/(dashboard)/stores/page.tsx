@@ -1,8 +1,8 @@
-import Seo from '@/shared/layouts-components/seo/seo';
-import React from 'react';
+import React, { Suspense } from 'react';
 import StoreList from './StoreList';
-import { getAllStores } from '@/services/store.service';
-import Breadcrumb from './Breadcrumb';
+import { filterStore } from '@/services/store.service';
+import { makeFilterData } from '@/helper/filter';
+import CustomLoading from '@/shared/layouts-components/custom-loading/CustomLoading';
 
 export default async function StorePage(props: {
   searchParams?: Promise<{
@@ -12,16 +12,15 @@ export default async function StorePage(props: {
   }>;
 }) {
   const searchParams = await props.searchParams;
-  const limit = 20;
-  const page = Number(searchParams?.page || 1);
-  const search_text = searchParams?.search_text || '';
-  const res = await getAllStores(page, limit, search_text);
+  const { categories, rating, search_text, page, limit } = makeFilterData(
+    searchParams || {},
+  );
+  const res = await filterStore({ categories, rating, search_text, page, limit });
   if (!res.success || (res.success && !res.data)) {
     return res.message;
   }
   return (
-    <>
-      <Seo title="Store management" />
+    <Suspense fallback={<CustomLoading />}>
       {res.data && (
         <StoreList
           data={res.data?.results}
@@ -29,11 +28,6 @@ export default async function StorePage(props: {
           currentPage={page}
         />
       )}
-      {/* <UpdateStoreModal
-        item={updateStore.item}
-        open={updateStore.isOpen}
-        onClose={handleCloseUpdateStore}
-      /> */}
-    </>
+    </Suspense>
   );
 }

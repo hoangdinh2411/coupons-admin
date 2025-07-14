@@ -8,10 +8,12 @@ import Link from 'next/link';
 import { APP_ROUTE } from '@/constants/route';
 import SearchBar from '@/shared/layouts-components/searchbar/SearchBar';
 import toast from 'react-hot-toast';
-import { deleteCouponById } from '@/services/coupon.service';
+import { deleteCouponById, updateCoupon } from '@/services/coupon.service';
 import CustomPagination from '@/shared/layouts-components/pagination/CustomPagination';
 import { CouponData } from '@/types/coupon.type';
-import { CouponType } from '@/types/enum';
+import { getBackgroundForType, getStatus } from '@/helper/coupons';
+import Filter from '@/shared/layouts-components/filter/Filter';
+import { Box, Rating } from '@mui/material';
 type Props = {
   data: CouponData[];
   total: number;
@@ -19,14 +21,16 @@ type Props = {
 };
 const HEADER = [
   { title: 'Title' },
-  { title: 'Code' },
   { title: 'Store' },
   { title: 'Category' },
+  { title: 'Start Date' },
   { title: 'Expire Date' },
+  { title: 'Rating' },
   { title: 'Type' },
   { title: 'Status' },
   { title: 'Actions' },
 ];
+
 export default function CouponList({
   data = [],
   total = 0,
@@ -35,6 +39,18 @@ export default function CouponList({
   const router = useRouter();
   const pathname = usePathname();
 
+  const handleRatingChange = (id: number, value: number) => {
+    toast.promise(updateCoupon(id, { rating: value }), {
+      loading: 'Updating...',
+      success: (res) => {
+        if (res.success) {
+          return 'Updated rating success';
+        }
+        throw res.message;
+      },
+      error: (err) => err,
+    });
+  };
   //TODO: handle modal
   const handleOpenUpdate = (id: number) => {
     router.push(`${pathname}/update/${id}`);
@@ -52,20 +68,6 @@ export default function CouponList({
     });
   };
 
-  const getBackgroundForType = (type: CouponType) => {
-    switch (type) {
-      case CouponType.CODE:
-        return 'bg-secondary';
-      case CouponType.ONLINE_AND_IN_STORE:
-        return 'bg-success';
-      case CouponType.SALE:
-        return 'bg-info';
-      default:
-        'bg-primary';
-    }
-  };
-
-  const getCouponStatus = (expired_date: string) => {};
   return (
     <Card className="custom-card">
       <Card.Header className="justify-content-between">
@@ -74,6 +76,9 @@ export default function CouponList({
 
       <Card.Body>
         <Row className="align-items-center g-2 flex-wrap">
+          <Col xs="12">
+            <Filter byCategory byStatus byStore byRating />
+          </Col>
           <Col xs="12" md>
             <div className="d-flex justify-content-between align-items-center gap-2 flex-wrap">
               <SearchBar placeholder="Search coupon..." />
@@ -92,10 +97,34 @@ export default function CouponList({
             {data.map((coupon: CouponData) => (
               <tr key={coupon.id}>
                 <td>{coupon.title}</td>
-                <td>{coupon.code}</td>
                 <td>{coupon.store?.name || 'N/A'}</td>
-                <td>{coupon.category?.name || 'N/A'}</td>
+                <td >
+                  {coupon.categories && coupon.categories.length > 0 ? (
+                    <Box display={'flex'} gap={1} flexWrap={'wrap'} width={200} >
+                      {coupon.categories.map((c) => (
+                        <span key={c.id} className="badge bg-primary me-1 ">
+                          {c.name}
+                        </span>
+                      ))}
+                    </Box>
+                  ) : (
+                    'N/A'
+                  )}
+                </td>
+                <td>{coupon.start_date}</td>
                 <td>{coupon.expire_date}</td>
+                <td>
+                  <Rating
+                    key={coupon.id}
+                    size="small"
+                    value={coupon.rating || null}
+                    onChange={(_, newValue: number | null) => {
+                      if (newValue !== null) {
+                        handleRatingChange(coupon.id, newValue);
+                      }
+                    }}
+                  />
+                </td>
                 <td>
                   <p
                     className={`badge ${getBackgroundForType(coupon.type)} mb-2 `}
@@ -105,9 +134,10 @@ export default function CouponList({
                 </td>
                 <td>
                   <p
-                    className={`badge ${getBackgroundForType(coupon.type)} mb-2 `}
+                    className={`badge ${getStatus(coupon.start_date, coupon.expire_date)?.color} mb-2 `}
                   >
-                    {coupon.type}
+                    {getStatus(coupon.start_date, coupon.expire_date)?.label ||
+                      'N/A'}
                   </p>
                 </td>
 
