@@ -1,9 +1,9 @@
 'use client';
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { useForm, Controller, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Box, MenuItem, OutlinedInput, Select } from '@mui/material';
-import { Form } from 'react-bootstrap';
+import { Box, MenuItem, OutlinedInput, Select, Typography } from '@mui/material';
+import { Accordion, Form } from 'react-bootstrap';
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
 
 import UploadFile, {
@@ -13,13 +13,13 @@ import toast from 'react-hot-toast';
 import { updateStore } from '@/services/store.service';
 import { StoreData, StorePayload } from '@/types/store.type';
 import UseAppStore from '@/store/useAppStore';
-import { defaultValues, schema, StoreFormData } from '../../create/CreateForm';
+import { schema, StoreFormData } from '../../create/CreateForm';
 import { getKeyWordsArray, getKeyWordsString } from '@/helper/keywords';
 import SeoForm from '@/shared/layouts-components/seo-form/SeoForm';
-import dynamic from 'next/dynamic';
 import CustomRichTextEditor from '../../../../../shared/layouts-components/richtext-editor';
 import useRickTextEditor from '@/hooks/useRickTextEditor';
 import { generateSlug } from '@/helper/generateSlug';
+import AccordionFAQ, { FAQItem } from '../../create/AccordionFAQ';
 
 type Props = {
   item: StoreData | null;
@@ -34,15 +34,27 @@ export default function UpdateForm({ item }: Props) {
     register,
     handleSubmit,
     control,
+    // watch,
     setValue,
     reset,
-    watch,
     formState: { errors },
   } = method;
   const { getContent, rteRef, setContent } = useRickTextEditor();
+  // const watchName = watch('name');
 
   const { categories, setStores, stores } = UseAppStore((state) => state);
+  const [faqList, setFaqList] = useState<FAQItem[]>([]);
+  const [isFaqInvalid, setIsFaqInvalid] = useState(false);
+  useEffect(() => {
+    const hasEmptyFAQ =
+      faqList.length > 0 &&
+      faqList.some((faq) => faq.question.trim() === '' && faq.answer.trim() === '');
 
+    setIsFaqInvalid(hasEmptyFAQ);
+  }, [faqList]);
+  // useEffect(() => {
+  //   setValue('slug', generateSlug(watchName));
+  // }, [watchName]);
   useEffect(() => {
     if (item && rteRef.current) {
       setContent(item.description);
@@ -59,7 +71,13 @@ export default function UpdateForm({ item }: Props) {
           ...item.meta_data,
           keywords: getKeyWordsString(item.meta_data?.keywords || []),
         },
+
       });
+      setFaqList(item.faqs.map(({ question, answer }, index) => ({
+        id: index,
+        question,
+        answer
+      })) || [])
     }
   }, [item]);
 
@@ -75,6 +93,7 @@ export default function UpdateForm({ item }: Props) {
           ...data.meta_data,
           keywords: getKeyWordsArray(data.meta_data.keywords),
         },
+        faqs: faqList.map(({ id, ...rest }) => rest)
       };
 
       toast.promise(updateStore(item.id, payload), {
@@ -95,6 +114,21 @@ export default function UpdateForm({ item }: Props) {
   };
   const handleChangeContent = (value: string) => {
     setValue('description', value);
+  };
+
+  const onCreateAccordion = () => {
+    const randomId = () => Date.now() + Math.floor(Math.random() * 1000);
+
+    setFaqList((prev) => [...prev, { id: randomId(), question: '', answer: '' }]);
+  };
+  const onRemoveAccordion = (id: number) => {
+    setFaqList((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  const handleSetFAQItem = (id: number, updatedItem: Omit<FAQItem, 'id'>) => {
+    setFaqList((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, ...updatedItem } : item)),
+    );
   };
   return (
     <FormProvider {...method}>
@@ -131,8 +165,8 @@ export default function UpdateForm({ item }: Props) {
             onBlur={handleChangeContent}
             error={Boolean(errors.description)}
             helpText={errors.description?.message}
-            // onChange={handleChangeContent}
-            // placeholder="Write blog content here"
+          // onChange={handleChangeContent}
+          // placeholder="Write blog content here"
           />
         </Box>
 
@@ -241,6 +275,57 @@ export default function UpdateForm({ item }: Props) {
               />
             </Box>
           </Box>
+        </Box>
+
+        <Box
+          sx={{
+            p: 2,
+            border: '1px solid',
+            borderColor: 'grey.100',
+            borderRadius: 2,
+            mt: 2,
+            mb: 2,
+          }}
+        >
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+            mb={2}
+          >
+            <Form.Label className="text-default mb-0">
+              FAQS List {` ${faqList ? faqList.length : ''}`}
+            </Form.Label>
+            <SpkButton
+              Buttonvariant="success"
+              Buttontype="button"
+              onClickfunc={onCreateAccordion}
+              Disabled={isFaqInvalid}
+            >
+              + Add FAQ
+            </SpkButton>
+          </Box>
+
+          {faqList.length === 0 ? (
+            <Typography variant="body2" color="text.secondary">
+              No FAQ added yet.
+            </Typography>
+          ) : (
+            <Accordion defaultActiveKey="0">
+              {faqList.map((item) => (
+                <AccordionFAQ
+                  key={item.id}
+                  eventKey={item.id ?? 0}
+                  question={item.question}
+                  answer={item.answer}
+                  handleSetFAQ={(updatedItem) =>
+                    handleSetFAQItem(item.id ?? 0, updatedItem)
+                  }
+                  onRemoveAccordion={() => onRemoveAccordion(item.id ?? 0)}
+                />
+              ))}
+            </Accordion>
+          )}
         </Box>
         <SeoForm />
         {/* Submit */}

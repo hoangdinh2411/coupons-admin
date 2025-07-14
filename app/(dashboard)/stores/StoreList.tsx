@@ -40,7 +40,7 @@ export default function StoreList({
 
   const { setStores, stores } = UseAppStore((state) => state);
   const handleRatingChange = (id: number, value: number) => {
-    toast.promise(updateStore(id, { rating: value }), {
+    toast.promise(updateStore(id, { rating: +value }), {
       loading: 'Updating...',
       success: (res) => {
         if (res.success) {
@@ -106,7 +106,7 @@ export default function StoreList({
                   <Image
                     src={
                       store.image?.url
-                        ? store.image.url
+                        ? store.image?.url
                         : '/assets/images/empty.png'
                     }
                     alt={store.name}

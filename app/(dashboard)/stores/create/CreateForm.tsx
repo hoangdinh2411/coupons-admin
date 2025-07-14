@@ -6,7 +6,7 @@ import { z } from 'zod';
 import { Box, MenuItem, OutlinedInput, Select, Typography } from '@mui/material';
 import { Accordion, Form } from 'react-bootstrap';
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
-import AccordionFAQ from './AccordionFAQ';
+import AccordionFAQ, { FAQItem } from './AccordionFAQ';
 import UploadFile, {
   ImageType,
 } from '@/shared/layouts-components/uploadFile/UploadFile';
@@ -22,16 +22,12 @@ import { getKeyWordsArray } from '@/helper/keywords';
 import CustomRichTextEditor from '../../../../shared/layouts-components/richtext-editor';
 import useRickTextEditor from '@/hooks/useRickTextEditor';
 import { generateSlug } from '@/helper/generateSlug';
-export interface FAQItem {
-  id?: number;
-  ques: string;
-  answ: string;
-}
+
 
 export interface AccordionFAQProps {
   eventKey: number;
-  ques: string;
-  answ: string;
+  question: string;
+  answer: string;
   handleSetFAQ: (updatedItem: FAQItem) => void;
   onRemoveAccordion: (index: number) => void;
 }
@@ -83,8 +79,8 @@ export default function CreateForm() {
     register,
     handleSubmit,
     control,
-    reset,
     watch,
+    reset,
     setValue,
     formState: { errors },
   } = method;
@@ -111,6 +107,7 @@ export default function CreateForm() {
         ...data.meta_data,
         keywords: getKeyWordsArray(data.meta_data.keywords),
       },
+      faqs: faqList.map(({ id, ...rest }) => rest)
     };
     toast.promise(createStore(payload), {
       loading: 'Pending...!',
@@ -128,24 +125,20 @@ export default function CreateForm() {
     });
   };
 
-  const handleUploadFile = (data: ImageByte) => {
-    setValue('image', data);
-  };
 
   const [faqList, setFaqList] = useState<FAQItem[]>([]);
   const [isFaqInvalid, setIsFaqInvalid] = useState(false);
   useEffect(() => {
-    const hasEmptyFAQ =
+    const inValid =
       faqList.length > 0 &&
-      faqList.some((faq) => faq.ques.trim() === '' || faq.answ.trim() === '');
+      faqList.some((faq) => faq.question.trim() === '' && faq.answer.trim() === '');
 
-    setIsFaqInvalid(hasEmptyFAQ);
+    setIsFaqInvalid(inValid);
   }, [faqList]);
 
   const onCreateAccordion = () => {
     const randomId = () => Date.now() + Math.floor(Math.random() * 1000);
-
-    setFaqList((prev) => [...prev, { id: randomId(), ques: '', answ: '' }]);
+    setFaqList((prev) => [...prev, { id: randomId(), question: '', answer: '' }]);
   };
   const onRemoveAccordion = (id: number) => {
     setFaqList((prev) => prev.filter((item) => item.id !== id));
@@ -156,7 +149,6 @@ export default function CreateForm() {
       prev.map((item) => (item.id === id ? { ...item, ...updatedItem } : item)),
     );
   };
-  console.log('💲💲💲 ~ CreateForm ~ faqList:', faqList);
   return (
     <FormProvider {...method}>
       <Form onSubmit={handleSubmit(onSubmit)}>
@@ -341,8 +333,8 @@ export default function CreateForm() {
                 <AccordionFAQ
                   key={item.id}
                   eventKey={item.id ?? 0}
-                  ques={item.ques}
-                  answ={item.answ}
+                  question={item.question}
+                  answer={item.answer}
                   handleSetFAQ={(updatedItem) =>
                     handleSetFAQItem(item?.id ?? 0, updatedItem)
                   }
