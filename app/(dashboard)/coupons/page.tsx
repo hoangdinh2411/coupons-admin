@@ -8,9 +8,9 @@ export default async function CouponPage(props: {
   searchParams?: Promise<Record<string, string>>;
 }) {
   const searchParams = await props.searchParams;
-  const data = makeFilterData(searchParams || {});
+  const params = makeFilterData(searchParams || {});
   const res = await filterCoupon({
-    ...data,
+    ...params,
     is_verified: true,
   });
   if (!res.success || (res.success && !res.data)) {
@@ -21,7 +21,7 @@ export default async function CouponPage(props: {
       <CouponList
         data={res.data?.results ?? []}
         total={res.data?.total ?? 0}
-        currentPage={data.page}
+        currentPage={params.page}
       />
     </Suspense>
   );
