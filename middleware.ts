@@ -12,7 +12,6 @@ export function middleware(request: NextRequest) {
   if (!AUTH_URLS.includes(pathname) && !token) {
     return NextResponse.redirect(new URL(APP_ROUTE.SIGN_IN, request.nextUrl));
   }
-
   return NextResponse.next();
 }
 

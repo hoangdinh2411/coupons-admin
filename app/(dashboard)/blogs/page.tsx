@@ -8,16 +8,10 @@ export default async function PostManagementPage(props: {
   searchParams?: Promise<Record<string, string>>;
 }) {
   const searchParams = await props.searchParams;
-  const { topics, page, search_text, rating, limit } = makeFilterData(
+  const params = makeFilterData(
     searchParams || {},
   );
-  const res = await filterBlog({
-    topics,
-    page,
-    limit,
-    search_text,
-    rating,
-  });
+  const res = await filterBlog(params);
   if (!res.success || (res.success && !res.data)) {
     return res.message;
   }
@@ -26,7 +20,7 @@ export default async function PostManagementPage(props: {
       <BlogList
         data={res.data?.results ?? []}
         total={res.data?.total ?? 0}
-        currentPage={page}
+        currentPage={params.page}
       />
     </Suspense>
   );

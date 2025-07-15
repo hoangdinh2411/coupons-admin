@@ -12,10 +12,8 @@ export default async function StorePage(props: {
   }>;
 }) {
   const searchParams = await props.searchParams;
-  const { categories, rating, search_text, page, limit } = makeFilterData(
-    searchParams || {},
-  );
-  const res = await filterStore({ categories, rating, search_text, page, limit });
+  const params = makeFilterData(searchParams || {});
+  const res = await filterStore(params);
   if (!res.success || (res.success && !res.data)) {
     return res.message;
   }
@@ -25,7 +23,7 @@ export default async function StorePage(props: {
         <StoreList
           data={res.data?.results}
           total={res.data?.total}
-          currentPage={page}
+          currentPage={params.page}
         />
       )}
     </Suspense>

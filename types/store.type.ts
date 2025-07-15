@@ -1,6 +1,14 @@
 import { ImageType } from '@/shared/layouts-components/uploadFile/UploadFile';
 import { CategoryData } from './category.type';
 import { MetaData, TimestampedEntity } from './share.type';
+import { FAQItem } from '@/app/(dashboard)/stores/create/AccordionFAQ';
+
+export interface FAQsData {
+  id: string;
+  question: string;
+  answer: string;
+  order: number;
+}
 
 export interface StorePayload {
   name?: string;
@@ -13,6 +21,7 @@ export interface StorePayload {
   rating?: number;
   meta_data?: MetaData;
   slug?: string;
+  faqs?: FAQItem[];
 }
 export interface StoreData extends TimestampedEntity {
   name: string;
@@ -27,4 +36,5 @@ export interface StoreData extends TimestampedEntity {
   coupons: [];
   meta_data?: MetaData;
   rating: number;
+  faqs: FAQsData[];
 }
