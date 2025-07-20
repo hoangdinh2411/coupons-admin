@@ -1,12 +1,12 @@
 'use server';
 import { revalidateTag } from 'next/cache';
 import { IResponseWithTotal } from '@/types/share.type';
-import customFetchWithToken from './customFetchWithToken';
+import customFetch from './customFetch';
 import { CouponData, CouponPayload } from '@/types/coupon.type';
 import { FilterPayload } from '@/types/filter.type';
 
 export async function filterCoupon(data: FilterPayload) {
-  return await customFetchWithToken<IResponseWithTotal<CouponData[]>>(
+  return await customFetch<IResponseWithTotal<CouponData[]>>(
     `/coupons/filter`,
     {
       method: 'POST',
@@ -19,7 +19,7 @@ export async function filterCoupon(data: FilterPayload) {
 }
 
 export async function getCouponsById(id: string) {
-  return await customFetchWithToken<CouponData>(`/coupons/${id}`, {
+  return await customFetch<CouponData>(`/coupons/${id}`, {
     method: 'GET',
     next: {
       tags: [`coupon-${id}`],
@@ -27,7 +27,7 @@ export async function getCouponsById(id: string) {
   });
 }
 export async function updateCoupon(id: number, payload: CouponPayload) {
-  const res = await customFetchWithToken<CouponData>(`/coupons/${id}`, {
+  const res = await customFetch<CouponData>(`/coupons/${id}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -42,7 +42,7 @@ export async function updateCoupon(id: number, payload: CouponPayload) {
   return res;
 }
 export async function deleteCouponById(id: number) {
-  const res = await customFetchWithToken<CouponData>(`/coupons/${id}`, {
+  const res = await customFetch<CouponData>(`/coupons/${id}`, {
     method: 'DELETE',
   });
   if (res.success) {
@@ -52,7 +52,7 @@ export async function deleteCouponById(id: number) {
   return res;
 }
 export async function submitCouponById(id: number) {
-  const res = await customFetchWithToken<CouponData>(`/coupons/submit/${id}`, {
+  const res = await customFetch<CouponData>(`/coupons/submit/${id}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -67,7 +67,7 @@ export async function submitCouponById(id: number) {
 }
 
 export async function createCoupon(payload: CouponPayload) {
-  const res = await customFetchWithToken<CouponData>(`/coupons`, {
+  const res = await customFetch<CouponData>(`/coupons`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

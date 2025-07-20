@@ -1,4 +1,5 @@
 'use client';
+import { signOut } from '@/services/auth.service';
 import { UserData } from '@/types/auth.type';
 import { CategoryData } from '@/types/category.type';
 import { StoreData } from '@/types/store.type';
@@ -19,6 +20,7 @@ export type ActionAppStoredType = {
   setCategory: (categories: CategoryData[]) => void;
   setStores: (stores: StoreData[]) => void;
   setTopics: (topics: TopicData[]) => void;
+  signOut: () => Promise<void>;
 };
 
 const initStore: StateAppStoredType = Object.seal({
@@ -37,6 +39,11 @@ const AppStore = createStore<StateAppStoredType & ActionAppStoredType>()(
     setCategory: (categories: CategoryData[]) => set({ categories }),
     setStores: (stores: StoreData[]) => set({ stores }),
     setTopics: (topics: TopicData[]) => set({ topics }),
+    signOut: async () => {
+      await signOut();
+      set({ profile: null });
+      window.location.reload();
+    },
   }),
 );
 

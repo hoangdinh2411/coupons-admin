@@ -1,3 +1,5 @@
+import { getToken } from '@/app/actions/getTokenFromCookie';
+import UseAppStore from '@/store/useAppStore';
 import { IResponse } from '@/types/share.type';
 export const BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5173/api/v1';
@@ -10,9 +12,11 @@ export default async function customFetch<T>(
   const id = setTimeout(() => controller.abort(), 60000);
 
   // Ensure headers is always an object
-  if (!config.headers) {
-    config.headers = {};
-  }
+  const token = await getToken();
+  config.headers = {
+    ...config.headers,
+    ['Authorization']: `Bearer ${token}`,
+  };
   return fetch(`${BASE_URL + url}`, {
     signal: controller.signal,
     credentials: 'include',
@@ -24,10 +28,9 @@ export default async function customFetch<T>(
     })
     .then((data: IResponse<T>) => {
       if (data.status === 401) {
-        if (window !== undefined) {
-          window.location.href = 'logout';
-        }
-        throw new Error('Unauthorized access, please sign in again');
+        const signOut = UseAppStore((state) => state.signOut);
+        signOut();
+        return;
       }
       return data as T;
     })

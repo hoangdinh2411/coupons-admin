@@ -2,12 +2,12 @@
 import { revalidateTag } from 'next/cache';
 import { IResponseWithTotal } from '@/types/share.type';
 import { StoreData, StorePayload } from '@/types/store.type';
-import customFetchWithToken from './customFetchWithToken';
+import customFetch from './customFetch';
 import { FilterPayload } from '@/types/filter.type';
 import { LIMIT_DEFAULT } from '@/constants/variants';
 
 export async function filterStore(data: FilterPayload) {
-  return await customFetchWithToken<IResponseWithTotal<StoreData[]>>(
+  return await customFetch<IResponseWithTotal<StoreData[]>>(
     `/stores/filter`,
     {
       method: 'POST',
@@ -20,7 +20,7 @@ export async function filterStore(data: FilterPayload) {
 }
 export async function getAllStores(page?: number, search_text?: string) {
   const query = `?page=${page}&limit=${LIMIT_DEFAULT}&search_text=${search_text}`;
-  return await customFetchWithToken<IResponseWithTotal<StoreData[]>>(
+  return await customFetch<IResponseWithTotal<StoreData[]>>(
     `/stores${query}`,
     {
       method: 'GET',
@@ -31,7 +31,7 @@ export async function getAllStores(page?: number, search_text?: string) {
   );
 }
 export async function getStoreById(id: string) {
-  return await customFetchWithToken<StoreData>(`/stores/${id}`, {
+  return await customFetch<StoreData>(`/stores/${id}`, {
     method: 'GET',
     next: {
       tags: [`store-${id}`],
@@ -39,7 +39,7 @@ export async function getStoreById(id: string) {
   });
 }
 export async function updateStore(id: number, payload: StorePayload) {
-  const res = await customFetchWithToken<StoreData>(`/stores/${id}`, {
+  const res = await customFetch<StoreData>(`/stores/${id}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -52,7 +52,7 @@ export async function updateStore(id: number, payload: StorePayload) {
   return res;
 }
 export async function deleteById(id: number) {
-  const res = await customFetchWithToken<StoreData>(`/stores/${id}`, {
+  const res = await customFetch<StoreData>(`/stores/${id}`, {
     method: 'DELETE',
   });
   if (res.success) {
@@ -62,7 +62,7 @@ export async function deleteById(id: number) {
 }
 
 export async function createStore(payload: StorePayload) {
-  const res = await customFetchWithToken<StoreData>(`/stores`, {
+  const res = await customFetch<StoreData>(`/stores`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

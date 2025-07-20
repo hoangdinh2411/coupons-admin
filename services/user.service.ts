@@ -1,10 +1,10 @@
 'use server';
 import { UserData, UserRequestPayload } from '@/types/auth.type';
-import customFetchWithToken from './customFetchWithToken';
+import customFetch from './customFetch';
 import { revalidateTag } from 'next/cache';
 
 export async function updateUser(payload: UserRequestPayload) {
-  const res = await customFetchWithToken<UserData>(`/users/profile`, {
+  const res = await customFetch<UserData>(`/users/profile`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -18,7 +18,7 @@ export async function updateUser(payload: UserRequestPayload) {
 }
 
 export async function getProfile() {
-  return await customFetchWithToken<UserData>('/users/profile', {
+  return await customFetch<UserData>('/users/profile', {
     next: {
       tags: ['profile'],
     },

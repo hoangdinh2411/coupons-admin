@@ -2,12 +2,12 @@
 import { CategoryData, CategoryPayload } from '@/types/category.type';
 import { revalidateTag } from 'next/cache';
 import { IResponseWithTotal } from '@/types/share.type';
-import customFetchWithToken from './customFetchWithToken';
+import customFetch from './customFetch';
 import { LIMIT_DEFAULT } from '@/constants/variants';
 
 export async function getCategories(page?: number, search_text: string = '') {
   const query = `?page=${page}&limit=${LIMIT_DEFAULT}&search_text=${search_text}`;
-  return await customFetchWithToken<IResponseWithTotal<CategoryData[]>>(
+  return await customFetch<IResponseWithTotal<CategoryData[]>>(
     `/categories${query}`,
     {
       method: 'GET',
@@ -18,7 +18,7 @@ export async function getCategories(page?: number, search_text: string = '') {
   );
 }
 export async function updateCategory(id: number, payload: CategoryPayload) {
-  const res = await customFetchWithToken<CategoryData>(`/categories/${id}`, {
+  const res = await customFetch<CategoryData>(`/categories/${id}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -31,7 +31,7 @@ export async function updateCategory(id: number, payload: CategoryPayload) {
   return res;
 }
 export async function deleteById(id: number) {
-  const res = await customFetchWithToken<CategoryData>(`/categories/${id}`, {
+  const res = await customFetch<CategoryData>(`/categories/${id}`, {
     method: 'DELETE',
   });
   if (res.success) {
@@ -41,7 +41,7 @@ export async function deleteById(id: number) {
 }
 
 export async function createCategory(payload: CategoryPayload) {
-  const res = await customFetchWithToken<CategoryData>(`/categories`, {
+  const res = await customFetch<CategoryData>(`/categories`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
