@@ -111,8 +111,8 @@ export default function UpdateForm({ item }: { item: BlogData }) {
           )}
         </Box>
         <Box mb={2}>
-          <Form.Label className="fw-bold text-default">Image</Form.Label>
-          <Box display="flex" alignItems="flex-start" flexDirection={'column'}>
+          <Form.Label className="text-default">Image</Form.Label>
+          <Box display="flex" alignItems="flex-start" flexDirection={'column'} mb={1}>
             <Box position="relative" flex={1} width={'100%'}>
               <Controller
                 control={control}
@@ -129,6 +129,14 @@ export default function UpdateForm({ item }: { item: BlogData }) {
                 )}
               />
             </Box>
+          </Box>
+          <Box className="mb-3">
+            <Form.Label className="text-default">Caption</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Slug for blog"
+              {...register('image.caption')}
+            />
           </Box>
         </Box>
         <Box className="mb-3">

@@ -36,6 +36,7 @@ export const blogSchema = z.object({
     file_name: z.string(),
     url: z.string(),
     public_id: z.string(),
+    caption: z.string(),
   }),
   slug: z.string().min(1, 'Slug is required'),
 });
@@ -50,6 +51,7 @@ export const defaultValues: BlogFormData = {
     file_name: '',
     url: '',
     public_id: '',
+    caption: '',
   },
   slug: '',
 };
@@ -106,6 +108,7 @@ export default function CreateForm() {
       error: (err) => err || 'Something wrong',
     });
   };
+  console.log(errors)
 
   return (
     <FormProvider {...method}>
@@ -135,8 +138,8 @@ export default function CreateForm() {
         </Box>
 
         <Box mb={2}>
-          <Form.Label className="fw-bold text-default">Image</Form.Label>
-          <Box display="flex" alignItems="flex-start" flexDirection={'column'}>
+          <Form.Label className="text-default">Image</Form.Label>
+          <Box display="flex" alignItems="flex-start" flexDirection={'column'} mb={1}>
             <Box position="relative" flex={1} width={'100%'}>
               <Controller
                 control={control}
@@ -153,6 +156,14 @@ export default function CreateForm() {
                 )}
               />
             </Box>
+          </Box>
+          <Box className="mb-3">
+            <Form.Label className="text-default">Caption</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Slug for blog"
+              {...register('image.caption')}
+            />
           </Box>
         </Box>
         <Box className="mb-3">

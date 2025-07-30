@@ -16,6 +16,7 @@ import toast from 'react-hot-toast';
 const schema = z.object({
   first_name: z.string().min(1, 'First name is required'),
   last_name: z.string().min(1, 'Last name is required'),
+  description: z.string(),
 });
 
 type ProfileType = z.infer<typeof schema>;
@@ -57,6 +58,7 @@ function ProfileTemplate() {
       reset({
         first_name: profile.first_name ?? '',
         last_name: profile.last_name ?? '',
+        description:profile.description ??''
       });
     }
   }, [profile, reset]);
@@ -133,6 +135,18 @@ function ProfileTemplate() {
                     />
                     <Form.Control.Feedback type="invalid">
                       {errors.last_name?.message}
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Description</Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder="Enter description"
+                      isInvalid={!!errors.description}
+                      {...register('description')}
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {errors.description?.message}
                     </Form.Control.Feedback>
                   </Form.Group>
 

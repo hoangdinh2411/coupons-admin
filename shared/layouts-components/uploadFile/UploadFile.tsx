@@ -8,6 +8,7 @@ export type ImageType = {
   file_name: string;
   url: string;
   public_id: string;
+  caption?: string
 };
 type Props = {
   onUploadFile: (data: ImageType[]) => void;
@@ -104,7 +105,7 @@ export default function UploadFile({
   };
 
   return (
-    <div className="d-flex flex-column gap-2 w-100">
+    <div className="d-flex flex-column w-100">
       <label
         htmlFor={id}
         className="form-control text-muted mar my-2 "

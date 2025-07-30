@@ -14,6 +14,7 @@ export interface UserData extends RegisterRequestPayLoad {
   email_verified: boolean;
   role: ROLES;
   token?: string;
+  description?: string;
 }
 export interface VerifyRequestPayload {
   email: string;
@@ -23,4 +24,5 @@ export interface VerifyRequestPayload {
 export interface UserRequestPayload {
   first_name: string;
   last_name: string;
+  description: string;
 }
