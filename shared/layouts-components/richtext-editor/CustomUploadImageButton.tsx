@@ -43,12 +43,23 @@ export default function CustomUploadImageButton({
         setUploadedImages([...uploadedImages, ...res.data]);
       }
       return res?.data
-        ? res?.data.map((image) => ({
-            src: image.url,
-            alt: getAltFromImageName(image.file_name),
-            width: '300px', // ✅ optionally set width
-            height: 'auto',
-          }))
+        ? await Promise.all(
+          res?.data.map(async (image) => {
+            const defaultAlt = getAltFromImageName(image.file_name);
+            const caption = window.prompt(
+              `Enter caption for image "${defaultAlt}"`,
+              defaultAlt
+            ); // 👈 Nhập caption tại đây
+
+            return {
+              src: image.url,
+              alt: defaultAlt,
+              caption: caption || '', // 👈 Thêm caption
+              width: '300px',
+              height: 'auto',
+            };
+          })
+        )
         : [];
     }
     return [];
@@ -56,6 +67,17 @@ export default function CustomUploadImageButton({
   return (
     <MenuButtonImageUpload
       onUploadFiles={handleUploadImage}
+      insertImages={({ images, editor }) => {
+        images.forEach((img :any) => {
+          editor?.chain().focus().insertContent({
+            type: 'image',
+            attrs: {
+              ...img,
+              caption: img.caption || img.alt
+            },
+          }).run()
+        })
+      }}
       inputProps={{
         multiple: false,
       }}

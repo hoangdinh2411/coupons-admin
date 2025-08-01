@@ -17,6 +17,7 @@ import { FontSize, LinkBubbleMenuHandler, ResizableImage } from 'mui-tiptap';
 import { EditorOptions } from '@tiptap/core';
 import History from '@tiptap/extension-history';
 import Placeholder from '@tiptap/extension-placeholder';
+import { CustomResizableImage } from './CustomerImageExtension';
 export default function useExtensions(): EditorOptions['extensions'] {
   return useMemo(() => {
     return [
@@ -33,10 +34,11 @@ export default function useExtensions(): EditorOptions['extensions'] {
       Underline,
       CodeBlock,
       Link,
-      ResizableImage.configure({
-        HTMLAttributes: {
+      CustomResizableImage.configure({
+        HTMLAttributes: () => (attrs: any) => ({
+          ...attrs,
           class: 'editor-image',
-        },
+        }),
       }),
       LinkBubbleMenuHandler,
       Color,

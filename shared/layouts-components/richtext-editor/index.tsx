@@ -6,6 +6,7 @@ import { filterUsedImageForEditor } from '@/helper/file';
 import EditorMenuController from './EditorMenuController';
 import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
 import useExtensions from './useExtensions';
+import { Button } from '@mui/material';
 
 const CustomRichTextEditor = forwardRef(
   (
@@ -112,10 +113,12 @@ const CustomRichTextEditor = forwardRef(
           )}
         />
         {error && <div className="text-danger">{helpText}</div>}
-        {/* <Button onClick={() => console.log(rteRef.current?.editor?.getHTML())}>
-        Log HTML
-      </Button> */}
+        <Button onClick={() => console.log(rteRef.current?.editor?.getHTML())}>
+          Log HTML
+        </Button>
+
       </Box>
+
     );
   },
 );

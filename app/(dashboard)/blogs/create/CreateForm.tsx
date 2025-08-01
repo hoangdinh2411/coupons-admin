@@ -36,7 +36,6 @@ export const blogSchema = z.object({
     file_name: z.string(),
     url: z.string(),
     public_id: z.string(),
-    caption: z.string(),
   }),
   slug: z.string().min(1, 'Slug is required'),
 });
@@ -51,7 +50,6 @@ export const defaultValues: BlogFormData = {
     file_name: '',
     url: '',
     public_id: '',
-    caption: '',
   },
   slug: '',
 };
@@ -157,14 +155,7 @@ export default function CreateForm() {
               />
             </Box>
           </Box>
-          <Box className="mb-3">
-            <Form.Label className="text-default">Caption</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Slug for blog"
-              {...register('image.caption')}
-            />
-          </Box>
+
         </Box>
         <Box className="mb-3">
           <Form.Label className="">Blog content</Form.Label>
