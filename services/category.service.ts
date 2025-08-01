@@ -6,9 +6,16 @@ import customFetch from './customFetch';
 import { LIMIT_DEFAULT } from '@/constants/variants';
 
 export async function getCategories(page?: number, search_text: string = '') {
-  const query = `?page=${page}&limit=${LIMIT_DEFAULT}&search_text=${search_text}`;
+  const params = new URLSearchParams();
+  if (page) {
+    params.append('page', page.toString());
+    params.append('limit', LIMIT_DEFAULT.toString());
+  }
+  if (search_text) {
+    params.append('search_text', search_text);
+  }
   return await customFetch<IResponseWithTotal<CategoryData[]>>(
-    `/categories${query}`,
+    `/categories${params.toString()}`,
     {
       method: 'GET',
       next: {

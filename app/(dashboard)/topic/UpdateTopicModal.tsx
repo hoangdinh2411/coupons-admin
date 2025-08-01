@@ -102,7 +102,19 @@ function UpdateTopicModal({ item, open, onClose }: UpdateTopicModalProps) {
                 <small className="text-danger">{errors.name.message}</small>
               )}
             </Box>
-
+            <Box className="mb-3">
+              <Form.Label className="fw-bold text-default">
+                Topic description
+              </Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter your topic name"
+                {...register('description')}
+              />
+              {errors.description && (
+                <small className="text-danger">{errors.description.message}</small>
+              )}
+            </Box>
             <Box mb={2}>
               <Form.Label className="fw-bold text-default">Image</Form.Label>
               <Box

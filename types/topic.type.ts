@@ -5,6 +5,7 @@ export interface TopicPayload {
   name: string;
   image: ImageType;
   meta_data?: MetaData;
+  description: string;
 }
 
 export interface TopicData extends TopicPayload {

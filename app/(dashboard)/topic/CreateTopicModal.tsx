@@ -28,6 +28,7 @@ interface CreateTopicModalPropsType {
 export const schema = z.object({
   ...seoDataSchema.shape,
   name: z.string().min(1, 'Topic name is required'),
+  description: z.string().min(1, 'Topic name is required'),
   image: z.object({
     file_name: z.string(),
     url: z.string(),
@@ -38,6 +39,7 @@ export const schema = z.object({
 export const defaultValues = {
   ...seoDefaultValues,
   name: '',
+  description: '',
   image: {
     file_name: '',
     url: '',
@@ -119,6 +121,19 @@ export default function CreateTopicModal({
               />
               {errors.name && (
                 <small className="text-danger">{errors.name.message}</small>
+              )}
+            </Box>
+            <Box className="mb-3">
+              <Form.Label className="fw-bold text-default">
+                Topic description
+              </Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter your topic name"
+                {...register('description')}
+              />
+              {errors.description && (
+                <small className="text-danger">{errors.description.message}</small>
               )}
             </Box>
 

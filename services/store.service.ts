@@ -7,28 +7,29 @@ import { FilterPayload } from '@/types/filter.type';
 import { LIMIT_DEFAULT } from '@/constants/variants';
 
 export async function filterStore(data: FilterPayload) {
-  return await customFetch<IResponseWithTotal<StoreData[]>>(
-    `/stores/filter`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
+  return await customFetch<IResponseWithTotal<StoreData[]>>(`/stores/filter`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
     },
-  );
+    body: JSON.stringify(data),
+  });
 }
 export async function getAllStores(page?: number, search_text?: string) {
-  const query = `?page=${page}&limit=${LIMIT_DEFAULT}&search_text=${search_text}`;
-  return await customFetch<IResponseWithTotal<StoreData[]>>(
-    `/stores${query}`,
-    {
-      method: 'GET',
-      next: {
-        tags: ['stores-data'],
-      },
+  const params = new URLSearchParams();
+  if (page) {
+    params.append('page', page.toString());
+    params.append('limit', LIMIT_DEFAULT.toString());
+  }
+  if (search_text) {
+    params.append('search_text', search_text);
+  }
+  return await customFetch<IResponseWithTotal<StoreData[]>>(`/stores${params.toString()}`, {
+    method: 'GET',
+    next: {
+      tags: ['stores-data'],
     },
-  );
+  });
 }
 export async function getStoreById(id: string) {
   return await customFetch<StoreData>(`/stores/${id}`, {

@@ -45,10 +45,12 @@ export default function UpdateForm({ item }: { item: CouponData }) {
     if (item) {
       reset({
         ...item,
+        discount: item.discount.toString(),
         categories: item.categories ? item.categories.map((c) => c.id) : [],
         is_exclusive: item.is_exclusive,
         expire_date: new Date(item.expire_date),
         start_date: new Date(item.start_date),
+        store_id: item.store?.id || -1
       });
     }
   }, [item]);
@@ -56,6 +58,7 @@ export default function UpdateForm({ item }: { item: CouponData }) {
   const onSubmit = async (data: CouponFormData) => {
     const payload: CouponPayload = {
       ...data,
+      discount: data.discount ? Number(data.discount) : 0,
       is_exclusive: Number(data.is_exclusive) === 0,
       expire_date: dayjs(data.expire_date).format('YYYY/MM/DD'),
       start_date: dayjs(data.start_date).format('YYYY/MM/DD'),
@@ -135,6 +138,17 @@ export default function UpdateForm({ item }: { item: CouponData }) {
         />
         {errors.title && (
           <small className="text-danger">{errors.title.message}</small>
+        )}
+      </Box>
+      <Box className="mb-3">
+        <Form.Label className="text-default">Discount</Form.Label>
+        <Form.Control
+          type="text"
+          placeholder="Enter discount 1-100"
+          {...register('discount')}
+        />
+        {errors.discount && (
+          <small className="text-danger">{errors.discount.message}</small>
         )}
       </Box>
       <Box className="mb-3">

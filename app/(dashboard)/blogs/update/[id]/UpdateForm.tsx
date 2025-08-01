@@ -51,7 +51,9 @@ export default function UpdateForm({ item }: { item: BlogData }) {
         meta_data: {
           ...item.meta_data,
           keywords: getKeyWordsString(item.meta_data?.keywords || []),
+
         },
+        topic_id: item.topic?.id || -1
       });
     }
   }, [item]);

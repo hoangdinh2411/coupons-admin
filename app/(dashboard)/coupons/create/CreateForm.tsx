@@ -46,6 +46,12 @@ export const schema = z
     }),
     offer_link: z.string().trim().optional(),
     type: z.enum(Object.values(CouponType) as [string, ...string[]]),
+    discount: z.coerce
+      .string()
+      .regex(/^[0-9]+$/, { message: 'Please enter numbers only' })
+      .refine((value) => Number(value) >= 0 && Number(value) <= 100, {
+        message: 'Between 0 -100 ',
+      }),
   })
   .refine((data) => dayjs(data.expire_date).isAfter(dayjs(data.start_date)), {
     message: 'Expire date must be after start date',
@@ -63,6 +69,7 @@ export const defaultValues: CouponFormData = {
   store_id: -1,
   type: '',
   offer_link: '',
+  discount: '',
 };
 export type CouponFormData = z.infer<typeof schema>;
 
@@ -83,9 +90,11 @@ export default function CreateForm() {
 
   const { categories, stores } = UseAppStore((state) => state);
 
+  console.log(stores)
   const onSubmit = async (data: CouponFormData) => {
     const payload: CouponPayload = {
       ...data,
+      discount: data.discount ? Number(data.discount) : 0,
       is_exclusive: Number(data.is_exclusive) === 0,
       expire_date: dayjs(data.expire_date).format('YYYY/MM/DD'),
       start_date: dayjs(data.start_date).format('YYYY/MM/DD'),
@@ -167,6 +176,17 @@ export default function CreateForm() {
         />
         {errors.title && (
           <small className="text-danger">{errors.title.message}</small>
+        )}
+      </Box>
+      <Box className="mb-3">
+        <Form.Label className="text-default">Discount</Form.Label>
+        <Form.Control
+          type="text"
+          placeholder="Enter discount 1-100"
+          {...register('discount')}
+        />
+        {errors.discount && (
+          <small className="text-danger">{errors.discount.message}</small>
         )}
       </Box>
       <Box className="mb-3">

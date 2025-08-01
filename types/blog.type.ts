@@ -15,7 +15,6 @@ export interface BlogData extends TimestampedEntity {
   title: string;
   content: string;
   keywords: string[];
-  topic_id: number;
   id: number;
   slug: string;
   topic?: TopicData;
