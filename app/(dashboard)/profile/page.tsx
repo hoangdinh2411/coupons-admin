@@ -9,7 +9,7 @@ import { Box } from '@mui/material';
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
 import Seo from '@/shared/layouts-components/seo/seo';
 import Breadcrumb from './Breadcrumb';
-import UseAppStore, { StateAppStoredType } from '@/store/useAppStore';
+import UseAppStore from '@/store/useAppStore';
 import { updateUser } from '@/services/user.service';
 import toast from 'react-hot-toast';
 
@@ -17,13 +17,18 @@ const schema = z.object({
   first_name: z.string().min(1, 'First name is required'),
   last_name: z.string().min(1, 'Last name is required'),
   description: z.string(),
+  linkedin: z.string(),
+  youtube: z.string(),
+  facebook: z.string(),
+  instagram: z.string(),
 });
+
 
 type ProfileType = z.infer<typeof schema>;
 
 function ProfileTemplate() {
   const { profile, setProfile } = UseAppStore((state) => state);
-
+  
   const {
     register,
     handleSubmit,
@@ -53,12 +58,16 @@ function ProfileTemplate() {
 
   //TODO: GET PROFILE
   useEffect(() => {
-    console.log(profile);
     if (profile) {
       reset({
         first_name: profile.first_name ?? '',
         last_name: profile.last_name ?? '',
-        description:profile.description ??''
+        description: profile.description ?? '',
+        linkedin: profile.linkedin ?? '',
+        youtube: profile.youtube ?? '',
+        instagram: profile.instagram ?? '',
+        facebook: profile.facebook ?? '',
+
       });
     }
   }, [profile, reset]);
@@ -147,6 +156,54 @@ function ProfileTemplate() {
                     />
                     <Form.Control.Feedback type="invalid">
                       {errors.description?.message}
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Facebook</Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder="Enter facebook"
+                      isInvalid={!!errors.facebook}
+                      {...register('facebook')}
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {errors.facebook?.message}
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Instagram</Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder="Enter instagram"
+                      isInvalid={!!errors.instagram}
+                      {...register('instagram')}
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {errors.instagram?.message}
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Youtube</Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder="Enter youtube"
+                      isInvalid={!!errors.youtube}
+                      {...register('youtube')}
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {errors.youtube?.message}
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                  <Form.Group className="mb-3">
+                    <Form.Label>LinkedIn</Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder="Enter linkedin"
+                      isInvalid={!!errors.linkedin}
+                      {...register('linkedin')}
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {errors.linkedin?.message}
                     </Form.Control.Feedback>
                   </Form.Group>
 

@@ -15,6 +15,10 @@ export interface UserData extends RegisterRequestPayLoad {
   role: ROLES;
   token?: string;
   description?: string;
+  youtube?: string;
+  facebook?: string;
+  linkedin?: string;
+  instagram?: string;
 }
 export interface VerifyRequestPayload {
   email: string;
@@ -25,4 +29,8 @@ export interface UserRequestPayload {
   first_name: string;
   last_name: string;
   description: string;
+  youtube: string;
+  facebook: string;
+  linkedin: string;
+  instagram: string;
 }
