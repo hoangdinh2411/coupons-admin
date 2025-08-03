@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { Box, Paper } from '@mui/material';
 import Breadcrumb from '../Breadcrumb';
 import CreateForm from './CreateForm';
@@ -6,18 +7,18 @@ import CustomLoading from '@/shared/layouts-components/custom-loading/CustomLoad
 
 export default function CreateStorePage() {
   return (
-    <Suspense fallback={<CustomLoading />}>
-      <Paper
-        sx={{
-          p: 4,
-        }}
-      >
-        <Breadcrumb />
-        <Box display={'flex'} mb={1} justifyContent={'space-between'}>
-          <h6>Create store</h6>
-        </Box>
+    <Paper
+      sx={{
+        p: 4,
+      }}
+    >
+      <Breadcrumb />
+      <Box display={'flex'} mb={1} justifyContent={'space-between'}>
+        <h6>Create store</h6>
+      </Box>
+      <Suspense fallback={<CustomLoading />}>
         <CreateForm />
-      </Paper>
-    </Suspense>
+      </Suspense>
+    </Paper>
   );
 }

@@ -14,14 +14,11 @@ import toast from 'react-hot-toast';
 import { createStore } from '@/services/store.service';
 import { StorePayload } from '@/types/store.type';
 import UseAppStore from '@/store/useAppStore';
-import SeoForm, {
-  seoDataSchema,
-  seoDefaultValues,
-} from '@/shared/layouts-components/seo-form/SeoForm';
-import { getKeyWordsArray } from '@/helper/keywords';
 import CustomRichTextEditor from '../../../../shared/layouts-components/richtext-editor';
 import useRickTextEditor from '@/hooks/useRickTextEditor';
 import { generateSlug } from '@/helper/generateSlug';
+import SeoForm, { seoDataSchema, seoDefaultValues } from '@/shared/layouts-components/seo-form/SeoForm';
+import { getKeyWordsArray } from '@/helper/keywords';
 
 
 export interface AccordionFAQProps {

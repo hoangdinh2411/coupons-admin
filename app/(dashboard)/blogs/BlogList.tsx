@@ -134,10 +134,10 @@ export default function BlogList({
                 <td>
                   {blog.keywords
                     ? blog.keywords.map((k: string, index: number) => (
-                        <span key={index} className="badge bg-dark me-1">
-                          {k}
-                        </span>
-                      ))
+                      <span key={index} className="badge bg-dark me-1">
+                        {k}
+                      </span>
+                    ))
                     : 'N/A'}
                 </td>
                 <td>

@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { Box, Paper } from '@mui/material';
 import CreateForm from './CreateForm';
 import CustomLoading from '@/shared/layouts-components/custom-loading/CustomLoading';
