@@ -8,14 +8,12 @@ import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk
 import toast from 'react-hot-toast';
 import UseAppStore from '@/store/useAppStore';
 import 'react-datepicker/dist/react-datepicker.css';
-import dynamic from 'next/dynamic';
 import { updateBlog } from '@/services/blog';
 import { BlogData, BlogPayload } from '@/types/blog.type';
 import SeoForm from '@/shared/layouts-components/seo-form/SeoForm';
 import {
   BlogFormData,
   blogSchema,
-  defaultValues,
 } from '../../create/CreateForm';
 import { getKeyWordsArray, getKeyWordsString } from '@/helper/keywords';
 import UploadFile, {

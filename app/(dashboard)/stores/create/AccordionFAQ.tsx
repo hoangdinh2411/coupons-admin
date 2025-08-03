@@ -1,5 +1,5 @@
-import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
-import { Box, Typography } from '@mui/material';
+'use client'
+import { Typography } from '@mui/material';
 import React, { useRef, useState } from 'react';
 import { Accordion, Card, Form, useAccordionButton } from 'react-bootstrap';
 import { AccordionFAQProps } from './CreateForm';
