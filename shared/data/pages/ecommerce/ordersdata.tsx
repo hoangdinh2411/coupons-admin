@@ -1,4 +1,4 @@
-
+'use client';
 interface OrderStat {
   title: string;
   iconClass: string;
@@ -12,29 +12,29 @@ export const orderStats: OrderStat[] = [
     iconClass: 'ri-box-2-fill text-primary',
     cardClass: 'border border-primary border-opacity-10 bg-primary-transparent',
     badgeClass: 'bg-primary',
-    orderCount: 45
+    orderCount: 45,
   },
   {
     title: 'Orders Pending',
     iconClass: 'ri-box-2-fill text-secondary',
     cardClass: 'border border-secondary border-opacity-25 bg-secondary-transparent',
     badgeClass: 'bg-secondary',
-    orderCount: 3
+    orderCount: 3,
   },
   {
     title: 'Cancelled',
     iconClass: 'ri-box-2-fill text-danger',
     cardClass: 'border border-danger border-opacity-10 bg-danger-transparent',
     badgeClass: 'bg-danger',
-    orderCount: 15
+    orderCount: 15,
   },
   {
     title: 'Delivered',
     iconClass: 'ri-box-2-fill text-success',
     cardClass: 'border border-success border-opacity-10 bg-success-transparent',
     badgeClass: 'bg-success',
-    orderCount: 23
-  }
+    orderCount: 23,
+  },
 ];
 
 interface OrderData {
@@ -54,7 +54,7 @@ export const Orderdata: OrderData[] = [
   {
     id: 1,
     orderId: '#1154632',
-    productName: 'Women\'s Sling Bag',
+    productName: "Women's Sling Bag",
     productImage: '../../../assets/images/ecommerce/png/1.png',
     customerName: 'Emma Watson',
     customerAvatar: '../../../assets/images/faces/3.jpg',
@@ -94,9 +94,9 @@ export const Orderdata: OrderData[] = [
     id: 4,
     orderId: '#1185634',
     productName: "Men's Casual Sneakers",
-    productImage: "../../../assets/images/ecommerce/png/4.png",
+    productImage: '../../../assets/images/ecommerce/png/4.png',
     customerName: 'Chris Evans',
-    customerAvatar: "../../../assets/images/faces/6.jpg",
+    customerAvatar: '../../../assets/images/faces/6.jpg',
     customerPhone: '(456) 789-0123',
     orderDate: '15 Mar 2024',
     orderStatus: 'Shipped',
@@ -107,9 +107,9 @@ export const Orderdata: OrderData[] = [
     id: 5,
     orderId: '#1257842',
     productName: 'Flower Pot',
-    productImage: "../../../assets/images/ecommerce/png/5.png",
+    productImage: '../../../assets/images/ecommerce/png/5.png',
     customerName: 'David Harper',
-    customerAvatar: "../../../assets/images/faces/12.jpg",
+    customerAvatar: '../../../assets/images/faces/12.jpg',
     customerPhone: '(789) 123-4567',
     orderDate: '22 Apr 2024',
     orderStatus: 'Processing',
@@ -120,9 +120,9 @@ export const Orderdata: OrderData[] = [
     id: 6,
     orderId: '#1257845',
     productName: 'Decorative Wall Clock',
-    productImage: "../../../assets/images/ecommerce/png/7.png",
+    productImage: '../../../assets/images/ecommerce/png/7.png',
     customerName: 'Jessica Parker',
-    customerAvatar: "../../../assets/images/faces/13.jpg",
+    customerAvatar: '../../../assets/images/faces/13.jpg',
     customerPhone: '(567) 234-9876',
     orderDate: '29 Apr 2024',
     orderStatus: 'Delivered',
@@ -133,9 +133,9 @@ export const Orderdata: OrderData[] = [
     id: 7,
     orderId: '#1257847',
     productName: 'Wrist watch',
-    productImage: "../../../assets/images/ecommerce/png/6.png",
+    productImage: '../../../assets/images/ecommerce/png/6.png',
     customerName: 'Michael Johnson',
-    customerAvatar: "../../../assets/images/faces/14.jpg",
+    customerAvatar: '../../../assets/images/faces/14.jpg',
     customerPhone: '(987) 456-7891',
     orderDate: '2 May 2024',
     orderStatus: 'Cancelled',

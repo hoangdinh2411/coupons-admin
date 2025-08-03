@@ -1,0 +1,162 @@
+'use client';
+
+import { APP_ROUTE } from '@/constants/route';
+import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
+import { UserData } from '@/types/auth.type';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import React, { useActionState, useEffect, useState } from 'react';
+import { Card, Col, Form, Row } from 'react-bootstrap';
+import toast from 'react-hot-toast';
+import { z } from 'zod';
+import { loginAction } from '../../actions/sign-in.actions';
+import { signinSchema } from '@/helper/schemas/auth.schema';
+import { ROLES } from '@/types/enum';
+
+export type AuthLoginSchemaType = z.infer<typeof signinSchema>;
+function SignInPage() {
+  const [state, actions, isPending] = useActionState(loginAction, {});
+  const [passwordShow, setPasswordShow] = useState(false);
+  const router = useRouter();
+  useEffect(() => {
+    if (state.error) {
+      toast.error(state.error);
+    }
+    if (state.data) {
+      const result: UserData = state.data;
+      toast.success('Welcome back!');
+      router.push(APP_ROUTE.DASHBOARD);
+    }
+  }, [state]);
+
+  return (
+    <Row className="justify-content-center authentication authentication-basic align-items-center h-100">
+      <Col xxl={7} sm={8} className="col-12">
+        <Card className="custom-card my-4 border">
+          <Card.Body>
+            <Row className="mx-0 align-items-center">
+              {/* Login Form Section */}
+              <Col xl={6}>
+                <Form action={actions} className="p-3">
+                  <Row className="gy-2">
+                    {/* Email */}
+                    <label htmlFor="signin-email" className="text-default px-0">
+                      Email Address <sup className="fs-12 text-danger">*</sup>
+                    </label>
+                    <Form.Control
+                      type="email"
+                      id="signin-email"
+                      placeholder="Enter your email address"
+                      name="email"
+                      // {...register('email')}
+                    />
+                    {state.errors && (
+                      <small className="text-danger mt-1">
+                        {state.errors.email}
+                      </small>
+                    )}
+
+                    {/* Password */}
+                    <div className="mt-2"></div>
+                    <label
+                      htmlFor="signin-password "
+                      className="text-default px-0"
+                    >
+                      Password <sup className="fs-12 text-danger">*</sup>
+                    </label>
+                    <div className="input-group p-0">
+                      <Form.Control
+                        type={passwordShow ? 'text' : 'password'}
+                        id="signin-password"
+                        placeholder="Enter your password"
+                        className="signin-password-input"
+                        name="password"
+                        // {...register('password')}
+                      />
+                      <SpkButton
+                        Buttontype="button"
+                        Buttonvariant="primary-light"
+                        Customclass="show-password-button"
+                        onClickfunc={() => setPasswordShow(!passwordShow)}
+                      >
+                        <i
+                          className={`ri-${
+                            passwordShow ? 'eye-line' : 'eye-off-line'
+                          } align-middle`}
+                        ></i>
+                      </SpkButton>
+                    </div>
+                    {state.errors && (
+                      <small className="text-danger mt-1">
+                        {state.errors.password}
+                      </small>
+                    )}
+
+                    {/* Forgot Password */}
+                    <Col
+                      xl={12}
+                      className="d-flex p-0 mt-2 justify-content-end"
+                    >
+                      <Link
+                        href={APP_ROUTE.FORGOT}
+                        className="text-success fw-medium fs-12"
+                      >
+                        Forgot Password?
+                      </Link>
+                    </Col>
+
+                    {/* Submit Button */}
+                    <Col xl={12} className="d-grid mt-4 p-0">
+                      <SpkButton Buttontype="submit" Disabled={isPending}>
+                        <i className="ri-login-circle-line lh-1 me-2 align-middle"></i>
+                        Sign In
+                      </SpkButton>
+                    </Col>
+
+                    {/* Sign Up Link */}
+                    <Col xl={12} className="text-center">
+                      <p className="text-muted mt-3 mb-0">
+                        Don't have an account?{' '}
+                        <Link
+                          href="/authentication/sign-up"
+                          className="text-primary fw-medium text-decoration-underline"
+                        >
+                          Sign Up
+                        </Link>
+                      </p>
+                    </Col>
+                  </Row>
+                </Form>
+              </Col>
+
+              {/* Image + Welcome Text */}
+              <Col
+                xl={6}
+                className="border rounded border-secondary border-opacity-10"
+              >
+                <div className="d-flex align-items-center  position-relative justify-content-around flex-column gap-4 h-100">
+                  <Image
+                    fill
+                    priority
+                    src="/assets/images/authentication/5.png"
+                    alt="Sign In"
+                    className="img-fluid m-auto mb-3 flex-fill mt-4 position-relative"
+                  />
+                  <div className="flex-fill text-center">
+                    <h6 className="mb-2">Welcome Back!</h6>
+                    <p className="mb-0 text-muted fw-normal fs-12">
+                      Sign in to your account to continue.
+                    </p>
+                  </div>
+                </div>
+              </Col>
+            </Row>
+          </Card.Body>
+        </Card>
+      </Col>
+    </Row>
+  );
+}
+
+export default SignInPage;

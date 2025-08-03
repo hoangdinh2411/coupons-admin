@@ -1,23 +1,37 @@
-"use client"
+import React from 'react';
+import './globals.scss';
+import ToastProvider from '@/context/ToastProvider';
+import InitialLoadProvider from '@/context/InitialLoadProvider';
+import { Metadata } from 'next';
+import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 
-import { store } from '@/shared/redux/store'
-import React, { Fragment, useState } from 'react'
-import "./globals.scss";
-import { Provider } from 'react-redux'
-import { Initialload } from '@/shared/layouts-components/contextapi';
-const RootLayout = ({ children, }: any) => {
-
-    const [pageloading, setpageloading] = useState(false)
-
-    return (
-        <Fragment>
-            <Provider store={store}>
-                <Initialload.Provider value={{ pageloading, setpageloading }}>
-                    {children}
-                </Initialload.Provider>
-            </Provider>
-        </Fragment>
-    )
+export const metadata: Metadata = {
+  title: 'Couponly',
+  description: 'Affiliate & Submitting Discounts Coupons',
+};
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html>
+      <head>
+        <title>Coupon Admin Dashboard</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta
+          name="keywords"
+          content="admin dashboard template, bootstrap dashboard, bootstrap next js, next js, next js typescript, next js with react, nextjs admin, nextjs app router, nextjs dashboard template, nextjs firebase, nextjs framework, nextjs react bootstrap, nextjs with bootstrap, react next js, typescript with react"
+        />
+      </head>
+      <body suppressHydrationWarning suppressContentEditableWarning>
+        <AppRouterCacheProvider>
+          <InitialLoadProvider>
+            {children}
+            <ToastProvider />
+          </InitialLoadProvider>
+        </AppRouterCacheProvider>
+      </body>
+    </html>
+  );
 }
-
-export default RootLayout
