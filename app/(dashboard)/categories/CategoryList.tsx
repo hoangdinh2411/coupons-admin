@@ -28,7 +28,6 @@ export default function CategoryList({
   total = 1,
   currentPage = 1,
 }: Props) {
-  console.log(data)
   const [categoryModal, setCategoryModal] = useState<{
     isOpen: boolean;
     item: CategoryData | null;
@@ -98,7 +97,7 @@ export default function CategoryList({
           {/* Table */}
           <div className="table-responsive mt-3">
             <SpkTables tableClass="table-hover text-nowrap" header={HEADER}>
-              {data.map((cat) => (
+              {data && data?.map((cat) => (
                 <tr key={cat.id}>
                   <td>{cat.id}</td>
                   <td>{cat.name}</td>

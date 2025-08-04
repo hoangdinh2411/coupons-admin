@@ -91,7 +91,7 @@ export default function TopicList({
           {/* Table */}
           <div className="table-responsive mt-3">
             <SpkTables tableClass="table-hover text-nowrap" header={HEADER}>
-              {data.map((topic) => (
+              {data && data?.map((topic) => (
                 <tr key={topic.id}>
                   <td>{topic.name}</td>
                   <td>
