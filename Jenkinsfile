@@ -6,7 +6,7 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                git branch: 'UAT', url: 'https://github.com/hoangdinh2411/coupons-admin.git'
+                git branch: 'main', url: 'https://github.com/hoangdinh2411/coupons-admin.git'
             }
         }
         stage('Copy .env file') {
