@@ -14,15 +14,13 @@ export default async function StorePage(props: {
   const searchParams = await props.searchParams;
   const params = makeFilterData(searchParams || {});
   const res = await filterStore(params);
-  if (!res.success || (res.success && !res.data)) {
-    return res.message;
-  }
+
   return (
     <Suspense fallback={<CustomLoading />}>
       {res.data && (
         <StoreList
-          data={res.data?.results}
-          total={res.data?.total}
+          data={res.data?.results ?? []}
+          total={res.data?.total ?? 0}
           currentPage={params.page}
         />
       )}

@@ -13,9 +13,7 @@ export default async function CouponPage(props: {
     ...params,
     is_verified: true,
   });
-  if (!res.success || (res.success && !res.data)) {
-    return res.message;
-  }
+
   return (
     <Suspense fallback={<CustomLoading />}>
       <CouponList

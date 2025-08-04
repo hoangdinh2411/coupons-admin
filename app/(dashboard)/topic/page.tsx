@@ -15,9 +15,7 @@ export default async function TopicPage(props: {
   const searchParams = await props.searchParams;
   const { search_text, page } = makeFilterData(searchParams || {});
   const res = await getTopics(page, search_text);
-  if (!res.success || res.message) {
-    return { message: res?.message };
-  }
+
   if (!res.data) {
     return notFound();
   }
