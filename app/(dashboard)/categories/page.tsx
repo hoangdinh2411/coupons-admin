@@ -14,8 +14,6 @@ export default async function CategoryPage(props: {
   const searchParams = await props.searchParams;
   const { search_text, page } = makeFilterData(searchParams || {});
   const res = await getCategories(page, search_text);
-
-
   return (
     <Suspense fallback={<CustomLoading />}>
       <CategoryList

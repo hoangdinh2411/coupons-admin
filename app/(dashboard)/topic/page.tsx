@@ -16,9 +16,6 @@ export default async function TopicPage(props: {
   const { search_text, page } = makeFilterData(searchParams || {});
   const res = await getTopics(page, search_text);
 
-  if (!res.data) {
-    return notFound();
-  }
   return (
     <Suspense fallback={<CustomLoading />}>
       <TopicList
