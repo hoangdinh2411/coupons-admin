@@ -1,6 +1,7 @@
 import { getToken } from '@/app/actions/getTokenFromCookie';
 import UseAppStore from '@/store/useAppStore';
 import { IResponse } from '@/types/share.type';
+import toast from 'react-hot-toast';
 export const BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5173/api/v1';
 
@@ -31,6 +32,9 @@ export default async function customFetch<T>(
         const signOut = UseAppStore((state) => state.signOut);
         signOut();
         return;
+      }
+      if (!data.success && data.message) {
+        toast.error(data.message || 'something wrong');
       }
       return data as T;
     })
