@@ -24,12 +24,15 @@ export async function getAllStores(page?: number, search_text?: string) {
   if (search_text) {
     params.append('search_text', search_text);
   }
-  return await customFetch<IResponseWithTotal<StoreData[]>>(`/stores${params.toString()}`, {
-    method: 'GET',
-    next: {
-      tags: ['stores-data'],
+  return await customFetch<IResponseWithTotal<StoreData[]>>(
+    `/stores?${params.toString()}`,
+    {
+      method: 'GET',
+      next: {
+        tags: ['stores-data'],
+      },
     },
-  });
+  );
 }
 export async function getStoreById(id: string) {
   return await customFetch<StoreData>(`/stores/${id}`, {

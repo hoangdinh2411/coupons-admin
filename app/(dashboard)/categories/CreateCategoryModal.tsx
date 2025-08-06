@@ -28,6 +28,7 @@ interface CreateCategoryModalPropsType {
 export const schema = z.object({
   ...seoDataSchema.shape,
   name: z.string().min(1, 'Category name is required').trim(),
+  description: z.string().min(1, 'Description sis required').trim(),
   image: z.object({
     file_name: z.string().trim(),
     url: z.string().trim(),
@@ -38,6 +39,7 @@ export const schema = z.object({
 export const defaultValues = {
   ...seoDefaultValues,
   name: '',
+  description: '',
   image: {
     file_name: '',
     url: '',
@@ -120,14 +122,26 @@ export default function CreateCategoryModal({
               </Form.Label>
               <Form.Control
                 type="text"
-                placeholder="Enter your category name"
+                placeholder="Enter category name"
                 {...register('name')}
               />
               {errors.name && (
                 <small className="text-danger">{errors.name.message}</small>
               )}
             </Box>
-
+            <Box className="mb-3">
+              <Form.Label className="fw-bold text-default">
+                Description
+              </Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter category description"
+                {...register('description')}
+              />
+              {errors.description && (
+                <small className="text-danger">{errors.description.message}</small>
+              )}
+            </Box>
             <Box mb={2}>
               <Form.Label className="fw-bold text-default">Image</Form.Label>
               <Box

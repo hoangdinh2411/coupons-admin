@@ -13,7 +13,7 @@ export async function getTopics(page?: number, search_text: string = '') {
     params.append('search_text', search_text);
   }
   return await customFetch<IResponseWithTotal<TopicData[]>>(
-    `/topic${params.toString()}`,
+    `/topic?${params.toString()}`,
     {
       method: 'GET',
       next: {

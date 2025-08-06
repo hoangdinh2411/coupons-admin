@@ -5,8 +5,6 @@ import { useForm, Controller, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Modal, Form, CloseButton } from 'react-bootstrap';
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
-import { generateImageBytesObjectFromBase64 } from '@/helper/image';
-import { ImageByte } from '@/helper/image';
 import { CategoryFormData, schema } from './CreateCategoryModal';
 import { Box, Paper } from '@mui/material';
 import UploadFile, {
@@ -102,14 +100,26 @@ function UpdateCategoryModal({
               </Form.Label>
               <Form.Control
                 type="text"
-                placeholder="Enter your category name"
+                placeholder="Enter category name"
                 {...register('name')}
               />
               {errors.name && (
                 <small className="text-danger">{errors.name.message}</small>
               )}
             </Box>
-
+            <Box className="mb-3">
+              <Form.Label className="fw-bold text-default">
+                Description
+              </Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter category description"
+                {...register('description')}
+              />
+              {errors.description && (
+                <small className="text-danger">{errors.description.message}</small>
+              )}
+            </Box>
             <Box mb={2}>
               <Form.Label className="fw-bold text-default">Image</Form.Label>
               <Box
