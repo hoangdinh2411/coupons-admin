@@ -41,6 +41,7 @@ export const filterUsedImageForEditor = async (
 
 const MAX_SIZE_MB = 3; // 2MB
 export const isFileSizeValid = (fileSize: number): boolean => {
+  if (!fileSize) return false;
   const maxSize = 1024 * 1024 * MAX_SIZE_MB;
 
   return fileSize <= maxSize;
@@ -52,8 +53,9 @@ function checkFileFormat(file: File): boolean {
     'image/png',
     'image/jpg',
     'image/svg+xml',
+    'image/webp',
   ];
-  return allowedFormats.includes(file.type);
+  return allowedFormats.includes(file?.type);
 }
 
 export function validateFile(file: File) {
@@ -62,7 +64,7 @@ export function validateFile(file: File) {
     isValid = false;
     toast.error('Missing File');
   }
-  if (!isFileSizeValid(file.size)) {
+  if (!isFileSizeValid(file?.size)) {
     isValid = false;
     toast.error('File is too large, max 3 MB');
   }

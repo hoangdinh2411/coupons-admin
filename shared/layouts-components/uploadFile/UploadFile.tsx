@@ -26,6 +26,7 @@ export default function UploadFile({
 }: Props) {
   const handleSelectFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files && e.target.files;
+    console.log(files)
     if (files) {
       let isValid;
       if (multiple) {
@@ -48,7 +49,7 @@ export default function UploadFile({
               throw res.message;
             }
             if (!res.data) {
-              throw 'Missing data on respose';
+              throw 'Missing data on response';
             }
             onUploadFile(res.data);
             return 'Uploaded success';
@@ -79,6 +80,7 @@ export default function UploadFile({
       //   console.log(error);
       // }
     }
+    e.target.value = ''
   };
 
   const handleDeleteSelectedFile = async () => {

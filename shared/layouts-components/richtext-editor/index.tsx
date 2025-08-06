@@ -113,9 +113,9 @@ const CustomRichTextEditor = forwardRef(
           )}
         />
         {error && <div className="text-danger">{helpText}</div>}
-        <Button onClick={() => console.log(rteRef.current?.editor?.getHTML())}>
+        {/* <Button onClick={() => console.log(rteRef.current?.editor?.getHTML())}>
           Log HTML
-        </Button>
+        </Button> */}
 
       </Box>
 

@@ -8,12 +8,12 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'res.cloudinary.com',
-        pathname: '/**',
+        hostname: 's3.amazonaws.com',
+        pathname: '/img.trustcoupon.com/**',
       },
       {
         protocol: 'https',
-        hostname: 's3.us-east-1.amazonaws.com',
+        hostname: 'res.cloudinary.com',
         pathname: '/**',
       },
       {
@@ -25,7 +25,7 @@ const nextConfig = {
   },
   experimental: {
     serverActions: {
-      bodySizeLimit: '3mb',
+      bodySizeLimit: '5mb',
     },
   },
 };
