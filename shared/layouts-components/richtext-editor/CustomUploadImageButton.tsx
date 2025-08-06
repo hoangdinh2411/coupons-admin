@@ -35,6 +35,7 @@ export default function CustomUploadImageButton({
 
     if (isValid) {
       formData.append('folder', imageFolder);
+      formData.append('is_used', "false");
       const res = await uploadFile(formData);
       if (!res.success && res.message) {
         return [];
@@ -68,7 +69,7 @@ export default function CustomUploadImageButton({
     <MenuButtonImageUpload
       onUploadFiles={handleUploadImage}
       insertImages={({ images, editor }) => {
-        images.forEach((img :any) => {
+        images.forEach((img: any) => {
           editor?.chain().focus().insertContent({
             type: 'image',
             attrs: {
