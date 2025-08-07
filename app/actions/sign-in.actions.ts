@@ -35,7 +35,7 @@ export async function loginAction(
     return { error: 'Missing user data' };
   }
   if (
-    (data?.role as ROLES) !== ROLES.ADMIN ||
+    (data?.role as ROLES) !== ROLES.ADMIN &&
     (data?.role as ROLES) !== ROLES.PARTNER
   ) {
     return {
