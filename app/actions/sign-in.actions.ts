@@ -34,7 +34,10 @@ export async function loginAction(
   if (!data) {
     return { error: 'Missing user data' };
   }
-  if ((data?.role as ROLES) !== ROLES.ADMIN) {
+  if (
+    (data?.role as ROLES) !== ROLES.ADMIN ||
+    (data?.role as ROLES) !== ROLES.PARTNER
+  ) {
     return {
       error: 'Done have permission',
     };
