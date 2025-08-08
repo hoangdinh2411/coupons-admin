@@ -17,7 +17,7 @@ import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk
 import toast from 'react-hot-toast';
 import UseAppStore from '@/store/useAppStore';
 import { updateCoupon } from '@/services/coupon.service';
-import { CouponType } from '@/types/enum';
+import { CouponType, TypeDiscount } from '@/types/enum';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import dayjs from 'dayjs';
@@ -45,10 +45,10 @@ export default function UpdateForm({ item }: { item: CouponData }) {
     if (item) {
       reset({
         ...item,
-        discount: item.discount.toString(),
+        discount: item.discount,
         categories: item.categories ? item.categories.map((c) => c.id) : [],
         is_exclusive: item.is_exclusive,
-        expire_date: new Date(item.expire_date),
+        expire_date: item.expire_date ? new Date(item.expire_date) : '',
         start_date: new Date(item.start_date),
         store_id: item.store?.id || -1
       });
@@ -58,9 +58,9 @@ export default function UpdateForm({ item }: { item: CouponData }) {
   const onSubmit = async (data: CouponFormData) => {
     const payload: CouponPayload = {
       ...data,
-      discount: data.discount ? Number(data.discount) : 0,
+      discount: data.discount,
       is_exclusive: Number(data.is_exclusive) === 0,
-      expire_date: dayjs(data.expire_date).format('YYYY/MM/DD'),
+      expire_date: data.expire_date ? dayjs(data.expire_date).format('YYYY/MM/DD') : null,
       start_date: dayjs(data.start_date).format('YYYY/MM/DD'),
       type: data.type as CouponType,
     };
@@ -76,7 +76,7 @@ export default function UpdateForm({ item }: { item: CouponData }) {
       error: (err) => err || 'Something wrong',
     });
   };
-
+  const typeDiscountWatch = watch('type_discount')
   const type = watch('type');
 
   const handleChange = (
@@ -140,12 +140,43 @@ export default function UpdateForm({ item }: { item: CouponData }) {
           <small className="text-danger">{errors.title.message}</small>
         )}
       </Box>
+      <Box display={"flex"} gap={2} alignItems={'center'}>
+        <Controller
+          name="type_discount"
+          control={control}
+          render={({ field }) => (
+            <fieldset>
+              <RadioGroup
+                row
+                value={field.value ?? TypeDiscount.PERCENT}
+                onChange={(_, v) => field.onChange(v)}
+                name="type_discount"
+              >
+                <FormControlLabel
+                  value={TypeDiscount.PERCENT}
+                  control={<Radio size="small" />}
+                  label="Percent"
+                />
+                <FormControlLabel
+                  value={TypeDiscount.DOLLAR}
+                  control={<Radio size="small" />}
+                  label="Dollar"
+                />
+              </RadioGroup>
+            </fieldset>
+          )}
+        />
+        {errors.type_discount && (
+          <small className="text-danger">{errors.type_discount.message}</small>
+        )}
+      </Box>
       <Box className="mb-3">
         <Form.Label className="text-default">Discount</Form.Label>
         <Form.Control
-          type="text"
-          placeholder="Enter discount 1-100"
+          type="number"
+          placeholder={`${typeDiscountWatch === TypeDiscount.PERCENT ? "Enter discount 1-100" : "Enter the number of dollar"}`}
           {...register('discount')}
+          onFocus={(e) => { if (e.currentTarget.value === '0') e.currentTarget.value = ''; }}
         />
         {errors.discount && (
           <small className="text-danger">{errors.discount.message}</small>
@@ -264,7 +295,7 @@ export default function UpdateForm({ item }: { item: CouponData }) {
                   isClearable
                   dateFormat="YYYY/MM/dd"
                   onChange={(date) => {
-                    field.onChange(date);
+                    field.onChange(date || '');
                   }}
                   placeholderText="Select expire date"
                   className="form-control flatpickr-input"

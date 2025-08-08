@@ -19,22 +19,20 @@ import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk
 import toast from 'react-hot-toast';
 import UseAppStore from '@/store/useAppStore';
 import { createCoupon } from '@/services/coupon.service';
-import { CouponType } from '@/types/enum';
+import { CouponType, TypeDiscount } from '@/types/enum';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import dayjs from 'dayjs';
 import { CouponPayload } from '@/types/coupon.type';
 const types = Object.values(CouponType);
 
-export const schema = z
+const baseSchema = z
   .object({
     title: z.string().min(1, 'Coupon title is required').trim(),
     code: z.string().trim(),
     offer_detail: z.string().min(1, 'Offer detail is required').trim(),
     is_exclusive: z.boolean(),
-    expire_date: z.date({
-      message: 'Expire date is required',
-    }),
+    expire_date: z.union([z.date(), z.literal('')]).optional(),
     start_date: z.date({
       message: 'Start date is required',
     }),
@@ -46,30 +44,35 @@ export const schema = z
     }),
     offer_link: z.string().trim().optional(),
     type: z.enum(Object.values(CouponType) as [string, ...string[]]),
-    discount: z.coerce
-      .string()
-      .regex(/^[0-9]+$/, { message: 'Please enter numbers only' })
-      .refine((value) => Number(value) >= 0 && Number(value) <= 100, {
-        message: 'Between 0 -100 ',
-      }),
   })
-  .refine((data) => dayjs(data.expire_date).isAfter(dayjs(data.start_date)), {
-    message: 'Expire date must be after start date',
-    path: ['expire_date'],
-  });
 
+// 3) branch by discriminator
+const PercentSchema = baseSchema.extend({
+  type_discount: z.literal(TypeDiscount.PERCENT),
+  discount: z.coerce.number().min(0).max(100, 'Discount must be between 0-100 for Percent type')
+});
+
+const DollarSchema = baseSchema.extend({
+  type_discount: z.literal(TypeDiscount.DOLLAR),
+  discount: z.coerce.number().nonnegative(),
+});
+export const schema = z.discriminatedUnion('type_discount', [PercentSchema, DollarSchema]).refine((data) => data.expire_date ? dayjs(data.expire_date).isAfter(dayjs(data.start_date)) : true, {
+  message: 'Expire date must be after start date',
+  path: ['expire_date'],
+})
 export const defaultValues: CouponFormData = {
   title: '',
   code: '',
   offer_detail: '',
   is_exclusive: false,
   start_date: new Date(),
-  expire_date: new Date(),
+  expire_date: '',
   categories: [],
   store_id: -1,
   type: '',
   offer_link: '',
-  discount: '',
+  discount: 0,
+  type_discount: TypeDiscount.PERCENT
 };
 export type CouponFormData = z.infer<typeof schema>;
 
@@ -89,17 +92,16 @@ export default function CreateForm() {
   });
 
   const { categories, stores } = UseAppStore((state) => state);
-
-  console.log(stores)
   const onSubmit = async (data: CouponFormData) => {
     const payload: CouponPayload = {
       ...data,
-      discount: data.discount ? Number(data.discount) : 0,
+      discount: data.discount,
       is_exclusive: Number(data.is_exclusive) === 0,
-      expire_date: dayjs(data.expire_date).format('YYYY/MM/DD'),
+      expire_date: data.expire_date ? dayjs(data.expire_date).format('YYYY/MM/DD') : null,
       start_date: dayjs(data.start_date).format('YYYY/MM/DD'),
       type: data.type as CouponType,
     };
+
     toast.promise(createCoupon(payload), {
       loading: 'Pending...!',
       success: (res) => {
@@ -113,9 +115,8 @@ export default function CreateForm() {
       error: (err) => err || 'Something wrong',
     });
   };
-
   const type = watch('type');
-
+  const typeDiscountWatch = watch('type_discount')
   const handleChange = (
     e: SelectChangeEvent,
     onChange: (...event: any[]) => void,
@@ -178,12 +179,43 @@ export default function CreateForm() {
           <small className="text-danger">{errors.title.message}</small>
         )}
       </Box>
+      <Box display={"flex"} gap={2} alignItems={'center'}>
+        <Controller
+          name="type_discount"
+          control={control}
+          render={({ field }) => (
+            <fieldset>
+              <RadioGroup
+                row
+                value={field.value ?? TypeDiscount.PERCENT}
+                onChange={(_, v) => field.onChange(v)}
+                name="type_discount"
+              >
+                <FormControlLabel
+                  value={TypeDiscount.PERCENT}
+                  control={<Radio size="small" />}
+                  label="Percent"
+                />
+                <FormControlLabel
+                  value={TypeDiscount.DOLLAR}
+                  control={<Radio size="small" />}
+                  label="Dollar"
+                />
+              </RadioGroup>
+            </fieldset>
+          )}
+        />
+        {errors.type_discount && (
+          <small className="text-danger">{errors.type_discount.message}</small>
+        )}
+      </Box>
       <Box className="mb-3">
         <Form.Label className="text-default">Discount</Form.Label>
         <Form.Control
-          type="text"
-          placeholder="Enter discount 1-100"
+          type="number"
+          placeholder={`${typeDiscountWatch === TypeDiscount.PERCENT ? "Enter discount 1-100" : "Enter the number of dollar"}`}
           {...register('discount')}
+          onFocus={(e) => { if (e.currentTarget.value === '0') e.currentTarget.value = ''; }}
         />
         {errors.discount && (
           <small className="text-danger">{errors.discount.message}</small>
@@ -291,7 +323,9 @@ export default function CreateForm() {
           )}
         </Col>
         <Col xl={6}>
-          <Form.Label className="text-default">Expire Date</Form.Label>
+          <Form.Label className="text-default">Expire Date
+
+          </Form.Label>
           <Controller
             control={control}
             name="expire_date"
@@ -302,7 +336,7 @@ export default function CreateForm() {
                   isClearable
                   dateFormat="YYYY/MM/dd"
                   onChange={(date) => {
-                    field.onChange(date);
+                    field.onChange(date || '');
                   }}
                   placeholderText="Select expire date"
                   className="form-control flatpickr-input"
