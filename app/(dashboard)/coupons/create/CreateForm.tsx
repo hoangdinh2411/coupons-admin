@@ -102,19 +102,18 @@ export default function CreateForm() {
       type: data.type as CouponType,
     };
 
-    console.log(payload)
-    // toast.promise(createCoupon(payload), {
-    //   loading: 'Pending...!',
-    //   success: (res) => {
-    //     if (res.success && res.data) {
-    //       reset(defaultValues);
-    //       return 'Created success';
-    //     }
+    toast.promise(createCoupon(payload), {
+      loading: 'Pending...!',
+      success: (res) => {
+        if (res.success && res.data) {
+          reset(defaultValues);
+          return 'Created success';
+        }
 
-    //     throw res.message;
-    //   },
-    //   error: (err) => err || 'Something wrong',
-    // });
+        throw res.message;
+      },
+      error: (err) => err || 'Something wrong',
+    });
   };
   const type = watch('type');
   const typeDiscountWatch = watch('type_discount')

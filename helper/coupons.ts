@@ -8,7 +8,10 @@ export const couponStatus = [
 ];
 
 const checkStatus = (start: string, end: string) => {
-  if (dayjs().isAfter(end)) {
+  if (!end && dayjs().isAfter(start)) {
+    return 1;
+  }
+  if (end && dayjs().isAfter(end)) {
     return 2;
   }
   if (dayjs().isAfter(start) && dayjs().isBefore(end)) {
@@ -19,7 +22,6 @@ const checkStatus = (start: string, end: string) => {
 
 export const getStatus = (start: string, end: string) => {
   const number = checkStatus(start, end);
-  console.log(couponStatus.find((s) => s.status === number));
   return couponStatus.find((s) => s.status === number);
 };
 
