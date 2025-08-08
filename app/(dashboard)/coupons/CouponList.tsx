@@ -40,7 +40,7 @@ export default function CouponList({
   const pathname = usePathname();
 
   const handleRatingChange = (id: number, value: number) => {
-    toast.promise(updateCoupon(id, { rating: value }), {
+    toast.promise(updateCoupon(id, { rating: +value }), {
       loading: 'Updating...',
       success: (res) => {
         if (res.success) {
