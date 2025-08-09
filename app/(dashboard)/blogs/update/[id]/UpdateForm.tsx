@@ -62,7 +62,6 @@ export default function UpdateForm({ item }: { item: BlogData }) {
   }, [rteRef.current, item]);
   const onSubmit = async (data: BlogFormData) => {
     const content = await getContent();
-
     const payload: BlogPayload = {
       ...data,
       content,
@@ -190,7 +189,7 @@ export default function UpdateForm({ item }: { item: BlogData }) {
 
         <Box display="flex" justifyContent="end" mt={4} gap={1}>
           <SpkButton Buttonvariant="primary" Buttontype="submit">
-            Create Blog
+            Update Blog
           </SpkButton>
         </Box>
       </Form>

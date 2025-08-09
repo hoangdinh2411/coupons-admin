@@ -1,8 +1,6 @@
 'use client';
 import { RichTextEditor, type RichTextEditorRef } from 'mui-tiptap';
 import { Box } from '@mui/system';
-import { ImageType } from '../uploadFile/UploadFile';
-import { filterUsedImageForEditor } from '@/helper/file';
 import EditorMenuController from './EditorMenuController';
 import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
 import useExtensions from './useExtensions';
@@ -23,7 +21,6 @@ const CustomRichTextEditor = forwardRef(
     },
     ref,
   ) => {
-    const [uploadedImages, setUploadedImages] = useState<ImageType[]>([]);
     const rteRef = useRef<RichTextEditorRef>(null);
     const handleBlur = () => {
       const value = rteRef.current?.editor?.getHTML() || '';
@@ -56,16 +53,7 @@ const CustomRichTextEditor = forwardRef(
         }
       },
       getContent: async () => {
-        const value = rteRef.current?.editor?.getHTML() || '';
-        const cleanedAllUnusedImages = await filterUsedImageForEditor(
-          value,
-          uploadedImages,
-        );
-        if (cleanedAllUnusedImages) {
-          setUploadedImages([]);
-          return rteRef.current?.editor?.getHTML() ?? '';
-        }
-        return '';
+        return rteRef.current?.editor?.getHTML() ?? '';
       },
     }));
     return (
@@ -101,21 +89,19 @@ const CustomRichTextEditor = forwardRef(
           onBlur={handleBlur}
           // editable={true}
           extensions={useExtensions()} // Or any Tiptap extensions you wish!
-          content={'<p></p>'} // Initial content for the editor
+          content={'<div></div>'} // Initial content for the editor
           // Optionally include `renderControls` for a menu-bar atop the editor:
           renderControls={() => (
             <EditorMenuController
               editor={rteRef.current && rteRef.current?.editor}
-              setUploadedImages={setUploadedImages}
-              uploadedImages={uploadedImages}
               imageFolder={imageFolder}
             />
           )}
         />
         {error && <div className="text-danger">{helpText}</div>}
-        {/* <Button onClick={() => console.log(rteRef.current?.editor?.getHTML())}>
+        <Button onClick={() => console.log(rteRef.current?.editor?.getHTML())}>
           Log HTML
-        </Button> */}
+        </Button>
 
       </Box>
 
