@@ -6,9 +6,9 @@ import ForgotForm from './ForgotForm';
 import { Card, Col, Row } from 'react-bootstrap';
 import VerifyForm from './VerifyForm';
 import ResetPassworForm from './ResetPasswordForm';
-
 export interface ForgotPagePropsType {
-  onChangeEmail: (email: string) => void;
+  onChangeEmail?: (email: string) => void;
+  onUpdateToken?: (token: string) => any;
   email: string;
   onChangeCurrentForm: (form: number) => void;
 }
@@ -21,12 +21,16 @@ export const TYPE_FORM = {
 function ForgotPasswordTemplate() {
   const [currentForm, setCurrentForm] = useState(TYPE_FORM.FORGOT);
   const [email, setEmail] = useState('');
+  const [token, setToken] = useState('');
 
   const onChangeCurrentForm = (type: number) => {
     setCurrentForm(type);
   };
   const onChangeEmail = (email: string) => {
     setEmail(email);
+  };
+  const onUpdateToken = (token: string) => {
+    setToken(token);
   };
   return (
     <>
@@ -45,15 +49,13 @@ function ForgotPasswordTemplate() {
                   )}
                   {currentForm === TYPE_FORM.VERIFY && (
                     <VerifyForm
-                      onChangeEmail={onChangeEmail}
+                      onUpdateToken={onUpdateToken}
                       onChangeCurrentForm={onChangeCurrentForm}
                       email={email}
                     />
                   )}
                   {currentForm === TYPE_FORM.RESET && (
-                    <ResetPassworForm
-                      email={email}
-                    />
+                    <ResetPassworForm token={token} />
                   )}
                 </Col>
                 <RightSection />

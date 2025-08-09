@@ -8,10 +8,16 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { resetPasswordSchema } from '@/helper/schemas/auth.schema';
 import { Box } from '@mui/material';
+import { changePassword } from '@/services/auth.service';
+import toast from 'react-hot-toast';
+import { APP_ROUTE } from '@/constants/route';
+import { useRouter } from 'next/router';
 
 type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
 
-function ResetPassworForm({ email }: { email: string }) {
+function ResetPassworForm({ token }: { token: string }) {
+  const router = useRouter();
+
   const [passwordVisibility, setPasswordVisibility] = useState<{
     [key: string]: boolean;
   }>({
@@ -39,9 +45,16 @@ function ResetPassworForm({ email }: { email: string }) {
     }));
   };
 
-  const onSubmit = (data: ResetPasswordFormData) => {
-    console.log('Email:', email);
-    console.log('Submitted data:', data);
+  const onSubmit = async (data: ResetPasswordFormData) => {
+    const response = await changePassword({
+      confirm_password: data.confirm_password,
+      password: data.password,
+      reset_token: token,
+    });
+    if (response && response.success) {
+      toast.success('Reset password success!');
+      router.push(APP_ROUTE.SIGN_IN);
+    }
   };
 
   return (

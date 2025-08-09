@@ -22,7 +22,11 @@ export interface UserData extends RegisterRequestPayLoad {
 }
 export interface VerifyRequestPayload {
   email: string;
-  code: string;
+  code: number;
+  type: string;
+}
+export interface ForgetRequestPayload {
+  email: string;
 }
 
 export interface UserRequestPayload {
@@ -33,4 +37,10 @@ export interface UserRequestPayload {
   facebook: string;
   linkedin: string;
   instagram: string;
+}
+
+export interface ChangePassRequestPayload {
+  password: string;
+  confirm_password: string;
+  reset_token: string;
 }

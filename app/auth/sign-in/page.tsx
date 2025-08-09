@@ -2,7 +2,6 @@
 
 import { APP_ROUTE } from '@/constants/route';
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
-import { UserData } from '@/types/auth.type';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -12,7 +11,6 @@ import toast from 'react-hot-toast';
 import { z } from 'zod';
 import { loginAction } from '../../actions/sign-in.actions';
 import { signinSchema } from '@/helper/schemas/auth.schema';
-import { ROLES } from '@/types/enum';
 
 export type AuthLoginSchemaType = z.infer<typeof signinSchema>;
 function SignInPage() {
@@ -24,7 +22,6 @@ function SignInPage() {
       toast.error(state.error);
     }
     if (state.data) {
-      const result: UserData = state.data;
       toast.success('Welcome back!');
       router.push(APP_ROUTE.DASHBOARD);
     }

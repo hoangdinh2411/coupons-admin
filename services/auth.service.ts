@@ -3,6 +3,8 @@ import {
   LoginRequestPayload,
   RegisterRequestPayLoad,
   VerifyRequestPayload,
+  ForgetRequestPayload,
+  ChangePassRequestPayload,
 } from '@/types/auth.type';
 import customFetch from './customFetch';
 
@@ -24,9 +26,9 @@ export async function register(payload: RegisterRequestPayLoad) {
     body: JSON.stringify(payload),
   });
 }
-export async function verify(payload: VerifyRequestPayload) {
-  return await customFetch(`/auth/verify-account`, {
-    method: 'PATCH',
+export async function verify(payload: VerifyRequestPayload): Promise<any> {
+  return await customFetch(`/auth/verify-code`, {
+    method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
@@ -36,5 +38,25 @@ export async function verify(payload: VerifyRequestPayload) {
 export async function signOut() {
   return await fetch(`/api/sign-out`, {
     method: 'DELETE',
+  });
+}
+
+export async function forgetPassword(payload: ForgetRequestPayload) {
+  return await customFetch(`/auth/forget-password`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function changePassword(payload: ChangePassRequestPayload) {
+  return await customFetch(`/auth/change-pass`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
   });
 }
