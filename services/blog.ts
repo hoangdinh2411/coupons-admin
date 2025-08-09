@@ -18,7 +18,7 @@ export async function getBlogBy(identity: string | number) {
   return await customFetch<BlogData>(`/blogs/${identity}`, {
     method: 'GET',
     next: {
-      tags: [`store-${identity}`],
+      tags: [`blog-${identity}`],
     },
   });
 }
@@ -32,6 +32,7 @@ export async function updateBlog(id: number, payload: BlogPayload) {
   });
   if (res.success) {
     revalidateTag('blogs-data');
+    revalidateTag(`blog-${id}`);
   }
   return res;
 }

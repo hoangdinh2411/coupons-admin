@@ -14,6 +14,9 @@ export async function filterCoupon(data: FilterPayload) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(data),
+      next: {
+        tags: ['coupons-data'],
+      },
     },
   );
 }
