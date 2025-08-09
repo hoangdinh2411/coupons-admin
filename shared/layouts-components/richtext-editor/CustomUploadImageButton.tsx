@@ -4,15 +4,12 @@ import { MenuButtonImageUpload } from 'mui-tiptap';
 import React from 'react';
 import { ImageType } from '../uploadFile/UploadFile';
 import { validateFile } from '@/helper/file';
+import toast from 'react-hot-toast';
 
 export default function CustomUploadImageButton({
-  uploadedImages,
-  setUploadedImages,
   imageFolder,
 }: {
-  uploadedImages: ImageType[];
   imageFolder: string;
-  setUploadedImages: React.Dispatch<React.SetStateAction<ImageType[]>>;
 }) {
   function getAltFromImageName(fileName: string) {
     const words = fileName
@@ -39,9 +36,7 @@ export default function CustomUploadImageButton({
       if (!res.success && res.message) {
         return [];
       }
-      if (res.data && res.data.length > 0) {
-        setUploadedImages([...uploadedImages, ...res.data]);
-      }
+      toast.success('Uploaded success')
       return res?.data
         ? await Promise.all(
           res?.data.map(async (image) => {
