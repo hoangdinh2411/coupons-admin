@@ -35,7 +35,6 @@ export default function CustomUploadImageButton({
 
     if (isValid) {
       formData.append('folder', imageFolder);
-      formData.append('is_used', "false");
       const res = await uploadFile(formData);
       if (!res.success && res.message) {
         return [];
