@@ -11,12 +11,12 @@ export interface CouponPayload {
   store_id?: number;
   categories?: number[];
   is_exclusive?: boolean;
-  expire_date?: string;
+  expire_date?: string | null;
   start_date?: string;
   type?: CouponType;
   rating?: number;
   offer_link?: string;
-  discount: number;
+  discount?: number;
 }
 
 export interface CouponData extends TimestampedEntity {

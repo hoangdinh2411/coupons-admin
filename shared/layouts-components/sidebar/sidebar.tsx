@@ -11,11 +11,12 @@ import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 import Image from 'next/image';
 import { APP_ROUTE } from '@/constants/route';
+import UseAppStore from '@/store/useAppStore';
 
 const Sidebar = () => {
   const pathname = usePathname();
   let [variable, setVariable] = useState(getState());
-
+  const profile = UseAppStore(state => state.profile)
   useEffect(() => {
     const subscription = data$.subscribe((e) => {
       setVariable(e);
@@ -476,10 +477,10 @@ const Sidebar = () => {
             if (theme.dir == 'rtl') {
               if (
                 siblingULRect.left - siblingULRect.width - outterUlWidth + 150 <
-                  0 &&
+                0 &&
                 outterUlWidth < window.innerWidth &&
                 outterUlWidth + siblingULRect.width + siblingULRect.width <
-                  window.innerWidth
+                window.innerWidth
               ) {
                 targetObject.dirchange = true;
               } else {
@@ -488,10 +489,10 @@ const Sidebar = () => {
             } else {
               if (
                 outterUlWidth + siblingULRect.right + siblingULRect.width + 50 >
-                  window.innerWidth &&
+                window.innerWidth &&
                 siblingULRect.right >= 0 &&
                 outterUlWidth + siblingULRect.width + siblingULRect.width <
-                  window.innerWidth
+                window.innerWidth
               ) {
                 targetObject.dirchange = true;
               } else {
@@ -694,10 +695,10 @@ const Sidebar = () => {
           if (theme.dir == 'rtl') {
             if (
               siblingULRect.left - siblingULRect.width - outterUlWidth + 150 <
-                0 &&
+              0 &&
               outterUlWidth < window.innerWidth &&
               outterUlWidth + siblingULRect.width + siblingULRect.width <
-                window.innerWidth
+              window.innerWidth
             ) {
               item.dirchange = true;
             } else {
@@ -706,10 +707,10 @@ const Sidebar = () => {
           } else {
             if (
               outterUlWidth + siblingULRect.right + siblingULRect.width + 50 >
-                window.innerWidth &&
+              window.innerWidth &&
               siblingULRect.right >= 0 &&
               outterUlWidth + siblingULRect.width + siblingULRect.width <
-                window.innerWidth
+              window.innerWidth
             ) {
               item.dirchange = true;
             } else {
@@ -813,7 +814,7 @@ const Sidebar = () => {
             <ul className="main-menu">
               {/* <!-- Start::slide --> */}
 
-              {openMenu.map((list: any, index: any) => (
+              {openMenu.map((list: any, index: any) => list.roles.includes(profile?.role) ? (
                 <Fragment key={index}>
                   <li
                     className={` ${list.menutitle ? 'slide__category' : ''} ${list.type === 'link' ? 'slide' : ''} ${list.type === 'sub' ? 'slide has-sub' : ''} ${list.active ? 'open' : ''}  ${list?.selected ? 'active' : ''}  `}
@@ -890,7 +891,7 @@ const Sidebar = () => {
                     )}
                   </li>
                 </Fragment>
-              ))}
+              ) : null)}
 
               {/* <!-- End::slide --> */}
             </ul>

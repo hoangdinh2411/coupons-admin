@@ -1,4 +1,5 @@
 import { APP_ROUTE } from '@/constants/route';
+import { ROLES } from '@/types/enum';
 
 const Dashboardicon = (
   <svg
@@ -76,6 +77,7 @@ export const MENUITEMS: any = [
     dirchange: false,
     selected: true,
     path: APP_ROUTE.DASHBOARD,
+    roles: [ROLES.ADMIN, ROLES.PARTNER]
   },
   {
     title: 'Category',
@@ -84,6 +86,7 @@ export const MENUITEMS: any = [
     dirchange: false,
     type: 'link',
     path: APP_ROUTE.CATEGORY,
+    roles: [ROLES.ADMIN]
   },
   {
     title: 'Store',
@@ -108,6 +111,8 @@ export const MENUITEMS: any = [
         path: APP_ROUTE.ADD_STORE,
       },
     ],
+    roles: [ROLES.ADMIN]
+
   },
   {
     title: 'Coupons',
@@ -140,6 +145,8 @@ export const MENUITEMS: any = [
         path: APP_ROUTE.ADD_COUPON,
       },
     ],
+    roles: [ROLES.ADMIN]
+
   },
 
   {
@@ -172,5 +179,7 @@ export const MENUITEMS: any = [
         path: APP_ROUTE.TOPIC,
       },
     ],
+    roles: [ROLES.ADMIN, ROLES.PARTNER]
+
   },
 ];

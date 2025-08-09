@@ -145,6 +145,7 @@ export default function CreateForm() {
                 render={({ field }) => (
                   <UploadFile
                     folder="blogs"
+                    multiple={false}
                     newFile={field.value}
                     onUploadFile={(data: ImageType[]) =>
                       field.onChange(data[0])
