@@ -21,10 +21,10 @@ export const CustomResizableImage = ResizableImage.extend({
       'div',
       { 'data-type': 'image-wrapper', class: 'image-wrapper' },
       ['img', mergeAttributes(imgAttrs)],
-      ['p', { class: 'image-caption' }, caption || ''],
+      ['p', { class: 'image-caption' }, caption || imgAttrs],
     ];
   },
   addNodeView() {
-    return ReactNodeViewRenderer(ResizableImageNodeView)
-  }
+    return ReactNodeViewRenderer(ResizableImageNodeView);
+  },
 });
