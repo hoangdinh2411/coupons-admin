@@ -19,6 +19,7 @@ function VerifyForm({
   const {
     register,
     handleSubmit,
+    resetField,
     formState: { errors },
   } = useForm<VerifyFormData>({
     resolver: zodResolver(verifyFormSchema),
@@ -28,15 +29,23 @@ function VerifyForm({
   });
 
   const onSubmit = async (data: VerifyFormData) => {
-    const response = await verify({
-      email: email,
-      code: parseInt(data.verificationCode),
-      type: VerifyCodeType.FORGET_PASSWORD,
-    });
-    if (response && response.success) {
-      toast.success('Verify OTP success !');
-      onChangeCurrentForm(TYPE_FORM.RESET);
-      onUpdateToken?.(response.data.token ?? '');
+    try {
+      const response = await verify({
+        email: email,
+        code: parseInt(data.verificationCode),
+        type: VerifyCodeType.FORGET_PASSWORD,
+      });
+      if (response && response.success) {
+        toast.success('Verify OTP success !');
+        onChangeCurrentForm(TYPE_FORM.RESET);
+        onUpdateToken?.(response.data.token ?? '');
+      } else {
+        toast.error(response.message);
+        resetField('verificationCode');
+      }
+    } catch (error) {
+      toast.error('Error coding');
+    } finally {
     }
   };
 

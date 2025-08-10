@@ -11,7 +11,7 @@ import { Box } from '@mui/material';
 import { changePassword } from '@/services/auth.service';
 import toast from 'react-hot-toast';
 import { APP_ROUTE } from '@/constants/route';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 
 type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
 
