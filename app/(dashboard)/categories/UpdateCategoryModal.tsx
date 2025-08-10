@@ -16,6 +16,10 @@ import toast from 'react-hot-toast';
 import { updateCategory } from '@/services/category.service';
 import SeoForm from '@/shared/layouts-components/seo-form/SeoForm';
 import { getKeyWordsArray, getKeyWordsString } from '@/helper/keywords';
+import Faqs from '@/shared/layouts-components/faqs/Faqs';
+import useFaqs from '@/hooks/useFaqs';
+import useRickTextEditor from '@/hooks/useRickTextEditor';
+import CustomRichTextEditor from '@/shared/layouts-components/richtext-editor';
 
 interface UpdateCategoryModalProps {
   item: CategoryData | null;
@@ -28,21 +32,26 @@ function UpdateCategoryModal({
   open,
   onClose,
 }: UpdateCategoryModalProps) {
+  const { getFaqsValues, faqList, handleAddFaq, handleRemoveAccordion, onCreateAccordion, setFaqList } = useFaqs()
   const { setCategory, categories } = UseAppStore((state) => state);
   const method = useForm<CategoryFormData>({
     resolver: zodResolver(schema),
   });
+  const { getContent, rteRef, setContent } = useRickTextEditor();
+
   const {
     register,
+    setValue,
     handleSubmit,
     control,
-    setValue,
     reset,
     formState: { errors },
   } = method;
 
   useEffect(() => {
     if (item) {
+      console.log(item.faqs)
+
       reset({
         ...item,
         meta_data: {
@@ -50,16 +59,25 @@ function UpdateCategoryModal({
           keywords: getKeyWordsString(item.meta_data?.keywords || []),
         },
       });
+      setContent(item.description)
+      setFaqList(item.faqs ? item.faqs.map(({ question, answer }, index) => ({
+        id: index,
+        question,
+        answer
+      })) : [])
     }
   }, [item]);
   const onSubmit = async (data: CategoryFormData) => {
     if (item) {
+      const description = await getContent();
       const payload = {
         ...data,
+        description,
         meta_data: {
           ...data.meta_data,
           keywords: getKeyWordsArray(data.meta_data?.keywords),
         },
+        faqs: getFaqsValues()
       };
       toast.promise(updateCategory(item?.id, payload), {
         loading: 'Updating...!',
@@ -78,12 +96,15 @@ function UpdateCategoryModal({
       });
     }
   };
-
+  const handleChangeContent = (value: string) => {
+    setValue('description', value);
+  };
   return (
     <Modal
       show={open}
       onHide={onClose}
       centered
+      fullscreen
       aria-labelledby="update-category-modal"
       aria-describedby="modal-to-update-category"
     >
@@ -91,7 +112,7 @@ function UpdateCategoryModal({
         <Modal.Title as="h6">Update Category</Modal.Title>
         <CloseButton onClick={onClose} aria-label="close" />
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body className='px-4'>
         <FormProvider {...method}>
           <Form onSubmit={handleSubmit(onSubmit)}>
             <Box className="mb-3">
@@ -108,17 +129,14 @@ function UpdateCategoryModal({
               )}
             </Box>
             <Box className="mb-3">
-              <Form.Label className="fw-bold text-default">
-                Description
-              </Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter category description"
-                {...register('description')}
+              <Form.Label className="text-default fw-bold">Description</Form.Label>
+              <CustomRichTextEditor
+                imageFolder="stores"
+                ref={rteRef}
+                onBlur={handleChangeContent}
+                error={Boolean(errors.description)}
+                helpText={errors.description?.message}
               />
-              {errors.description && (
-                <small className="text-danger">{errors.description.message}</small>
-              )}
             </Box>
             <Box mb={2}>
               <Form.Label className="fw-bold text-default">Image</Form.Label>
@@ -145,6 +163,8 @@ function UpdateCategoryModal({
                 </Box>
               </Box>
             </Box>
+            <Faqs onAdd={onCreateAccordion} values={faqList} onChange={handleAddFaq} onRemove={handleRemoveAccordion} />
+
             <SeoForm />
             <Box display="flex" justifyContent="end" mt={4} gap={1}>
               <SpkButton Buttonvariant="primary" Buttontype="submit">
