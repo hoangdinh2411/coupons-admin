@@ -42,7 +42,6 @@ const AppStore = createStore<StateAppStoredType & ActionAppStoredType>()(
     signOut: async () => {
       await signOut();
       set({ profile: null });
-      window.location.reload();
     },
   }),
 );

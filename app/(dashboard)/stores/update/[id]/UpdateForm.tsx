@@ -49,7 +49,7 @@ export default function UpdateForm({ item }: Props) {
     if (item && rteRef.current) {
       setContent(item.description);
     }
-  }, [item, rteRef.current]);
+  }, [rteRef.current]);
 
   useEffect(() => {
     if (item) {

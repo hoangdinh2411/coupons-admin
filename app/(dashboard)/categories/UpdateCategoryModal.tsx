@@ -21,6 +21,7 @@ import useFaqs from '@/hooks/useFaqs';
 import useRickTextEditor from '@/hooks/useRickTextEditor';
 import CustomRichTextEditor from '@/shared/layouts-components/richtext-editor';
 
+
 interface UpdateCategoryModalProps {
   item: CategoryData | null;
   open: boolean;
@@ -47,11 +48,8 @@ function UpdateCategoryModal({
     reset,
     formState: { errors },
   } = method;
-
   useEffect(() => {
     if (item) {
-      console.log(item.faqs)
-
       reset({
         ...item,
         meta_data: {
@@ -59,7 +57,6 @@ function UpdateCategoryModal({
           keywords: getKeyWordsString(item.meta_data?.keywords || []),
         },
       });
-      setContent(item.description)
       setFaqList(item.faqs ? item.faqs.map(({ question, answer }, index) => ({
         id: index,
         question,
@@ -67,6 +64,12 @@ function UpdateCategoryModal({
       })) : [])
     }
   }, [item]);
+
+  useEffect(() => {
+    if (item && rteRef.current) {
+      setContent(item.description)
+    }
+  }, [rteRef.current])
   const onSubmit = async (data: CategoryFormData) => {
     if (item) {
       const description = await getContent();
@@ -164,7 +167,19 @@ function UpdateCategoryModal({
               </Box>
             </Box>
             <Faqs onAdd={onCreateAccordion} values={faqList} onChange={handleAddFaq} onRemove={handleRemoveAccordion} />
-
+            <Box className="mb-3">
+              <Form.Label className="fw-bold text-default">
+                About
+              </Form.Label>
+              <Form.Control
+                as="textarea" rows={3}
+                placeholder="Enter about"
+                {...register('about')}
+              />
+              {errors.about && (
+                <small className="text-danger">{errors.about.message}</small>
+              )}
+            </Box>
             <SeoForm />
             <Box display="flex" justifyContent="end" mt={4} gap={1}>
               <SpkButton Buttonvariant="primary" Buttontype="submit">

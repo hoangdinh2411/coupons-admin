@@ -1,3 +1,4 @@
+'use client';
 import { useMemo } from 'react';
 import { TextStyle } from '@tiptap/extension-text-style';
 import { FontFamily } from '@tiptap/extension-font-family';
@@ -23,6 +24,10 @@ export default function useExtensions(): EditorOptions['extensions'] {
     return [
       StarterKit.configure({
         history: false,
+        codeBlock: false,
+        bulletList: false,
+        orderedList: false,
+        listItem: false,
       }),
       Placeholder.configure({
         // Use a placeholder:
@@ -35,18 +40,17 @@ export default function useExtensions(): EditorOptions['extensions'] {
       CodeBlock,
       Link,
       CustomResizableImage.configure({
-        HTMLAttributes: () => (attrs: any) => ({
-          ...attrs,
-          class: 'editor-image',
-        }),
+        HTMLAttributes: (attrs: any) => {
+          console.log('Image HTMLAttributes:', attrs);
+          return { ...attrs, class: 'editor-image' };
+        },
       }),
       LinkBubbleMenuHandler,
       Color,
       TextAlign.configure({
         defaultAlignment: 'left',
-        types: ['heading', 'paragraph', 'image'],
+        types: ['heading', 'paragraph'], // ✅ safer
       }),
-
       Highlight,
       TaskList,
       BulletList,

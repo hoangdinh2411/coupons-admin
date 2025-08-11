@@ -1,6 +1,7 @@
 import { getToken } from '@/app/actions/getTokenFromCookie';
 import UseAppStore from '@/store/useAppStore';
 import { IResponse } from '@/types/share.type';
+import { unauthorized } from 'next/navigation';
 export const BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5173/api/v1';
 
@@ -28,9 +29,7 @@ export default async function customFetch<T>(
     })
     .then((data: IResponse<T>) => {
       if (data.status === 401) {
-        const signOut = UseAppStore((state) => state.signOut);
-        signOut();
-        return;
+        unauthorized();
       }
       return data as T;
     })

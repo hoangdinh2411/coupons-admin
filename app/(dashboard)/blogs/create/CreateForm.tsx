@@ -19,9 +19,12 @@ import { getKeyWordsArray } from '@/helper/keywords';
 import UploadFile, {
   ImageType,
 } from '@/shared/layouts-components/uploadFile/UploadFile';
-import CustomRichTextEditor from '@/shared/layouts-components/richtext-editor';
+import dynamic from 'next/dynamic';
 import useRickTextEditor from '@/hooks/useRickTextEditor';
 import { generateSlug } from '@/helper/generateSlug';
+const CustomRichTextEditor = dynamic(() => import('../../../../shared/layouts-components/richtext-editor'), {
+  ssr: false
+})
 export const blogSchema = z.object({
   ...seoDataSchema.shape,
   title: z.string().min(1, 'Coupon title is required'),
