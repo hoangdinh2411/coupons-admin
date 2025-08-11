@@ -9,6 +9,7 @@ export interface CategoryPayload {
   meta_data: MetaData;
   description: string;
   faqs?: FAQItem[];
+  about: string;
 }
 
 export interface CategoryData {
@@ -19,4 +20,5 @@ export interface CategoryData {
   meta_data: MetaData;
   description: string;
   faqs: FAQsData[];
+  about: string;
 }

@@ -1,4 +1,5 @@
-import React, { useEffect, useRef } from 'react'
+'use client'
+import React, { useRef } from 'react'
 import { NodeViewWrapper, NodeViewProps } from '@tiptap/react'
 
 const ResizableImageNodeView = ({ node, updateAttributes }: NodeViewProps) => {

@@ -21,8 +21,9 @@ import SeoForm, {
 import { getKeyWordsArray } from '@/helper/keywords';
 import Faqs from '@/shared/layouts-components/faqs/Faqs';
 import useFaqs from '@/hooks/useFaqs';
-import CustomRichTextEditor from '@/shared/layouts-components/richtext-editor';
+
 import useRickTextEditor from '@/hooks/useRickTextEditor';
+import CustomRichTextEditor from '@/shared/layouts-components/richtext-editor';
 
 interface CreateCategoryModalPropsType {
   open: boolean;
@@ -33,6 +34,7 @@ export const schema = z.object({
   ...seoDataSchema.shape,
   name: z.string().min(1, 'Category name is required').trim(),
   description: z.string().min(1, 'Description sis required').trim(),
+  about: z.string().min(1, 'Description sis required').trim(),
   image: z.object({
     file_name: z.string().trim(),
     url: z.string().trim(),
@@ -44,6 +46,7 @@ export const defaultValues = {
   ...seoDefaultValues,
   name: '',
   description: '',
+  about: '',
   image: {
     file_name: '',
     url: '',
@@ -144,6 +147,7 @@ export default function CreateCategoryModal({
                 <small className="text-danger">{errors.name.message}</small>
               )}
             </Box>
+
             {/* Description */}
             <Box className="mb-3">
               <Form.Label className="text-default fw-bold">Description</Form.Label>
@@ -181,7 +185,19 @@ export default function CreateCategoryModal({
               </Box>
             </Box>
             <Faqs onAdd={onCreateAccordion} values={faqList} onChange={handleAddFaq} onRemove={handleRemoveAccordion} />
-
+            <Box className="mb-3">
+              <Form.Label className="fw-bold text-default">
+                About
+              </Form.Label>
+              <Form.Control
+                as="textarea" rows={3}
+                placeholder="Enter about"
+                {...register('about')}
+              />
+              {errors.about && (
+                <small className="text-danger">{errors.about.message}</small>
+              )}
+            </Box>
             <SeoForm />
             <Box display="flex" justifyContent="end" mt={4} gap={1}>
               <SpkButton Buttonvariant="primary" Buttontype="submit">

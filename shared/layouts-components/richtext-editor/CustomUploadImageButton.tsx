@@ -2,7 +2,6 @@
 import { uploadFile } from '@/services/file.service';
 import { MenuButtonImageUpload } from 'mui-tiptap';
 import React from 'react';
-import { ImageType } from '../uploadFile/UploadFile';
 import { validateFile } from '@/helper/file';
 import toast from 'react-hot-toast';
 
@@ -63,15 +62,21 @@ export default function CustomUploadImageButton({
     <MenuButtonImageUpload
       onUploadFiles={handleUploadImage}
       insertImages={({ images, editor }) => {
-        images.forEach((img: any) => {
-          editor?.chain().focus().insertContent({
+        if (!editor) return
+        const pos = editor.state.selection.to;
+        const nodes = images.flatMap((img: any) => ([
+          {
             type: 'image',
             attrs: {
               ...img,
-              caption: img.caption || img.alt
+              caption: img.caption || img.alt,
             },
-          }).run()
-        })
+          },
+          { type: 'paragraph' }, // push cursor after the image
+        ]));
+
+        // Insert in one shot to avoid schema conflicts
+        editor.chain().focus().insertContentAt(pos, nodes).run();
       }}
       inputProps={{
         multiple: false,

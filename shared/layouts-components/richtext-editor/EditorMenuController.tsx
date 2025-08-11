@@ -1,9 +1,6 @@
 'use client';
 import {
   LinkBubbleMenu,
-  MenuButtonAlignCenter,
-  MenuButtonAlignLeft,
-  MenuButtonAlignRight,
   MenuButtonBlockquote,
   MenuButtonBold,
   MenuButtonBulletedList,
@@ -26,7 +23,6 @@ import {
 } from 'mui-tiptap';
 import React, { useState } from 'react';
 import CustomUploadImageButton from './CustomUploadImageButton';
-import { ImageType } from '../uploadFile/UploadFile';
 import { Editor } from '@tiptap/core';
 
 type Props = {

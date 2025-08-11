@@ -115,7 +115,7 @@ export default function BlogList({
         {/* Table */}
         <div className="table-responsive mt-3">
           <SpkTables tableClass="table-hover text-nowrap" header={HEADER}>
-            {data.map((blog: BlogData) => (
+            {data && data?.map((blog: BlogData) => (
               <tr key={blog.id}>
                 <td>{blog.title}</td>
                 <td>{blog.topic?.name || 'N/A'}</td>
@@ -123,7 +123,7 @@ export default function BlogList({
                   <Rating
                     key={blog.id}
                     size="small"
-                    value={blog.rating || null}
+                    value={blog.rating ?? 0}
                     onChange={(_, newValue: number | null) => {
                       if (newValue !== null) {
                         handleRatingChange(blog.id, newValue);
