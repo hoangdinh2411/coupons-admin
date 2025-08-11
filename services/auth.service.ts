@@ -36,7 +36,7 @@ export async function verify(payload: VerifyRequestPayload): Promise<any> {
   });
 }
 export async function signOut() {
-  return await fetch(`/api/sign-out`, {
+  return await fetch(`${process.env.NEXT_PUBLIC_APP_DOMAIN}/api/sign-out`, {
     method: 'DELETE',
   });
 }
