@@ -2,12 +2,11 @@
 
 import { APP_ROUTE } from '@/constants/route'
 import UseAppStore from '@/store/useAppStore'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import toast from 'react-hot-toast'
 
-export default function Unauthorized() {
+export default function SignOutPage() {
   const signOut = UseAppStore((state) => state.signOut)
   const router = useRouter()
   useEffect(() => {

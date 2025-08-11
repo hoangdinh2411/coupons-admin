@@ -4,16 +4,16 @@ import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
 import React from 'react';
-import {  Col, Form, Row } from 'react-bootstrap';
+import { Col, Form, Row } from 'react-bootstrap';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { ForgotPagePropsType, TYPE_FORM } from './page';
 import { Box } from '@mui/material';
+import { forgetPassword } from '@/services/auth.service';
 
 export type ForgotFormData = z.infer<typeof forgetSchema>;
 
 function ForgotForm({
-  email,
   onChangeCurrentForm,
   onChangeEmail,
 }: ForgotPagePropsType) {
@@ -26,9 +26,13 @@ function ForgotForm({
     mode: 'onTouched',
   });
 
-  const onSubmit = (data: ForgotFormData) => {
-    onChangeEmail(data.email);
-    onChangeCurrentForm(TYPE_FORM.VERIFY);
+  const onSubmit = async (data: ForgotFormData) => {
+    const response = await forgetPassword({ email: data.email });
+    if (response && response.success) {
+      
+      onChangeEmail?.(data.email);
+      onChangeCurrentForm(TYPE_FORM.VERIFY);
+    }
   };
 
   return (
