@@ -3,15 +3,17 @@ import React, { Fragment, useState } from 'react';
 import { Button, Card, Col, Row } from 'react-bootstrap';
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
 import SpkTables from '@/shared/@spk-reusable-components/reusable-tables/spk-tables';
-import CreateCategoryModal from './CreateCategoryModal';
 import { CategoryData } from '@/types/category.type';
-import UpdateCategoryModal from './UpdateCategoryModal';
 import toast from 'react-hot-toast';
 import { deleteById } from '@/services/category.service';
 import Image from 'next/image';
 import SearchBar from '@/shared/layouts-components/searchbar/SearchBar';
 import CustomPagination from '@/shared/layouts-components/pagination/CustomPagination';
 import UseAppStore from '@/store/useAppStore';
+import dynamic from 'next/dynamic';
+
+const UpdateCategoryModal = dynamic(() => import('./UpdateCategoryModal'), { ssr: false })
+const CreateCategoryModal = dynamic(() => import('./CreateCategoryModal'), { ssr: false })
 type Props = {
   data: CategoryData[];
   total: number;

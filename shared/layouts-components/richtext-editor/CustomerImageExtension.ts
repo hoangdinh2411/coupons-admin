@@ -16,15 +16,14 @@ export const CustomResizableImage = ResizableImage.extend({
   },
   renderHTML({ HTMLAttributes }) {
     const { caption, ...imgAttrs } = HTMLAttributes;
-    console.log(caption, HTMLAttributes);
     return [
       'div',
       { 'data-type': 'image-wrapper', class: 'image-wrapper' },
       ['img', mergeAttributes(imgAttrs)],
-      ['p', { class: 'image-caption' }, caption || ''],
+      ['p', { class: 'image-caption' }, String(caption ?? '')],
     ];
   },
   addNodeView() {
-    return ReactNodeViewRenderer(ResizableImageNodeView)
-  }
+    return ReactNodeViewRenderer(ResizableImageNodeView);
+  },
 });

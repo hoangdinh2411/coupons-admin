@@ -73,10 +73,6 @@ const Header = () => {
   useEffect(() => {
     const handleFetchProfile = async () => {
       const profileRes = await getProfile();
-      if (!profileRes.success) {
-        handleSignOut();
-        return;
-      }
       if (!profileRes.data) {
         toast.error('Missing user data');
         return;

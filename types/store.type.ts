@@ -1,7 +1,7 @@
 import { ImageType } from '@/shared/layouts-components/uploadFile/UploadFile';
 import { CategoryData } from './category.type';
 import { MetaData, TimestampedEntity } from './share.type';
-import { FAQItem } from '@/app/(dashboard)/stores/create/AccordionFAQ';
+import { FAQItem } from '@/shared/layouts-components/faqs/AccordionFAQ';
 
 export interface FAQsData {
   id: string;

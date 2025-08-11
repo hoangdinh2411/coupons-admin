@@ -1,5 +1,5 @@
 'use client';
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { useForm, Controller, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Box } from '@mui/material';
@@ -20,8 +20,7 @@ import UploadFile, {
   ImageType,
 } from '@/shared/layouts-components/uploadFile/UploadFile';
 import useRickTextEditor from '@/hooks/useRickTextEditor';
-import CustomRichTextEditor from '../../../../../shared/layouts-components/richtext-editor';
-
+import CustomRichTextEditor from '@/shared/layouts-components/richtext-editor';
 export default function UpdateForm({ item }: { item: BlogData }) {
   const method = useForm<BlogFormData>({
     resolver: zodResolver(blogSchema),
@@ -37,7 +36,6 @@ export default function UpdateForm({ item }: { item: BlogData }) {
   } = method;
   const { topics } = UseAppStore((state) => state);
   const { getContent, rteRef, setContent } = useRickTextEditor();
-
   const handleChangeContent = (value: string) => {
     setValue('content', value);
   };
@@ -56,13 +54,12 @@ export default function UpdateForm({ item }: { item: BlogData }) {
     }
   }, [item]);
   useEffect(() => {
-    if (item && rteRef.current) {
+    if (rteRef.current) {
       setContent(item.content);
     }
-  }, [rteRef.current, item]);
+  }, [rteRef.current]);
   const onSubmit = async (data: BlogFormData) => {
     const content = await getContent();
-
     const payload: BlogPayload = {
       ...data,
       content,
@@ -190,7 +187,7 @@ export default function UpdateForm({ item }: { item: BlogData }) {
 
         <Box display="flex" justifyContent="end" mt={4} gap={1}>
           <SpkButton Buttonvariant="primary" Buttontype="submit">
-            Create Blog
+            Update Blog
           </SpkButton>
         </Box>
       </Form>

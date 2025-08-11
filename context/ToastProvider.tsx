@@ -6,7 +6,7 @@ export default function ToastProvider() {
     <Toaster
       position="top-right"
       toastOptions={{
-        duration: 5000,
+        duration: 3000,
         removeDelay: 500,
       }}
     />

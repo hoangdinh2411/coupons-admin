@@ -1,9 +1,6 @@
 'use client';
 import {
   LinkBubbleMenu,
-  MenuButtonAlignCenter,
-  MenuButtonAlignLeft,
-  MenuButtonAlignRight,
   MenuButtonBlockquote,
   MenuButtonBold,
   MenuButtonBulletedList,
@@ -26,21 +23,16 @@ import {
 } from 'mui-tiptap';
 import React, { useState } from 'react';
 import CustomUploadImageButton from './CustomUploadImageButton';
-import { ImageType } from '../uploadFile/UploadFile';
 import { Editor } from '@tiptap/core';
 
 type Props = {
   editor: Editor | null;
-  uploadedImages: ImageType[];
-  setUploadedImages: React.Dispatch<React.SetStateAction<ImageType[]>>;
   imageFolder: string;
 };
 
 export default function EditorMenuController({
   editor,
   imageFolder,
-  uploadedImages,
-  setUploadedImages,
 }: Props) {
   const [color, setColor] = useState('');
 
@@ -77,9 +69,7 @@ export default function EditorMenuController({
       <MenuDivider />
       {/*  */}
       <CustomUploadImageButton
-        uploadedImages={uploadedImages}
         imageFolder={imageFolder}
-        setUploadedImages={setUploadedImages}
       />
       <MenuButtonColorPicker
         tooltipLabel="Text color"

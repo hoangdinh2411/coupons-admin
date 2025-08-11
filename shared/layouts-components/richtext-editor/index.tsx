@@ -1,12 +1,11 @@
 'use client';
 import { RichTextEditor, type RichTextEditorRef } from 'mui-tiptap';
 import { Box } from '@mui/system';
-import { ImageType } from '../uploadFile/UploadFile';
-import { filterUsedImageForEditor } from '@/helper/file';
 import EditorMenuController from './EditorMenuController';
-import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import useExtensions from './useExtensions';
 import { Button } from '@mui/material';
+import { Editor } from '@tiptap/core';
 
 const CustomRichTextEditor = forwardRef(
   (
@@ -23,22 +22,30 @@ const CustomRichTextEditor = forwardRef(
     },
     ref,
   ) => {
-    const [uploadedImages, setUploadedImages] = useState<ImageType[]>([]);
     const rteRef = useRef<RichTextEditorRef>(null);
     const handleBlur = () => {
+      const editor = rteRef.current?.editor;
+      if (!editor || editor.isDestroyed) return;
       const value = rteRef.current?.editor?.getHTML() || '';
       onBlur(value);
     };
+
+    const getEditor = () => {
+      const editor = rteRef.current?.editor;
+      return editor && !editor.isDestroyed ? editor : null;
+    };
+
     useImperativeHandle(ref, () => ({
       editor: rteRef.current?.editor,
       setContent: (html: string) => {
-        const editor = rteRef.current?.editor;
-        if (editor) {
+        const editor = getEditor()
+        if (!editor) return;
+        if (html) {
           editor.commands.setContent(html);
         }
       },
       clearIfEmpty: () => {
-        const editor = rteRef.current?.editor;
+        const editor = getEditor()
         if (!editor) return;
 
         const html = editor
@@ -50,24 +57,20 @@ const CustomRichTextEditor = forwardRef(
         }
       },
       clearAll: () => {
-        const editor = rteRef.current?.editor;
+        const editor = getEditor()
+        if (!editor) return;
         if (editor) {
           editor.commands.clearContent();
         }
       },
       getContent: async () => {
-        const value = rteRef.current?.editor?.getHTML() || '';
-        const cleanedAllUnusedImages = await filterUsedImageForEditor(
-          value,
-          uploadedImages,
-        );
-        if (cleanedAllUnusedImages) {
-          setUploadedImages([]);
-          return rteRef.current?.editor?.getHTML() ?? '';
-        }
-        return '';
+        const editor = getEditor()
+        if (!editor) return;
+        return editor.getHTML() ?? '';
       },
     }));
+
+
     return (
       <Box
         marginBottom={2}
@@ -97,25 +100,25 @@ const CustomRichTextEditor = forwardRef(
         }}
       >
         <RichTextEditor
+          immediatelyRender={false}
           ref={rteRef}
           onBlur={handleBlur}
           // editable={true}
           extensions={useExtensions()} // Or any Tiptap extensions you wish!
           content={'<p></p>'} // Initial content for the editor
           // Optionally include `renderControls` for a menu-bar atop the editor:
-          renderControls={() => (
+          renderControls={() => rteRef.current?.editor && !rteRef.current.editor.isDestroyed ? (
             <EditorMenuController
               editor={rteRef.current && rteRef.current?.editor}
-              setUploadedImages={setUploadedImages}
-              uploadedImages={uploadedImages}
               imageFolder={imageFolder}
             />
-          )}
+          ) : null}
+
         />
         {error && <div className="text-danger">{helpText}</div>}
-        {/* <Button onClick={() => console.log(rteRef.current?.editor?.getHTML())}>
+        <Button onClick={() => console.log(rteRef.current?.editor?.getHTML())}>
           Log HTML
-        </Button> */}
+        </Button>
 
       </Box>
 

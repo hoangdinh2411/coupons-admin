@@ -52,6 +52,7 @@ export async function updateStore(id: number, payload: StorePayload) {
   });
   if (res.success) {
     revalidateTag('stores-data');
+    revalidateTag(`store-${id}`);
   }
   return res;
 }

@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, } from 'react';
 import { useForm, Controller, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { set, z } from 'zod';
-import { Box, Paper } from '@mui/material';
+import { z } from 'zod';
+import { Box } from '@mui/material';
 import { Modal, Form } from 'react-bootstrap';
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
 
@@ -19,6 +19,11 @@ import SeoForm, {
   seoDefaultValues,
 } from '@/shared/layouts-components/seo-form/SeoForm';
 import { getKeyWordsArray } from '@/helper/keywords';
+import Faqs from '@/shared/layouts-components/faqs/Faqs';
+import useFaqs from '@/hooks/useFaqs';
+
+import useRickTextEditor from '@/hooks/useRickTextEditor';
+import CustomRichTextEditor from '@/shared/layouts-components/richtext-editor';
 
 interface CreateCategoryModalPropsType {
   open: boolean;
@@ -29,6 +34,7 @@ export const schema = z.object({
   ...seoDataSchema.shape,
   name: z.string().min(1, 'Category name is required').trim(),
   description: z.string().min(1, 'Description sis required').trim(),
+  about: z.string().min(1, 'Description sis required').trim(),
   image: z.object({
     file_name: z.string().trim(),
     url: z.string().trim(),
@@ -40,6 +46,7 @@ export const defaultValues = {
   ...seoDefaultValues,
   name: '',
   description: '',
+  about: '',
   image: {
     file_name: '',
     url: '',
@@ -52,6 +59,8 @@ export default function CreateCategoryModal({
   open,
   onClose,
 }: CreateCategoryModalPropsType) {
+
+
   const method = useForm<CategoryFormData>({
     resolver: zodResolver(schema),
     defaultValues,
@@ -64,20 +73,30 @@ export default function CreateCategoryModal({
     setValue,
     formState: { errors },
   } = method;
+  const { getFaqsValues, faqList, handleAddFaq, handleRemoveAccordion, onCreateAccordion, setFaqList } = useFaqs()
+  const { getContent, rteRef, clearAll } = useRickTextEditor();
 
   const { setCategory, categories } = UseAppStore((state) => state);
   useEffect(() => {
     if (!open) {
       reset(defaultValues);
+      clearAll()
+      setFaqList([])
     }
   }, [open]);
+  const handleChangeContent = (value: string) => {
+    setValue('description', value);
+  };
   const onSubmit = async (data: CategoryFormData) => {
+    const description = await getContent();
     const payload = {
       ...data,
+      description,
       meta_data: {
         ...data.meta_data,
         keywords: getKeyWordsArray(data.meta_data.keywords),
       },
+      faqs: getFaqsValues()
     };
 
     toast.promise(createCategory(payload), {
@@ -86,6 +105,8 @@ export default function CreateCategoryModal({
         if (res.success && res.data) {
           setCategory([...categories, res.data]);
           reset(defaultValues);
+          setFaqList([])
+          clearAll()
           return 'Created success';
         } else {
           throw res.message;
@@ -95,10 +116,6 @@ export default function CreateCategoryModal({
     });
   };
 
-  // const handleUploadFile = (data: ImageType) => {
-  //   console.log(data);
-  //   setValue('image', data);
-  // };
 
   return (
     <Modal
@@ -107,13 +124,14 @@ export default function CreateCategoryModal({
       onHide={() => {
         onClose();
       }}
+      fullscreen
       keyboard={false}
       className="modal fade"
     >
       <Modal.Header closeButton>
         <Modal.Title as="h6">Create Category</Modal.Title>
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body className='px-4'>
         <FormProvider {...method}>
           <Form onSubmit={handleSubmit(onSubmit)}>
             <Box className="mb-3">
@@ -129,18 +147,17 @@ export default function CreateCategoryModal({
                 <small className="text-danger">{errors.name.message}</small>
               )}
             </Box>
+
+            {/* Description */}
             <Box className="mb-3">
-              <Form.Label className="fw-bold text-default">
-                Description
-              </Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter category description"
-                {...register('description')}
+              <Form.Label className="text-default fw-bold">Description</Form.Label>
+              <CustomRichTextEditor
+                imageFolder="stores"
+                ref={rteRef}
+                onBlur={handleChangeContent}
+                error={Boolean(errors.description)}
+                helpText={errors.description?.message}
               />
-              {errors.description && (
-                <small className="text-danger">{errors.description.message}</small>
-              )}
             </Box>
             <Box mb={2}>
               <Form.Label className="fw-bold text-default">Image</Form.Label>
@@ -166,6 +183,20 @@ export default function CreateCategoryModal({
                   />
                 </Box>
               </Box>
+            </Box>
+            <Faqs onAdd={onCreateAccordion} values={faqList} onChange={handleAddFaq} onRemove={handleRemoveAccordion} />
+            <Box className="mb-3">
+              <Form.Label className="fw-bold text-default">
+                About
+              </Form.Label>
+              <Form.Control
+                as="textarea" rows={3}
+                placeholder="Enter about"
+                {...register('about')}
+              />
+              {errors.about && (
+                <small className="text-danger">{errors.about.message}</small>
+              )}
             </Box>
             <SeoForm />
             <Box display="flex" justifyContent="end" mt={4} gap={1}>

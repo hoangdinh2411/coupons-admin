@@ -3,10 +3,10 @@ import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { useForm, Controller, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Box, MenuItem, OutlinedInput, Select, Typography } from '@mui/material';
-import { Accordion, Form } from 'react-bootstrap';
+import { Box, MenuItem, OutlinedInput, Select } from '@mui/material';
+import { Form } from 'react-bootstrap';
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
-import AccordionFAQ, { FAQItem } from './AccordionFAQ';
+import { FAQItem } from '../../../../shared/layouts-components/faqs/AccordionFAQ';
 import UploadFile, {
   ImageType,
 } from '@/shared/layouts-components/uploadFile/UploadFile';
@@ -19,15 +19,11 @@ import useRickTextEditor from '@/hooks/useRickTextEditor';
 import { generateSlug } from '@/helper/generateSlug';
 import SeoForm, { seoDataSchema, seoDefaultValues } from '@/shared/layouts-components/seo-form/SeoForm';
 import { getKeyWordsArray } from '@/helper/keywords';
+import Faqs from '@/shared/layouts-components/faqs/Faqs';
+import useFaqs from '@/hooks/useFaqs';
 
 
-export interface AccordionFAQProps {
-  eventKey: number;
-  question: string;
-  answer: string;
-  handleSetFAQ: (updatedItem: FAQItem) => void;
-  onRemoveAccordion: (index: number) => void;
-}
+
 export const schema = z.object({
   ...seoDataSchema.shape,
   name: z.string().min(1, 'Store name is required').trim(),
@@ -85,7 +81,8 @@ export default function CreateForm() {
   const { categories, setStores, stores } = UseAppStore((state) => state);
   const { getContent, rteRef, clearAll } = useRickTextEditor();
 
-  const [faqList, setFaqList] = useState<FAQItem[]>([]);
+  const { getFaqsValues, faqList, handleAddFaq, handleRemoveAccordion, onCreateAccordion, setFaqList } = useFaqs()
+
   const watchName = watch('name');
 
   useEffect(() => {
@@ -94,18 +91,8 @@ export default function CreateForm() {
   const handleChangeContent = (value: string) => {
     setValue('description', value);
   };
-  const validFaq = useMemo(() => {
-
-    return faqList.length > 0 ?
-      faqList.every((faq) => faq.question.trim() !== '' && faq.answer.trim() !== '') : true;
-  }, [faqList])
-
   const onSubmit = async (data: StoreFormData) => {
     const description = await getContent();
-    if (!validFaq) {
-      toast.error('Please fill all faqs ')
-      return
-    }
     const payload: StorePayload = {
       ...data,
       description,
@@ -114,7 +101,7 @@ export default function CreateForm() {
         ...data.meta_data,
         keywords: getKeyWordsArray(data.meta_data.keywords),
       },
-      faqs: faqList.map(({ id, ...rest }) => rest)
+      faqs: getFaqsValues()
     };
     toast.promise(createStore(payload), {
       loading: 'Pending...!',
@@ -136,19 +123,7 @@ export default function CreateForm() {
 
 
 
-  const onCreateAccordion = () => {
-    const randomId = () => Date.now() + Math.floor(Math.random() * 1000);
-    setFaqList((prev) => [...prev, { id: randomId(), question: '', answer: '' }]);
-  };
-  const onRemoveAccordion = (id: number) => {
-    setFaqList((prev) => prev.filter((item) => item.id !== id));
-  };
 
-  const handleSetFAQItem = (id: number, updatedItem: Omit<FAQItem, 'id'>) => {
-    setFaqList((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, ...updatedItem } : item)),
-    );
-  };
   return (
     <FormProvider {...method}>
       <Form onSubmit={handleSubmit(onSubmit)}>
@@ -178,7 +153,7 @@ export default function CreateForm() {
 
         {/* Description */}
         <Box className="mb-3">
-          <Form.Label className="text-default">Description</Form.Label>
+          <Form.Label className="text-default fw-bold">Description</Form.Label>
           <CustomRichTextEditor
             imageFolder="stores"
             ref={rteRef}
@@ -294,56 +269,7 @@ export default function CreateForm() {
             </Box>
           </Box>
         </Box>
-        <Box
-          sx={{
-            p: 2,
-            border: '1px solid',
-            borderColor: 'grey.100',
-            borderRadius: 2,
-            mt: 2,
-            mb: 2,
-          }}
-        >
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-            mb={2}
-          >
-            <Form.Label className="text-default mb-0">
-              FAQS List {` ${faqList ? faqList.length : ''}`}
-            </Form.Label>
-            <SpkButton
-              Buttonvariant="success"
-              Buttontype="button"
-              onClickfunc={onCreateAccordion}
-              Disabled={!validFaq}
-            >
-              + Add FAQ
-            </SpkButton>
-          </Box>
-
-          {faqList.length === 0 ? (
-            <Typography variant="body2" color="text.secondary">
-              No FAQ added yet.
-            </Typography>
-          ) : (
-            <Accordion defaultActiveKey="0">
-              {faqList.map((item) => (
-                <AccordionFAQ
-                  key={item.id}
-                  eventKey={item.id ?? 0}
-                  question={item.question}
-                  answer={item.answer}
-                  handleSetFAQ={(updatedItem) =>
-                    handleSetFAQItem(item?.id ?? 0, updatedItem)
-                  }
-                  onRemoveAccordion={() => onRemoveAccordion(item.id ?? 0)}
-                />
-              ))}
-            </Accordion>
-          )}
-        </Box>
+        <Faqs onAdd={onCreateAccordion} values={faqList} onChange={handleAddFaq} onRemove={handleRemoveAccordion} />
         <SeoForm />
         {/* Submit */}
         <Box display="flex" justifyContent="end" mt={4} gap={1}>
