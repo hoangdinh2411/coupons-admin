@@ -12,7 +12,7 @@ export interface BlogPayload {
   rating?: number;
   images?: ImageType;
   meta_data?: MetaData;
-  faqs: FAQItem[];
+  faqs?: FAQItem[];
 }
 export interface BlogData extends TimestampedEntity {
   title: string;
