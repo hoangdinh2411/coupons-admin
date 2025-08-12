@@ -12,6 +12,9 @@ import Breadcrumb from './Breadcrumb';
 import UseAppStore from '@/store/useAppStore';
 import { updateUser } from '@/services/user.service';
 import toast from 'react-hot-toast';
+import Image from 'next/image';
+import { validateFile } from '@/helper/file';
+import { uploadFile } from '@/services/file.service';
 
 const schema = z.object({
   first_name: z.string().min(1, 'First name is required'),
@@ -28,11 +31,12 @@ type ProfileType = z.infer<typeof schema>;
 
 function ProfileTemplate() {
   const { profile, setProfile } = UseAppStore((state) => state);
-  
+
   const {
     register,
     handleSubmit,
     reset,
+    getValues,
     formState: { errors },
   } = useForm<ProfileType>({
     resolver: zodResolver(schema),
@@ -67,11 +71,72 @@ function ProfileTemplate() {
         youtube: profile.youtube ?? '',
         instagram: profile.instagram ?? '',
         facebook: profile.facebook ?? '',
-
       });
     }
   }, [profile, reset]);
 
+  const handleSelectFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files && e.target.files;
+    if (files) {
+      let isValid;
+      isValid = validateFile(files[0]);
+      if (isValid) {
+        const formData = new FormData();
+        for (let index = 0; index < files.length; index++) {
+          formData.append('files', files[index]);
+        }
+        formData.append('folder', 'users');
+        let new_image = {
+          public_id: '',
+          file_name: '',
+          url: ''
+        }
+        const fileRes = await uploadFile(formData)
+        if (!fileRes.success && fileRes.message) {
+          toast.error(fileRes.message)
+        }
+        if (!fileRes.data) {
+          toast.error('Missing data on response')
+        }
+        if (fileRes.data) {
+          const values = getValues()
+          const res = await updateUser({
+            ...values,
+            avatar: fileRes.data[0]
+          })
+          if (res.success && res.data) {
+            setProfile(res.data)
+            toast.success('Uploaded avatar')
+          } else {
+            toast.error(res.message ?? 'cannot upload avatar')
+          }
+        }
+
+      }
+      // try {
+      //   const encodedFile = await encodeFileToBase64(file);
+      //   if (error) {
+      //     setError('');
+      //   }
+      //   const data = {
+      //     filename: file.name,
+      //     type: file.type,
+      //     data: encodedFile,
+      //   };
+      //   onUploadFile({
+      //     ...data,
+      //     data: decodeBase64(data),
+      //   });
+      //   e.target.value = '';
+      // } catch (error) {
+      //   if (typeof error === 'string') {
+      //     setError(error as string);
+      //   }
+      //   console.log(error);
+      // }
+    }
+    e.target.value = ''
+  };
   return (
     <Fragment>
       <Seo title="Pages-Profile" />
@@ -94,21 +159,30 @@ function ProfileTemplate() {
                 flexShrink={0}
                 display="flex"
                 flexDirection={'column'}
-                justifyContent="center"
+                justifyContent="flex-start"
                 alignItems={'center'}
                 width={{ xs: '100%', md: '30%' }}
               >
-                <img
-                  src="https://img.freepik.com/free-psd/3d-illustration-person-with-sunglasses_23-2149436188.jpg"
+                <Image
+                  src={profile?.avatar?.url ?? '/assets/images/logo/logo-icon-green.png'}
                   alt="User Avatar"
+                  width={250}
+                  height={250}
                   style={{
-                    width: 250,
-                    height: 250,
                     borderRadius: '50%',
-                    objectFit: 'cover',
+                    objectFit: 'contain',
                     border: '2px solid #eee',
                   }}
                 />
+
+                <label htmlFor='avatar' className='p-2 mt-2 bg-primary text-white' style={{
+                  borderRadius: '4px'
+                }}>
+                  Upload avatar
+                  <input id="avatar" type='file' hidden multiple={false}
+                    onChange={handleSelectFile}
+                    accept="image/*" />
+                </label>
               </Box>
               <Box flex={1}>
                 <Form onSubmit={handleSubmit(onSubmit)} noValidate>

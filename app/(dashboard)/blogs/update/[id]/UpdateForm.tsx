@@ -21,6 +21,8 @@ import UploadFile, {
 } from '@/shared/layouts-components/uploadFile/UploadFile';
 import useRickTextEditor from '@/hooks/useRickTextEditor';
 import CustomRichTextEditor from '@/shared/layouts-components/richtext-editor';
+import Faqs from '@/shared/layouts-components/faqs/Faqs';
+import useFaqs from '@/hooks/useFaqs';
 export default function UpdateForm({ item }: { item: BlogData }) {
   const method = useForm<BlogFormData>({
     resolver: zodResolver(blogSchema),
@@ -34,6 +36,8 @@ export default function UpdateForm({ item }: { item: BlogData }) {
     reset,
     formState: { errors },
   } = method;
+  const { getFaqsValues, faqList, handleAddFaq, handleRemoveAccordion, onCreateAccordion, setFaqList } = useFaqs()
+
   const { topics } = UseAppStore((state) => state);
   const { getContent, rteRef, setContent } = useRickTextEditor();
   const handleChangeContent = (value: string) => {
@@ -51,6 +55,11 @@ export default function UpdateForm({ item }: { item: BlogData }) {
         },
         topic_id: item.topic?.id || -1
       });
+      setFaqList(item.faqs ? item.faqs.map(({ question, answer }, index) => ({
+        id: index,
+        question,
+        answer
+      })) : [])
     }
   }, [item]);
   useEffect(() => {
@@ -68,6 +77,7 @@ export default function UpdateForm({ item }: { item: BlogData }) {
         ...data.meta_data,
         keywords: getKeyWordsArray(data.meta_data.keywords),
       },
+      faqs: getFaqsValues() ?? []
     };
     toast.promise(updateBlog(item.id, payload), {
       loading: 'Pending...!',
@@ -183,6 +193,8 @@ export default function UpdateForm({ item }: { item: BlogData }) {
             }}
           />
         </Box>
+        <Faqs onAdd={onCreateAccordion} values={faqList} onChange={handleAddFaq} onRemove={handleRemoveAccordion} />
+
         <SeoForm />
 
         <Box display="flex" justifyContent="end" mt={4} gap={1}>

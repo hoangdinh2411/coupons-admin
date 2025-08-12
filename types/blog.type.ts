@@ -1,6 +1,8 @@
 import { ImageType } from '@/shared/layouts-components/uploadFile/UploadFile';
 import { MetaData, TimestampedEntity } from './share.type';
 import { TopicData } from './topic.type';
+import { FAQItem } from '@/shared/layouts-components/faqs/AccordionFAQ';
+import { FAQsData } from './store.type';
 
 export interface BlogPayload {
   title?: string;
@@ -10,6 +12,7 @@ export interface BlogPayload {
   rating?: number;
   images?: ImageType;
   meta_data?: MetaData;
+  faqs: FAQItem[];
 }
 export interface BlogData extends TimestampedEntity {
   title: string;
@@ -23,4 +26,5 @@ export interface BlogData extends TimestampedEntity {
   image: ImageType;
   is_published: boolean;
   is_indexed: boolean;
+  faqs: FAQsData[];
 }
