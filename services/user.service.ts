@@ -19,8 +19,6 @@ export async function updateUser(payload: UserRequestPayload) {
 
 export async function getProfile() {
   return await customFetch<UserData>('/users/profile', {
-    next: {
-      tags: ['profile'],
-    },
+    cache: 'no-store',
   });
 }

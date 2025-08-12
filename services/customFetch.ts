@@ -1,7 +1,7 @@
 import { getToken } from '@/app/actions/getTokenFromCookie';
-import UseAppStore from '@/store/useAppStore';
 import { IResponse } from '@/types/share.type';
-import { unauthorized } from 'next/navigation';
+import { redirect } from 'next/navigation';
+import { APP_ROUTE } from '@/constants/route';
 export const BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5173/api/v1';
 
@@ -28,9 +28,6 @@ export default async function customFetch<T>(
       return response.json();
     })
     .then((data: IResponse<T>) => {
-      if (data.status === 401) {
-        unauthorized();
-      }
       return data as T;
     })
     .catch((error) => {

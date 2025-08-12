@@ -10,6 +10,10 @@ export enum CouponType {
   ONLINE_AND_IN_STORE = 'Online & In-Store',
 }
 
+export enum VerifyCodeType {
+  VERIFY_ACCOUNT = 'VERIFY_ACCOUNT',
+  FORGET_PASSWORD = 'FORGET_PASSWORD',
+}
 export enum TypeDiscount {
   PERCENT = 'percent',
   DOLLAR = 'dollar',

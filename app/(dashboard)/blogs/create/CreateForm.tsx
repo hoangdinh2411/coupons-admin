@@ -22,6 +22,8 @@ import UploadFile, {
 import dynamic from 'next/dynamic';
 import useRickTextEditor from '@/hooks/useRickTextEditor';
 import { generateSlug } from '@/helper/generateSlug';
+import Faqs from '@/shared/layouts-components/faqs/Faqs';
+import useFaqs from '@/hooks/useFaqs';
 const CustomRichTextEditor = dynamic(() => import('../../../../shared/layouts-components/richtext-editor'), {
   ssr: false
 })
@@ -73,6 +75,8 @@ export default function CreateForm() {
     watch,
     formState: { errors },
   } = method;
+  const { getFaqsValues, faqList, handleAddFaq, handleRemoveAccordion, onCreateAccordion, setFaqList } = useFaqs()
+
   const { topics } = UseAppStore((state) => state);
   const { getContent, rteRef, clearAll } = useRickTextEditor();
   const handleChangeContent = (value: string) => {
@@ -93,6 +97,7 @@ export default function CreateForm() {
         ...data.meta_data,
         keywords: getKeyWordsArray(data.meta_data.keywords),
       },
+      faqs: getFaqsValues() ?? []
     };
     toast.promise(createBlog(payload), {
       loading: 'Creating...!',
@@ -100,6 +105,7 @@ export default function CreateForm() {
         if (res.success && res.data) {
           reset(defaultValues);
           clearAll();
+          setFaqList([])
           reset(defaultValues);
 
           return 'Created successfully';
@@ -216,6 +222,8 @@ export default function CreateForm() {
             }}
           />
         </Box>
+        <Faqs onAdd={onCreateAccordion} values={faqList} onChange={handleAddFaq} onRemove={handleRemoveAccordion} />
+
         <SeoForm />
         <Box display="flex" justifyContent="end" mt={4} gap={1}>
           <SpkButton Buttonvariant="primary" Buttontype="submit">

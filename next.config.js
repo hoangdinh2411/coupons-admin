@@ -3,6 +3,9 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  experimental: {
+    authInterrupts: true,
+  },
   reactStrictMode: false, // Disable Strict Mode if necessary
   images: {
     remotePatterns: [

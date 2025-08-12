@@ -73,6 +73,10 @@ const Header = () => {
   useEffect(() => {
     const handleFetchProfile = async () => {
       const profileRes = await getProfile();
+      if (profileRes.status === 401) {
+        router.push(APP_ROUTE.SIGN_OUT)
+        return
+      }
       if (!profileRes.data) {
         toast.error('Missing user data');
         return;
@@ -565,7 +569,7 @@ const Header = () => {
                   <Image
                     height={28}
                     width={28}
-                    src={`/assets/images/faces/14.jpg`}
+                    src={profile?.avatar?.url ?? '/assets/images/faces/14.jpg'}
                     alt="img"
                     className="img-fluid"
                   />
