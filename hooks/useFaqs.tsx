@@ -25,7 +25,7 @@ export default function useFaqs() {
             toast.error('Please fill all faqs ')
             return
         }
-        return faqList.map(({ id, ...rest }) => rest)
+        return faqList.map(({ id, ...rest }) => rest) ?? []
     }
 
     function validate() {

@@ -1,3 +1,4 @@
+import { ImageType } from '@/shared/layouts-components/uploadFile/UploadFile';
 import { ROLES } from './enum';
 
 export interface LoginRequestPayload {
@@ -14,11 +15,12 @@ export interface UserData extends RegisterRequestPayLoad {
   email_verified: boolean;
   role: ROLES;
   token?: string;
-  description?: string;
-  youtube?: string;
-  facebook?: string;
-  linkedin?: string;
-  instagram?: string;
+  description: string;
+  youtube: string;
+  facebook: string;
+  linkedin: string;
+  instagram: string;
+  avatar: ImageType;
 }
 export interface VerifyRequestPayload {
   email: string;
@@ -37,6 +39,7 @@ export interface UserRequestPayload {
   facebook: string;
   linkedin: string;
   instagram: string;
+  avatar?: ImageType;
 }
 
 export interface ChangePassRequestPayload {
