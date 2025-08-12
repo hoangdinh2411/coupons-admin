@@ -69,6 +69,7 @@ export default function StoreList({
     });
   };
 
+
   return (
     <Card className="custom-card">
       <Card.Header className="justify-content-between">
@@ -113,20 +114,26 @@ export default function StoreList({
                     width={40}
                     height={40}
                     className="rounded"
-                  />{' '}
+                  />
                 </td>
                 <td>
                   {store.keywords
-                    ? store.keywords.map((k: string, index: number) => (
-                      <span key={index} className="badge bg-info me-1">
-                        {k}
-                      </span>
-                    ))
-                    : 'N/A'}
+                    ?
+                    <Box display={'flex'} gap={1} flexWrap={'wrap'} maxWidth={400}>
+                      {
+                        store.keywords.map((k: string, index: number) => (
+                          <p key={index} className="badge bg-info me-1">
+                            {k}
+                          </p>
+                        ))
+
+                      }
+                    </Box>
+                    : <p>N/A</p>}
                 </td>
                 <td>
                   {store.categories && store.categories.length > 0 ? (
-                    <Box display={'flex'} gap={1} flexWrap={'wrap'}>
+                    <Box display={'flex'} gap={1} flexWrap={'wrap'} maxWidth={400}>
                       {store.categories.map((c) => (
                         <span key={c.id} className="badge bg-primary me-1 ">
                           {c.name}
