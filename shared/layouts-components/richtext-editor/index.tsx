@@ -37,6 +37,11 @@ const CustomRichTextEditor = forwardRef(
       const editor = rteRef.current?.editor;
       return editor && !editor.isDestroyed ? editor : null;
     };
+    useEffect(() => {
+      if (rteRef.current?.editor) {
+        console.log('Initial HTML:', rteRef.current.editor.getHTML());
+      }
+    }, [editorReady]);
 
     useImperativeHandle(ref, () => ({
       editor: rteRef.current?.editor,
@@ -50,14 +55,8 @@ const CustomRichTextEditor = forwardRef(
       clearIfEmpty: () => {
         const editor = getEditor()
         if (!editor) return;
+        editor.commands.clearContent();
 
-        const html = editor
-          .getHTML()
-          .replace(/<p><br><\/p>/g, '')
-          .trim();
-        if (!html || html === '<p></p>') {
-          editor.commands.clearContent();
-        }
       },
       clearAll: () => {
         const editor = getEditor()
@@ -69,6 +68,7 @@ const CustomRichTextEditor = forwardRef(
       getContent: async () => {
         const editor = getEditor()
         if (!editor) return;
+        console.log(editor.getHTML())
         return editor.getHTML() ?? '';
       },
     }));
