@@ -14,14 +14,17 @@ import toast from 'react-hot-toast';
 import { createStore } from '@/services/store.service';
 import { StorePayload } from '@/types/store.type';
 import UseAppStore from '@/store/useAppStore';
-import CustomRichTextEditor from '../../../../shared/layouts-components/richtext-editor';
+// import CustomRichTextEditor from '../../../../shared/layouts-components/richtext-editor';
 import useRickTextEditor from '@/hooks/useRickTextEditor';
 import { generateSlug } from '@/helper/generateSlug';
 import SeoForm, { seoDataSchema, seoDefaultValues } from '@/shared/layouts-components/seo-form/SeoForm';
 import { getKeyWordsArray } from '@/helper/keywords';
 import Faqs from '@/shared/layouts-components/faqs/Faqs';
 import useFaqs from '@/hooks/useFaqs';
-
+import dynamic from 'next/dynamic';
+const CustomRichTextEditor = dynamic(() => import('../../../../shared/layouts-components/richtext-editor'), {
+  ssr: false
+})
 
 
 export const schema = z.object({

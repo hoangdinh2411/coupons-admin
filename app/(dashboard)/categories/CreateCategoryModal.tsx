@@ -23,8 +23,10 @@ import Faqs from '@/shared/layouts-components/faqs/Faqs';
 import useFaqs from '@/hooks/useFaqs';
 
 import useRickTextEditor from '@/hooks/useRickTextEditor';
-import CustomRichTextEditor from '@/shared/layouts-components/richtext-editor';
-
+import dynamic from 'next/dynamic';
+const CustomRichTextEditor = dynamic(() => import('../../../shared/layouts-components/richtext-editor'), {
+  ssr: false
+})
 interface CreateCategoryModalPropsType {
   open: boolean;
   onClose: () => void;
