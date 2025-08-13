@@ -69,18 +69,24 @@ export default function CustomUploadImageButton({
       return;
     }
     if (!editor || pendingImages.length === 0) return;
+    const isEmpty = editor.state.doc.content.size === 0;
+    let nodes = [];
+
+    if (isEmpty) {
+      nodes.push({ type: 'paragraph' }); // 👈 giữ lại <p></p> đầu tiên
+    }
 
     const pos = editor.state.selection.to;
-    const nodes = pendingImages.flatMap((img) => ([
-      {
+    pendingImages.forEach((img) => {
+      nodes.push({
         type: 'image',
         attrs: {
           ...img,
           caption: img.caption || img.alt,
         },
-      },
-      { type: 'paragraph' }, // đẩy con trỏ xuống dưới ảnh
-    ]));
+      });
+      nodes.push({ type: 'paragraph' }); // 👈 đẩy con trỏ xuống dưới ảnh
+    });
 
     editor.chain().focus().insertContentAt(pos, nodes).run();
     setPendingImages([]);
