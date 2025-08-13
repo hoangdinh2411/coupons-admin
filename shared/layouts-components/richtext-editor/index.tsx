@@ -22,6 +22,9 @@ const CustomRichTextEditor = forwardRef(
     },
     ref,
   ) => {
+
+    const [editorReady, setEditorReady] = useState(false);
+
     const rteRef = useRef<RichTextEditorRef>(null);
     const handleBlur = () => {
       const editor = rteRef.current?.editor;
@@ -69,6 +72,11 @@ const CustomRichTextEditor = forwardRef(
         return editor.getHTML() ?? '';
       },
     }));
+    useEffect(() => {
+      if (rteRef.current?.editor && !rteRef.current.editor.isDestroyed) {
+        setEditorReady(true); // Trigger re-render
+      }
+    }, [rteRef.current?.editor]);
 
 
     return (
@@ -107,12 +115,16 @@ const CustomRichTextEditor = forwardRef(
           extensions={useExtensions()} // Or any Tiptap extensions you wish!
           content={'<p></p>'} // Initial content for the editor
           // Optionally include `renderControls` for a menu-bar atop the editor:
-          renderControls={() => rteRef.current?.editor && !rteRef.current.editor.isDestroyed ? (
-            <EditorMenuController
-              editor={rteRef.current && rteRef.current?.editor}
-              imageFolder={imageFolder}
-            />
-          ) : null}
+          renderControls={() =>
+            editorReady && rteRef.current?.editor ? (
+              <EditorMenuController
+                editor={rteRef.current.editor}
+                imageFolder={imageFolder}
+              />
+            ) : null
+          }
+
+
 
         />
         {error && <div className="text-danger">{helpText}</div>}

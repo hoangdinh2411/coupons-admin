@@ -16,12 +16,14 @@ import UseAppStore from '@/store/useAppStore';
 import { schema, StoreFormData } from '../../create/CreateForm';
 import { getKeyWordsArray, getKeyWordsString } from '@/helper/keywords';
 import SeoForm from '@/shared/layouts-components/seo-form/SeoForm';
-import CustomRichTextEditor from '../../../../../shared/layouts-components/richtext-editor';
 import useRickTextEditor from '@/hooks/useRickTextEditor';
 import { FAQItem } from '../../../../../shared/layouts-components/faqs/AccordionFAQ';
 import Faqs from '@/shared/layouts-components/faqs/Faqs';
 import useFaqs from '@/hooks/useFaqs';
-
+import dynamic from 'next/dynamic';
+const CustomRichTextEditor = dynamic(() => import('../../../../../shared/layouts-components/richtext-editor'), {
+  ssr: false
+})
 type Props = {
   item: StoreData | null;
 };

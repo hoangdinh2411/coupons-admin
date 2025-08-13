@@ -70,6 +70,7 @@ export default function EditorMenuController({
       {/*  */}
       <CustomUploadImageButton
         imageFolder={imageFolder}
+        editor={editor}
       />
       <MenuButtonColorPicker
         tooltipLabel="Text color"

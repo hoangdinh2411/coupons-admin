@@ -20,3 +20,14 @@ textarea {
   max-width: 600px;
   object-fit: cover;
 }
+
+.image-wrapper {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px;
+  justify-content: center !important;
+  align-items: flex-start !important;
+  .image-caption {
+    text-align: center;
+  }
+}
