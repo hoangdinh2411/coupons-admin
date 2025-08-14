@@ -79,7 +79,6 @@ export async function createStore(payload: StorePayload) {
 
   if (res.success) {
     revalidateTag('stores-data');
-    
   }
   return res;
 }
