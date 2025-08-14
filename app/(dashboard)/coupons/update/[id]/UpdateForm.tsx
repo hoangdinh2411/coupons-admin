@@ -23,6 +23,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import dayjs from 'dayjs';
 import { CouponData, CouponPayload } from '@/types/coupon.type';
 import { CouponFormData, defaultValues, schema } from '../../create/CreateForm';
+import { refreshCacheClient } from '@/services/share.service';
 const types = Object.values(CouponType);
 
 export default function UpdateForm({ item }: { item: CouponData }) {
@@ -70,7 +71,11 @@ export default function UpdateForm({ item }: { item: CouponData }) {
         if (res.success && res.data) {
           return 'Updated success';
         }
-
+        const paths = categories.filter(c => data.categories.includes(c.id)).map(c => `/coupons/${c.slug}`) || []
+        refreshCacheClient({
+          paths,
+          tags: ['categories-data', 'menu-data']
+        })
         throw res.message;
       },
       error: (err) => err || 'Something wrong',

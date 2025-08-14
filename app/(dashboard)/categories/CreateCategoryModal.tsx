@@ -24,6 +24,7 @@ import useFaqs from '@/hooks/useFaqs';
 
 import useRickTextEditor from '@/hooks/useRickTextEditor';
 import dynamic from 'next/dynamic';
+import { refreshCacheClient } from '@/services/share.service';
 const CustomRichTextEditor = dynamic(() => import('../../../shared/layouts-components/richtext-editor'), {
   ssr: false
 })
@@ -109,6 +110,10 @@ export default function CreateCategoryModal({
           reset(defaultValues);
           setFaqList([])
           clearAll()
+          refreshCacheClient({
+            paths: [],
+            tags: ['categories-data','menu-data']
+          })
           return 'Created success';
         } else {
           throw res.message;

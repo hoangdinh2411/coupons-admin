@@ -19,6 +19,7 @@ import SeoForm, {
 } from '@/shared/layouts-components/seo-form/SeoForm';
 import { getKeyWordsArray } from '@/helper/keywords';
 import { createTopic } from '@/services/topic.service';
+import { refreshCacheClient } from '@/services/share.service';
 
 interface CreateTopicModalPropsType {
   open: boolean;
@@ -85,6 +86,10 @@ export default function CreateTopicModal({
         if (res.success && res.data) {
           setTopics([...topics, res.data]);
           reset(defaultValues);
+          refreshCacheClient({
+            paths: [`topics/${res.data.slug}`],
+            tags: ['menu-data', 'topic-data']
+          })
           return 'Created success';
         } else {
           throw res.message;

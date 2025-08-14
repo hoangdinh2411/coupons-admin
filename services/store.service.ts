@@ -1,5 +1,5 @@
 'use server';
-import { revalidateTag } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { IResponseWithTotal } from '@/types/share.type';
 import { StoreData, StorePayload } from '@/types/store.type';
 import customFetch from './customFetch';
@@ -13,6 +13,9 @@ export async function filterStore(data: FilterPayload) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(data),
+    next: {
+      tags: ['stores-data'],
+    },
   });
 }
 export async function getAllStores(page?: number, search_text?: string) {
@@ -37,9 +40,7 @@ export async function getAllStores(page?: number, search_text?: string) {
 export async function getStoreById(id: string) {
   return await customFetch<StoreData>(`/stores/${id}`, {
     method: 'GET',
-    next: {
-      tags: [`store-${id}`],
-    },
+    cache: 'force-cache',
   });
 }
 export async function updateStore(id: number, payload: StorePayload) {
@@ -52,7 +53,7 @@ export async function updateStore(id: number, payload: StorePayload) {
   });
   if (res.success) {
     revalidateTag('stores-data');
-    revalidateTag(`store-${id}`);
+    revalidatePath(`store-${id}`);
   }
   return res;
 }
@@ -62,6 +63,7 @@ export async function deleteById(id: number) {
   });
   if (res.success) {
     revalidateTag('stores-data');
+    revalidatePath(`store-${id}`);
   }
   return res;
 }
@@ -77,6 +79,7 @@ export async function createStore(payload: StorePayload) {
 
   if (res.success) {
     revalidateTag('stores-data');
+    
   }
   return res;
 }

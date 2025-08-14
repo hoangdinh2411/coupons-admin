@@ -24,6 +24,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import dayjs from 'dayjs';
 import { CouponPayload } from '@/types/coupon.type';
+import { refreshCacheClient } from '@/services/share.service';
 const types = Object.values(CouponType);
 
 const baseSchema = z
@@ -109,7 +110,11 @@ export default function CreateForm() {
           reset(defaultValues);
           return 'Created success';
         }
-
+        const paths = categories.filter(c => data.categories.includes(c.id)).map(c => `/coupons/${c.slug}`) || []
+        refreshCacheClient({
+          paths,
+          tags: ['categories-data','menu-data']
+        })
         throw res.message;
       },
       error: (err) => err || 'Something wrong',

@@ -22,6 +22,7 @@ import { getKeyWordsArray } from '@/helper/keywords';
 import Faqs from '@/shared/layouts-components/faqs/Faqs';
 import useFaqs from '@/hooks/useFaqs';
 import dynamic from 'next/dynamic';
+import { refreshCacheClient } from '@/services/share.service';
 const CustomRichTextEditor = dynamic(() => import('../../../../shared/layouts-components/richtext-editor'), {
   ssr: false
 })
@@ -114,6 +115,10 @@ export default function CreateForm() {
           reset(defaultValues);
           clearAll();
           setFaqList([])
+          refreshCacheClient({
+            paths: [`stores/${res.data.slug}`],
+            tags: []
+          })
           return 'Created success';
         }
 

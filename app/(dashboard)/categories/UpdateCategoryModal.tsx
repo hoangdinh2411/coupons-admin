@@ -20,6 +20,7 @@ import Faqs from '@/shared/layouts-components/faqs/Faqs';
 import useFaqs from '@/hooks/useFaqs';
 import useRickTextEditor from '@/hooks/useRickTextEditor';
 import dynamic from 'next/dynamic';
+import { refreshCacheClient } from '@/services/share.service';
 const CustomRichTextEditor = dynamic(() => import('../../../shared/layouts-components/richtext-editor'), {
   ssr: false
 })
@@ -93,6 +94,10 @@ function UpdateCategoryModal({
                 cat.id === item?.id ? { ...cat, ...res.data } : cat,
               ),
             );
+            refreshCacheClient({
+              paths: [`/coupons/${res.data.slug}`],
+              tags: ['categories-data', 'menu-data']
+            })
             return 'Updated success';
           }
           throw res.message;

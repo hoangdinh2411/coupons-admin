@@ -23,6 +23,7 @@ import useRickTextEditor from '@/hooks/useRickTextEditor';
 import CustomRichTextEditor from '@/shared/layouts-components/richtext-editor';
 import Faqs from '@/shared/layouts-components/faqs/Faqs';
 import useFaqs from '@/hooks/useFaqs';
+import { refreshCacheClient } from '@/services/share.service';
 export default function UpdateForm({ item }: { item: BlogData }) {
   const method = useForm<BlogFormData>({
     resolver: zodResolver(blogSchema),
@@ -83,6 +84,10 @@ export default function UpdateForm({ item }: { item: BlogData }) {
       loading: 'Pending...!',
       success: (res) => {
         if (res.success && res.data) {
+          refreshCacheClient({
+            paths: [`/ blogs/${item.slug}`],
+            tags: ['blogs-page']
+          })
           return 'Updated successfully';
         }
         throw res.message;

@@ -11,9 +11,6 @@ export async function updateUser(payload: UserRequestPayload) {
     },
     body: JSON.stringify(payload),
   });
-  if (res.success) {
-    revalidateTag('profile');
-  }
   return res;
 }
 
