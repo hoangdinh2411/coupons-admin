@@ -16,6 +16,7 @@ import SeoForm from '@/shared/layouts-components/seo-form/SeoForm';
 import { getKeyWordsArray, getKeyWordsString } from '@/helper/keywords';
 import { TopicData } from '@/types/topic.type';
 import { updateTopic } from '@/services/topic.service';
+import { refreshCacheClient } from '@/services/share.service';
 
 interface UpdateTopicModalProps {
   item: TopicData | null;
@@ -65,6 +66,10 @@ function UpdateTopicModal({ item, open, onClose }: UpdateTopicModalProps) {
                 cat.id === item?.id ? { ...cat, ...res.data } : cat,
               ),
             );
+            refreshCacheClient({
+              paths: [`topics/${res.data.slug}`],
+              tags: ['menu-data', 'topic-data']
+            })
             return 'Updated success';
           }
           throw res.message;

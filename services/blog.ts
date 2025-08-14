@@ -1,5 +1,5 @@
 'use server';
-import { revalidateTag } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { IResponseWithTotal } from '@/types/share.type';
 import customFetch from './customFetch';
 import { FilterPayload } from '@/types/filter.type';
@@ -12,14 +12,15 @@ export async function filterBlog(data: FilterPayload) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(data),
+    next: {
+      tags: ['filter-blogs'],
+    },
   });
 }
 export async function getBlogBy(identity: string | number) {
   return await customFetch<BlogData>(`/blogs/${identity}`, {
     method: 'GET',
-    next: {
-      tags: [`blog-${identity}`],
-    },
+    cache: 'force-cache',
   });
 }
 export async function updateBlog(id: number, payload: BlogPayload) {
@@ -31,8 +32,8 @@ export async function updateBlog(id: number, payload: BlogPayload) {
     body: JSON.stringify(payload),
   });
   if (res.success) {
-    revalidateTag('blogs-data');
-    revalidateTag(`blog-${id}`);
+    revalidateTag('filter-blogs');
+    revalidatePath(`blogs/${id}`);
   }
   return res;
 }
@@ -42,7 +43,8 @@ export async function deleteBlogById(id: number) {
     method: 'DELETE',
   });
   if (res.success) {
-    revalidateTag('blogs-data');
+    revalidateTag('filter-blogs');
+    revalidatePath(`blogs/${id}`);
   }
   return res;
 }
@@ -57,7 +59,7 @@ export async function createBlog(payload: BlogPayload) {
   });
 
   if (res.success) {
-    revalidateTag('blogs-data');
+    revalidateTag('filter-blogs');
   }
   return res;
 }

@@ -24,6 +24,7 @@ import useRickTextEditor from '@/hooks/useRickTextEditor';
 import { generateSlug } from '@/helper/generateSlug';
 import Faqs from '@/shared/layouts-components/faqs/Faqs';
 import useFaqs from '@/hooks/useFaqs';
+import { refreshCacheClient } from '@/services/share.service';
 const CustomRichTextEditor = dynamic(() => import('../../../../shared/layouts-components/richtext-editor'), {
   ssr: false
 })
@@ -107,7 +108,10 @@ export default function CreateForm() {
           clearAll();
           setFaqList([])
           reset(defaultValues);
-
+          refreshCacheClient({
+            paths: [],
+            tags: ['/blogs-page']
+          })
           return 'Created successfully';
         }
         throw res.message;

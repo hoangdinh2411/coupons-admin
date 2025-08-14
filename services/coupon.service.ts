@@ -1,5 +1,5 @@
 'use server';
-import { revalidateTag } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { IResponseWithTotal } from '@/types/share.type';
 import customFetch from './customFetch';
 import { CouponData, CouponPayload } from '@/types/coupon.type';
@@ -15,7 +15,7 @@ export async function filterCoupon(data: FilterPayload) {
       },
       body: JSON.stringify(data),
       next: {
-        tags: ['coupons-data'],
+        tags: [data.is_verified ? 'coupons-data' : 'submit-coupons-data'],
       },
     },
   );
@@ -24,9 +24,7 @@ export async function filterCoupon(data: FilterPayload) {
 export async function getCouponsById(id: string) {
   return await customFetch<CouponData>(`/coupons/${id}`, {
     method: 'GET',
-    next: {
-      tags: [`coupon-${id}`],
-    },
+    cache: 'force-cache',
   });
 }
 export async function updateCoupon(id: number, payload: CouponPayload) {
@@ -39,8 +37,8 @@ export async function updateCoupon(id: number, payload: CouponPayload) {
   });
   if (res.success) {
     revalidateTag('coupons-data');
-    revalidateTag('coupons-submit-data');
-    revalidateTag(`coupon-${id}`);
+    revalidateTag('submit-coupons-data');
+    revalidatePath(`coupon/${id}`);
   }
   return res;
 }
@@ -50,7 +48,8 @@ export async function deleteCouponById(id: number) {
   });
   if (res.success) {
     revalidateTag('coupons-data');
-    revalidateTag('coupons-submit-data');
+    revalidateTag('submit-coupons-data');
+    revalidatePath(`coupon/${id}`);
   }
   return res;
 }
@@ -63,8 +62,8 @@ export async function submitCouponById(id: number) {
   });
   if (res.success) {
     revalidateTag('coupons-data');
-    revalidateTag('coupons-submit-data');
-    revalidateTag(`coupon-${id}`);
+    revalidateTag('submit-coupons-data');
+    revalidatePath(`coupon/${id}`);
   }
   return res;
 }
@@ -80,7 +79,7 @@ export async function createCoupon(payload: CouponPayload) {
 
   if (res.success) {
     revalidateTag('coupons-data');
-    revalidateTag('coupons-submit-data');
+    revalidateTag('submit-coupons-data');
   }
   return res;
 }

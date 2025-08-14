@@ -21,6 +21,7 @@ import { FAQItem } from '../../../../../shared/layouts-components/faqs/Accordion
 import Faqs from '@/shared/layouts-components/faqs/Faqs';
 import useFaqs from '@/hooks/useFaqs';
 import dynamic from 'next/dynamic';
+import { refreshCacheClient } from '@/services/share.service';
 const CustomRichTextEditor = dynamic(() => import('../../../../../shared/layouts-components/richtext-editor'), {
   ssr: false
 })
@@ -96,6 +97,10 @@ export default function UpdateForm({ item }: Props) {
               s.id === item?.id ? { ...s, ...res.data } : s,
             );
             setStores(newStores);
+            refreshCacheClient({
+              paths: [`stores/${res.data.slug}`],
+              tags: ['menu-data']
+            })
             return 'Updated success';
           }
           throw res.message;
