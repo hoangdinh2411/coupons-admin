@@ -22,7 +22,6 @@ const HEADER = [
   { title: 'Title' },
   { title: 'Topic' },
   { title: 'Rating' },
-  { title: 'Keywords' },
   { title: 'Publish' },
   { title: 'Index' },
   { title: 'Actions' },
@@ -130,23 +129,6 @@ export default function BlogList({
                       }
                     }}
                   />
-                </td>
-                <td >
-                  <div style={{
-                    maxWidth: 300,
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    gap: 4
-                  }}>
-                    {blog.keywords
-                      ? blog.keywords.map((k: string, index: number) => (
-                        <span key={index} className="badge bg-dark me-1 ">
-                          {k}
-                        </span>
-                      ))
-                      : 'N/A'}
-
-                  </div>
                 </td>
                 <td>
                   <Switch
