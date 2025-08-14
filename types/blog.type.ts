@@ -3,6 +3,7 @@ import { MetaData, TimestampedEntity } from './share.type';
 import { TopicData } from './topic.type';
 import { FAQItem } from '@/shared/layouts-components/faqs/AccordionFAQ';
 import { FAQsData } from './store.type';
+import { UserData } from './auth.type';
 
 export interface BlogPayload {
   title?: string;
@@ -27,4 +28,5 @@ export interface BlogData extends TimestampedEntity {
   is_published: boolean;
   is_indexed: boolean;
   faqs: FAQsData[];
+  user: UserData;
 }
