@@ -16,6 +16,7 @@ import UseAppStore from '@/store/useAppStore';
 import CustomPagination from '@/shared/layouts-components/pagination/CustomPagination';
 import Filter from '@/shared/layouts-components/filter/Filter';
 import { Box, Chip, Rating } from '@mui/material';
+import { refreshCacheClient } from '@/services/share.service';
 type Props = {
   data: StoreData[];
   total: number;
@@ -39,11 +40,15 @@ export default function StoreList({
   const pathname = usePathname();
 
   const { setStores, stores } = UseAppStore((state) => state);
-  const handleRatingChange = (id: number, value: number) => {
-    toast.promise(updateStore(id, { rating: +value }), {
+  const handleRatingChange = (store: StoreData, value: number) => {
+    toast.promise(updateStore(store.id, { rating: +value }), {
       loading: 'Updating...',
       success: (res) => {
         if (res.success) {
+          refreshCacheClient({
+            paths: [`/stores/${store.slug}`],
+            tags: ['categories-data', 'menu-data','stores-data']
+          })
           return 'Updated rating success';
         }
         throw res.message;
@@ -56,12 +61,16 @@ export default function StoreList({
     router.push(`${pathname}/update/${storeId}`);
   };
   //TODO: handle modal
-  const handleDelete = (storeId: number) => {
-    toast.promise(deleteById(storeId), {
+  const handleDelete = (store: StoreData) => {
+    toast.promise(deleteById(store.id), {
       loading: 'Deleting...!',
       success: (res) => {
         if (res.success) {
-          setStores(stores.filter((s) => s.id !== storeId));
+          setStores(stores.filter((s) => s.id !== store.id));
+          refreshCacheClient({
+            paths: [`/stores/${store.slug}`],
+            tags: ['categories-data', 'menu-data','stores-data']
+          })
           return 'Deleted success';
         }
         throw res.message;
@@ -151,7 +160,7 @@ export default function StoreList({
                     value={store.rating || null}
                     onChange={(_, newValue: number | null) => {
                       if (newValue !== null) {
-                        handleRatingChange(store.id, newValue);
+                        handleRatingChange(store, newValue);
                       }
                     }}
                   />
@@ -169,7 +178,7 @@ export default function StoreList({
                     variant="danger-light"
                     size="sm"
                     className="btn btn-sm btn-primary-light mx-2"
-                    onClick={() => handleDelete(store.id)}
+                    onClick={() => handleDelete(store)}
                   >
                     <i className="ri-delete-bin-line"></i> Delete
                   </Button>

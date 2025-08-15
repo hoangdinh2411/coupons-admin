@@ -14,6 +14,7 @@ import { CouponData } from '@/types/coupon.type';
 import { getBackgroundForType, getStatus } from '@/helper/coupons';
 import Filter from '@/shared/layouts-components/filter/Filter';
 import { Box, Rating } from '@mui/material';
+import { refreshCacheClient } from '@/services/share.service';
 type Props = {
   data: CouponData[];
   total: number;
@@ -39,11 +40,15 @@ export default function CouponList({
   const router = useRouter();
   const pathname = usePathname();
 
-  const handleRatingChange = (id: number, value: number) => {
-    toast.promise(updateCoupon(id, { rating: +value }), {
+  const handleRatingChange = (coupon: CouponData, value: number) => {
+    toast.promise(updateCoupon(coupon.id, { rating: +value }), {
       loading: 'Updating...',
       success: (res) => {
         if (res.success) {
+          refreshCacheClient({
+            paths: coupon.categories?.map(c => `/coupons/${c.slug}`) ?? [],
+            tags: ['categories-data', 'menu-data']
+          })
           return 'Updated rating success';
         }
         throw res.message;
@@ -56,11 +61,15 @@ export default function CouponList({
     router.push(`${pathname}/update/${id}`);
   };
   //TODO: handle modal
-  const handleDelete = (id: number) => {
-    toast.promise(deleteCouponById(id), {
+  const handleDelete = (coupon: CouponData) => {
+    toast.promise(deleteCouponById(coupon.id), {
       loading: 'Deleting...!',
       success: (res) => {
         if (res.success) {
+          refreshCacheClient({
+            paths: coupon.categories?.map(c => `/coupons/${c.slug}`) ?? [],
+            tags: ['categories-data', 'menu-data']
+          })
           return 'Deleted success';
         }
         throw res.message;
@@ -120,7 +129,7 @@ export default function CouponList({
                     value={coupon.rating || null}
                     onChange={(_, newValue: number | null) => {
                       if (newValue !== null) {
-                        handleRatingChange(coupon.id, newValue);
+                        handleRatingChange(coupon, newValue);
                       }
                     }}
                   />
@@ -154,7 +163,7 @@ export default function CouponList({
                     variant="danger-light"
                     size="sm"
                     className="btn btn-sm btn-primary-light mx-2"
-                    onClick={() => handleDelete(coupon.id)}
+                    onClick={() => handleDelete(coupon)}
                   >
                     <i className="ri-delete-bin-line"></i> Delete
                   </Button>
