@@ -47,7 +47,7 @@ export default function CouponList({
         if (res.success) {
           refreshCacheClient({
             paths: coupon.categories?.map(c => `/coupons/${c.slug}`) ?? [],
-            tags: ['categories-data', 'menu-data']
+            tags: ['categories-data', 'menu-data', 'stores-data']
           })
           return 'Updated rating success';
         }
@@ -68,12 +68,13 @@ export default function CouponList({
         if (res.success) {
           refreshCacheClient({
             paths: coupon.categories?.map(c => `/coupons/${c.slug}`) ?? [],
-            tags: ['categories-data', 'menu-data']
+            tags: ['categories-data', 'menu-data', 'stores-data']
           })
           return 'Deleted success';
         }
         throw res.message;
       },
+      error: err => err ?? 'Cannot remove'
     });
   };
 

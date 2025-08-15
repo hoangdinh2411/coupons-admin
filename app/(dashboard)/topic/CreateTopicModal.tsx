@@ -88,7 +88,7 @@ export default function CreateTopicModal({
           reset(defaultValues);
           refreshCacheClient({
             paths: [`/topics/${res.data.slug}`],
-            tags: ['menu-data', 'topic-data']
+            tags: ['menu-data', 'topic-data','blogs-page']
           })
           return 'Created success';
         } else {

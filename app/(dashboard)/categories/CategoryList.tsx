@@ -68,6 +68,7 @@ export default function CategoryList({
         }
         throw res.message;
       },
+      error: err => err ?? 'Cannot remove'
     });
   };
 

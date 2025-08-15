@@ -15,6 +15,7 @@ import { CouponType } from '@/types/enum';
 import { getBackgroundForType } from '@/helper/coupons';
 import Filter from '@/shared/layouts-components/filter/Filter';
 import { Box } from '@mui/system';
+import { refreshCacheClient } from '@/services/share.service';
 type Props = {
   data: CouponData[];
   total: number;
@@ -36,27 +37,37 @@ export default function CouponSubmitList({
   currentPage = 1,
 }: Props) {
   //TODO: handle modal
-  const handleAccept = (id: number) => {
-    toast.promise(submitCouponById(id), {
+  const handleAccept = (coupon: CouponData) => {
+    toast.promise(submitCouponById(coupon.id), {
       loading: 'Pending...',
       success: (res) => {
+        refreshCacheClient({
+          paths: coupon.categories?.map(c => `/coupons/${c.slug}`) ?? [],
+          tags: ['categories-data', 'menu-data', 'stores-data']
+        })
         if (res.success) {
           return 'Submitted coupon';
         }
         throw res.message;
       },
+      error: err => err ?? 'Cannot submit coupon'
     });
   };
   //TODO: handle modal
-  const handleDelete = (id: number) => {
-    toast.promise(deleteCouponById(id), {
+  const handleDelete = (coupon: CouponData) => {
+    toast.promise(deleteCouponById(coupon.id), {
       loading: 'Deleting...!',
       success: (res) => {
         if (res.success) {
+          refreshCacheClient({
+            paths: coupon.categories?.map(c => `/coupons/${c.slug}`) ?? [],
+            tags: ['categories-data', 'menu-data', 'stores-data']
+          })
           return 'Deleted success';
         }
         throw res.message;
       },
+      error: err => err ?? 'Cannot delete'
     });
   };
 
@@ -112,7 +123,7 @@ export default function CouponSubmitList({
                     variant="success-light"
                     size="sm"
                     className="btn btn-sm btn-primary-light"
-                    onClick={() => handleAccept(coupon.id)}
+                    onClick={() => handleAccept(coupon)}
                   >
                     <i className="bi bi-check-lg"></i> Accept
                   </Button>
@@ -120,7 +131,7 @@ export default function CouponSubmitList({
                     variant="danger-light"
                     size="sm"
                     className="btn btn-sm btn-primary-light mx-2"
-                    onClick={() => handleDelete(coupon.id)}
+                    onClick={() => handleDelete(coupon)}
                   >
                     <i className="ri-delete-bin-line"></i> Decline
                   </Button>

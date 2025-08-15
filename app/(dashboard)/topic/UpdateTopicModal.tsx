@@ -68,7 +68,7 @@ function UpdateTopicModal({ item, open, onClose }: UpdateTopicModalProps) {
             );
             refreshCacheClient({
               paths: [`/topics/${res.data.slug}`],
-              tags: ['menu-data', 'topic-data']
+              tags: ['menu-data', 'topic-data','blogs-page']
             })
             return 'Updated success';
           }

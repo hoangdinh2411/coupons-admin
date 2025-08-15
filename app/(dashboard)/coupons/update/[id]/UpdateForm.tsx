@@ -74,7 +74,7 @@ export default function UpdateForm({ item }: { item: CouponData }) {
         const paths = categories.filter(c => data.categories.includes(c.id)).map(c => `/coupons/${c.slug}`) || []
         refreshCacheClient({
           paths,
-          tags: ['categories-data', 'menu-data']
+          tags: ['categories-data','menu-data','stores-data']
         })
         throw res.message;
       },
