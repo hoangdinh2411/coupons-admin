@@ -36,11 +36,15 @@ export default function BlogList({
   const router = useRouter();
   const pathname = usePathname();
 
-  const handleRatingChange = (id: number, value: number) => {
-    toast.promise(updateBlog(id, { rating: value }), {
+  const handleRatingChange = (blog: BlogData, value: number) => {
+    toast.promise(updateBlog(blog.id, { rating: value }), {
       loading: 'Updating...',
       success: (res) => {
         if (res.success) {
+          refreshCacheClient({
+            paths: [`/blogs/${blog.slug}`],
+            tags: ['blogs-page']
+          })
           return 'Updated rating success';
         }
         throw res.message;
@@ -134,7 +138,7 @@ export default function BlogList({
                     value={blog.rating ?? 0}
                     onChange={(_, newValue: number | null) => {
                       if (newValue !== null) {
-                        handleRatingChange(blog.id, newValue);
+                        handleRatingChange(blog, newValue);
                       }
                     }}
                   />
