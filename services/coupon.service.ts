@@ -38,7 +38,7 @@ export async function updateCoupon(id: number, payload: CouponPayload) {
   if (res.success) {
     revalidateTag('coupons-data');
     revalidateTag('submit-coupons-data');
-    revalidatePath(`coupon/${id}`);
+    revalidatePath(`/coupons/${id}`);
   }
   return res;
 }
@@ -49,7 +49,7 @@ export async function deleteCouponById(id: number) {
   if (res.success) {
     revalidateTag('coupons-data');
     revalidateTag('submit-coupons-data');
-    revalidatePath(`coupon/${id}`);
+    revalidatePath(`/coupons/${id}`);
   }
   return res;
 }
@@ -63,7 +63,7 @@ export async function submitCouponById(id: number) {
   if (res.success) {
     revalidateTag('coupons-data');
     revalidateTag('submit-coupons-data');
-    revalidatePath(`coupon/${id}`);
+    revalidatePath(`/coupons/${id}`);
   }
   return res;
 }
