@@ -54,7 +54,7 @@ export default function TopicList({
           setTopics(topics.filter((t) => t.id !== topic.id));
           refreshCacheClient({
             paths: [`/topics/${topic.slug}`],
-            tags: ['menu-data', 'topic-data']
+            tags: ['menu-data', 'topic-data','blogs-page']
           })
           return 'Deleted success';
         }

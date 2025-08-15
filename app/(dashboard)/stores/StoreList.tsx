@@ -47,7 +47,7 @@ export default function StoreList({
         if (res.success) {
           refreshCacheClient({
             paths: [`/stores/${store.slug}`],
-            tags: ['categories-data', 'menu-data','stores-data']
+            tags: ['categories-data', 'menu-data', 'stores-data']
           })
           return 'Updated rating success';
         }
@@ -69,12 +69,13 @@ export default function StoreList({
           setStores(stores.filter((s) => s.id !== store.id));
           refreshCacheClient({
             paths: [`/stores/${store.slug}`],
-            tags: ['categories-data', 'menu-data','stores-data']
+            tags: ['categories-data', 'menu-data', 'stores-data']
           })
           return 'Deleted success';
         }
         throw res.message;
       },
+      error: (err) => err,
     });
   };
 

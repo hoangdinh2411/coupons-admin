@@ -49,7 +49,7 @@ export default function BlogList({
         }
         throw res.message;
       },
-      error: (err) => err,
+      error: err => err ?? 'Cannot change rating'
     });
   };
   //TODO: handle modal
@@ -57,19 +57,20 @@ export default function BlogList({
     router.push(`${pathname}/update/${id}`);
   };
   //TODO: handle modal
-  const handleDelete = (id: number) => {
-    toast.promise(deleteBlogById(id), {
+  const handleDelete = (blog: BlogData) => {
+    toast.promise(deleteBlogById(blog.id), {
       loading: 'Deleting...!',
       success: (res) => {
         if (res.success) {
           refreshCacheClient({
-            paths: [],
+            paths: [`/blogs/${blog.slug}`],
             tags: ['blogs-page']
           })
           return 'Deleted success';
         }
         throw res.message;
       },
+      error: err => err ?? 'Cannot remove'
     });
   };
   const handleUpdateSwitch = (
@@ -184,7 +185,7 @@ export default function BlogList({
                     variant="danger-light"
                     size="sm"
                     className="btn btn-sm btn-primary-light mx-2"
-                    onClick={() => handleDelete(blog.id)}
+                    onClick={() => handleDelete(blog)}
                   >
                     <i className="ri-delete-bin-line"></i> Delete
                   </Button>
