@@ -33,7 +33,7 @@ export async function updateBlog(id: number, payload: BlogPayload) {
   });
   if (res.success) {
     revalidateTag('filter-blogs');
-    revalidatePath(`blogs/${id}`);
+    revalidatePath(`/blogs/${id}`);
   }
   return res;
 }
@@ -44,7 +44,7 @@ export async function deleteBlogById(id: number) {
   });
   if (res.success) {
     revalidateTag('filter-blogs');
-    revalidatePath(`blogs/${id}`);
+    revalidatePath(`/blogs/${id}`);
   }
   return res;
 }
