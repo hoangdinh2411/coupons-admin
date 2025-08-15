@@ -53,7 +53,7 @@ export async function updateStore(id: number, payload: StorePayload) {
   });
   if (res.success) {
     revalidateTag('stores-data');
-    revalidatePath(`/stores/${id}`);
+    revalidatePath(`/stores/update/${id}`);
   }
   return res;
 }
@@ -63,7 +63,7 @@ export async function deleteById(id: number) {
   });
   if (res.success) {
     revalidateTag('stores-data');
-    revalidatePath(`/stores/${id}`);
+    revalidatePath(`/stores/update/${id}`);
   }
   return res;
 }
