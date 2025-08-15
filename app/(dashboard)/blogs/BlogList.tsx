@@ -13,6 +13,7 @@ import Filter from '@/shared/layouts-components/filter/Filter';
 import { Rating, Switch } from '@mui/material';
 import { BlogData } from '@/types/blog.type';
 import { deleteBlogById, updateBlog } from '@/services/blog';
+import { refreshCacheClient } from '@/services/share.service';
 type Props = {
   data: BlogData[];
   total: number;
@@ -57,6 +58,10 @@ export default function BlogList({
       loading: 'Deleting...!',
       success: (res) => {
         if (res.success) {
+          refreshCacheClient({
+            paths: [],
+            tags: ['blogs-page']
+          })
           return 'Deleted success';
         }
         throw res.message;
@@ -77,6 +82,10 @@ export default function BlogList({
         success: (res) => {
           if (res.success) {
             if (value === true) {
+              refreshCacheClient({
+                paths: [],
+                tags: ['blogs-page']
+              })
               return 'On success';
             } else {
               return 'Off success';

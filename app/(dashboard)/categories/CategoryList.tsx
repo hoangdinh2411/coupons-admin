@@ -11,6 +11,7 @@ import SearchBar from '@/shared/layouts-components/searchbar/SearchBar';
 import CustomPagination from '@/shared/layouts-components/pagination/CustomPagination';
 import UseAppStore from '@/store/useAppStore';
 import dynamic from 'next/dynamic';
+import { refreshCacheClient } from '@/services/share.service';
 
 const UpdateCategoryModal = dynamic(() => import('./UpdateCategoryModal'), { ssr: false })
 const CreateCategoryModal = dynamic(() => import('./CreateCategoryModal'), { ssr: false })
@@ -53,12 +54,16 @@ export default function CategoryList({
       isOpen: false,
     }));
   };
-  const handleRemove = (id: number) => {
-    toast.promise(deleteById(id), {
+  const handleRemove = (cat: CategoryData) => {
+    toast.promise(deleteById(cat.id), {
       loading: 'Deleting...!',
       success: (res) => {
         if (res.success) {
-          setCategory(categories.filter((c) => c.id !== id));
+          setCategory(categories.filter((c) => c.id !== cat.id));
+          refreshCacheClient({
+            paths: [`/coupons/${cat.slug}`],
+            tags: ['categories-data', 'menu-data']
+          })
           return 'Deleted success';
         }
         throw res.message;
@@ -129,7 +134,7 @@ export default function CategoryList({
                       variant="danger-light"
                       size="sm"
                       className="btn btn-sm btn-primary-light mx-2"
-                      onClick={() => handleRemove(cat.id)}
+                      onClick={() => handleRemove(cat)}
                     >
                       <i className="ri-delete-bin-line"></i>Delete
                     </Button>

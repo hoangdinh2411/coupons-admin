@@ -12,6 +12,7 @@ import UpdateTopicModal from './UpdateTopicModal';
 import CreateTopicModal from './CreateTopicModal';
 import { deleteById } from '@/services/topic.service';
 import UseAppStore from '@/store/useAppStore';
+import { refreshCacheClient } from '@/services/share.service';
 type Props = {
   data: TopicData[];
   total: number;
@@ -45,12 +46,16 @@ export default function TopicList({
       isOpen: false,
     }));
   };
-  const handleRemove = (id: number) => {
-    toast.promise(deleteById(id), {
+  const handleRemove = (topic: TopicData) => {
+    toast.promise(deleteById(topic.id), {
       loading: 'Deleting...!',
       success: (res) => {
         if (res.success) {
-          setTopics(topics.filter((t) => t.id !== id));
+          setTopics(topics.filter((t) => t.id !== topic.id));
+          refreshCacheClient({
+            paths: [`/topics/${topic.slug}`],
+            tags: ['menu-data', 'topic-data']
+          })
           return 'Deleted success';
         }
         throw res.message;
@@ -120,7 +125,7 @@ export default function TopicList({
                       variant="danger-light"
                       size="sm"
                       className="btn btn-sm btn-primary-light mx-2"
-                      onClick={() => handleRemove(topic.id)}
+                      onClick={() => handleRemove(topic)}
                     >
                       <i className="ri-delete-bin-line"></i>Delete
                     </Button>

@@ -117,7 +117,7 @@ export default function CreateForm() {
           setFaqList([])
           refreshCacheClient({
             paths: [],
-            tags: ['menu-data','stores-data']
+            tags: ['categories-data', 'menu-data','stores-data']
           })
           return 'Created success';
         }
