@@ -2,6 +2,7 @@ export async function refreshCacheClient(data: {
   paths: string[];
   tags: string[];
 }) {
+  console.log( process.env.NEXT_PUBLIC_CLIENT_DOMAIN)
   const res = await fetch(
     process.env.NEXT_PUBLIC_CLIENT_DOMAIN! + '/api/refresh-cache',
     {

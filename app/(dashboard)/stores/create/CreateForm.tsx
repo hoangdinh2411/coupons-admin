@@ -116,8 +116,8 @@ export default function CreateForm() {
           clearAll();
           setFaqList([])
           refreshCacheClient({
-            paths: [`stores/${res.data.slug}`],
-            tags: []
+            paths: [],
+            tags: ['menu-data','stores-data']
           })
           return 'Created success';
         }
