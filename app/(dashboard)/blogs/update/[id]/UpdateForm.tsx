@@ -85,7 +85,7 @@ export default function UpdateForm({ item }: { item: BlogData }) {
       success: (res) => {
         if (res.success && res.data) {
           refreshCacheClient({
-            paths: [`/ blogs/${item.slug}`],
+            paths: [`/blogs/${item.slug}`],
             tags: ['blogs-page']
           })
           return 'Updated successfully';

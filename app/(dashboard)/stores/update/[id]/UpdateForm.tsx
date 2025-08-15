@@ -98,8 +98,8 @@ export default function UpdateForm({ item }: Props) {
             );
             setStores(newStores);
             refreshCacheClient({
-              paths: [`stores/${res.data.slug}`],
-              tags: ['menu-data']
+              paths: [`/stores/${res.data.slug}`],
+              tags: ['menu-data','stores-data']
             })
             return 'Updated success';
           }

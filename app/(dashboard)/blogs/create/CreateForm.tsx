@@ -110,7 +110,7 @@ export default function CreateForm() {
           reset(defaultValues);
           refreshCacheClient({
             paths: [],
-            tags: ['/blogs-page']
+            tags: ['blogs-page']
           })
           return 'Created successfully';
         }
