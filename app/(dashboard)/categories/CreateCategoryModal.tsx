@@ -25,9 +25,8 @@ import useFaqs from '@/hooks/useFaqs';
 import useRickTextEditor from '@/hooks/useRickTextEditor';
 import dynamic from 'next/dynamic';
 import { refreshCacheClient } from '@/services/share.service';
-const CustomRichTextEditor = dynamic(() => import('../../../shared/layouts-components/richtext-editor'), {
-  ssr: false
-})
+import CustomRichTextEditor from '@/shared/layouts-components/richtext-editor';
+
 interface CreateCategoryModalPropsType {
   open: boolean;
   onClose: () => void;
@@ -112,7 +111,7 @@ export default function CreateCategoryModal({
           clearAll()
           refreshCacheClient({
             paths: [],
-            tags: ['categories-data','menu-data']
+            tags: ['categories-data', 'menu-data']
           })
           return 'Created success';
         } else {
@@ -123,7 +122,7 @@ export default function CreateCategoryModal({
     });
   };
 
-
+  if (!open) return null
   return (
     <Modal
       centered
@@ -159,7 +158,7 @@ export default function CreateCategoryModal({
             <Box className="mb-3">
               <Form.Label className="text-default fw-bold">Description</Form.Label>
               <CustomRichTextEditor
-                imageFolder="stores"
+                imageFolder="categories"
                 ref={rteRef}
                 onBlur={handleChangeContent}
                 error={Boolean(errors.description)}

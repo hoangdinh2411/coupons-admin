@@ -109,6 +109,8 @@ function UpdateCategoryModal({
   const handleChangeContent = (value: string) => {
     setValue('description', value);
   };
+
+  if (!open) return null
   return (
     <Modal
       show={open}
@@ -141,7 +143,7 @@ function UpdateCategoryModal({
             <Box className="mb-3">
               <Form.Label className="text-default fw-bold">Description</Form.Label>
               <CustomRichTextEditor
-                imageFolder="stores"
+                imageFolder="categories"
                 ref={rteRef}
                 onBlur={handleChangeContent}
                 error={Boolean(errors.description)}
