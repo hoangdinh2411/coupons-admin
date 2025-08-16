@@ -23,6 +23,9 @@ const CustomRichTextEditor = forwardRef(
     ref,
   ) => {
 
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => setMounted(true), []);
+    console.log(mounted)
     const [editorReady, setEditorReady] = useState(false);
 
     const rteRef = useRef<RichTextEditorRef>(null);
@@ -48,9 +51,9 @@ const CustomRichTextEditor = forwardRef(
       setContent: (html: string) => {
         const editor = getEditor()
         if (!editor) return;
-        if (html) {
-          editor.commands.setContent(html);
-        }
+        Promise.resolve().then(() => {
+          if (!editor.isDestroyed) editor.commands.setContent(html, false); // emitUpdate=false
+        });
       },
       clearIfEmpty: () => {
         const editor = getEditor()
@@ -79,6 +82,7 @@ const CustomRichTextEditor = forwardRef(
     }, [rteRef.current?.editor]);
 
 
+    console.log(editorReady, rteRef.current?.editor)
     return (
       <Box
         marginBottom={2}
@@ -107,6 +111,7 @@ const CustomRichTextEditor = forwardRef(
           },
         }}
       >
+
         <RichTextEditor
           immediatelyRender={false}
           ref={rteRef}
@@ -123,10 +128,10 @@ const CustomRichTextEditor = forwardRef(
               />
             ) : null
           }
-
-
-
         />
+
+
+
         {error && <div className="text-danger">{helpText}</div>}
         <Button onClick={() => console.log(rteRef.current?.editor?.getHTML())}>
           Log HTML

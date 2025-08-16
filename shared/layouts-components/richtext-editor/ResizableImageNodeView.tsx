@@ -17,7 +17,7 @@ const ResizableImageNodeView = ({ node, updateAttributes }: NodeViewProps) => {
           display: 'block',
         }}
       />
-      <p
+      <figcaption
         ref={captionRef}
         className="image-caption"
         contentEditable
@@ -27,7 +27,7 @@ const ResizableImageNodeView = ({ node, updateAttributes }: NodeViewProps) => {
         }
       >
         {caption}
-      </p>
+      </figcaption>
     </NodeViewWrapper>
   )
 }

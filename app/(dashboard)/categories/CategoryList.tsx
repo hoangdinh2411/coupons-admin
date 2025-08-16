@@ -12,9 +12,9 @@ import CustomPagination from '@/shared/layouts-components/pagination/CustomPagin
 import UseAppStore from '@/store/useAppStore';
 import dynamic from 'next/dynamic';
 import { refreshCacheClient } from '@/services/share.service';
+import CreateCategoryModal from './CreateCategoryModal';
+import UpdateCategoryModal from './UpdateCategoryModal';
 
-const UpdateCategoryModal = dynamic(() => import('./UpdateCategoryModal'), { ssr: false })
-const CreateCategoryModal = dynamic(() => import('./CreateCategoryModal'), { ssr: false })
 type Props = {
   data: CategoryData[];
   total: number;
