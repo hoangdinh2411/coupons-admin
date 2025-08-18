@@ -1,8 +1,9 @@
+import toast from 'react-hot-toast';
+
 export async function refreshCacheClient(data: {
   paths: string[];
   tags: string[];
 }) {
-  console.log( process.env.NEXT_PUBLIC_CLIENT_DOMAIN)
   const res = await fetch(
     process.env.NEXT_PUBLIC_CLIENT_DOMAIN! + '/api/refresh-cache',
     {
@@ -13,6 +14,8 @@ export async function refreshCacheClient(data: {
       body: JSON.stringify(data),
     },
   );
-  console.log(res);
+  if (!res.ok) {
+    toast.error('Cannot refresh cache');
+  }
   return await res.json();
 }
