@@ -25,6 +25,8 @@ import { generateSlug } from '@/helper/generateSlug';
 import Faqs from '@/shared/layouts-components/faqs/Faqs';
 import useFaqs from '@/hooks/useFaqs';
 import { refreshCacheClient } from '@/services/share.service';
+import { useRouter } from 'next/navigation';
+import { APP_ROUTE } from '@/constants/route';
 const CustomRichTextEditor = dynamic(() => import('../../../../shared/layouts-components/richtext-editor'), {
   ssr: false
 })
@@ -77,7 +79,7 @@ export default function CreateForm() {
     formState: { errors },
   } = method;
   const { getFaqsValues, faqList, handleAddFaq, handleRemoveAccordion, onCreateAccordion, setFaqList } = useFaqs()
-
+  const router = useRouter()
   const { topics } = UseAppStore((state) => state);
   const { getContent, rteRef, clearAll } = useRickTextEditor();
   const handleChangeContent = (value: string) => {
@@ -104,14 +106,13 @@ export default function CreateForm() {
       loading: 'Creating...!',
       success: (res) => {
         if (res.success && res.data) {
-          reset(defaultValues);
-          clearAll();
-          setFaqList([])
-          reset(defaultValues);
           refreshCacheClient({
             paths: [],
-            tags: ['blogs-page']
-          })
+            tags: ['blogs-page'],
+          });
+          setTimeout(() => {
+            router.push(APP_ROUTE.BLOG)
+          }, 1000)
           return 'Created successfully';
         }
         throw res.message;

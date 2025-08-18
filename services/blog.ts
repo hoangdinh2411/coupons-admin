@@ -4,6 +4,7 @@ import { IResponseWithTotal } from '@/types/share.type';
 import customFetch from './customFetch';
 import { FilterPayload } from '@/types/filter.type';
 import { BlogData, BlogPayload } from '@/types/blog.type';
+import { refreshCacheClient } from './share.service';
 
 export async function filterBlog(data: FilterPayload) {
   return await customFetch<IResponseWithTotal<BlogData[]>>(`/blogs/filter`, {
