@@ -1,8 +1,8 @@
 'use client';
-import React, { Fragment, useEffect, useMemo, useState } from 'react';
+import React, {  useEffect} from 'react';
 import { useForm, Controller, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Box, MenuItem, OutlinedInput, Select } from '@mui/material';
+import { Box} from '@mui/material';
 import { Form } from 'react-bootstrap';
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
 
@@ -17,10 +17,9 @@ import { FAQItem } from '../../../../../shared/layouts-components/faqs/Accordion
 import Faqs from '@/shared/layouts-components/faqs/Faqs';
 import useFaqs from '@/hooks/useFaqs';
 import dynamic from 'next/dynamic';
-import { refreshCacheClient } from '@/services/share.service';
-import { PageFormData, schema } from '../../CreatePageModal';
-import { PageData, PagePayload } from '@/types/page.type';
+import { PageData } from '@/types/page.type';
 import UseAppStore from '@/store/useAppStore';
+import { DynamicPageFormData, schema } from '../../ validation.schema';
 const CustomRichTextEditor = dynamic(
   () => import('../../../../../shared/layouts-components/richtext-editor'),
   {
@@ -32,23 +31,7 @@ type Props = {
 };
 
 export default function UpdateForm({ item }: Props) {
-  if (!item) return null;
-  const method = useForm<PageFormData>({
-    resolver: zodResolver(schema),
-    mode: 'onChange',
-  });
-  const {
-    register,
-    handleSubmit,
-    control,
-    // watch,
-    setValue,
-    reset,
-    formState: { errors },
-  } = method;
   const { getContent, rteRef, setContent } = useRickTextEditor();
-
-  const { pages, setPages } = UseAppStore((state) => state);
   const {
     getFaqsValues,
     faqList,
@@ -57,21 +40,26 @@ export default function UpdateForm({ item }: Props) {
     onCreateAccordion,
     setFaqList,
   } = useFaqs();
-
-  useEffect(() => {
-    if (item && rteRef.current) {
-      setContent(item.description);
-    }
-  }, [rteRef.current]);
+  const { setPages, pages } = UseAppStore((state) => state);
+  const method = useForm<DynamicPageFormData>({
+    resolver: zodResolver(schema),
+  });
+  const {
+    register,
+    setValue,
+    handleSubmit,
+    control,
+    reset,
+    formState: { errors },
+  } = method;
 
   useEffect(() => {
     if (item) {
       reset({
         ...item,
-        keywords: getKeyWordsString(item.keywords || []),
-        meta_data: {
-          ...item.meta_data,
-          keywords: getKeyWordsString(item.meta_data?.keywords || []),
+        metadata: {
+          ...item.metadata,
+          keywords: getKeyWordsString(item?.metadata?.keywords || ['']),
         },
       });
       setFaqList(
@@ -84,111 +72,124 @@ export default function UpdateForm({ item }: Props) {
           : [],
       );
     }
-  }, [item]);
+  }, [item, reset, setFaqList]);
 
-  const onSubmit = async (data: PageFormData) => {
-    const description = await getContent();
+  useEffect(() => {
+    if (item && rteRef.current) {
+      setContent(item.content);
+    }
+  }, [item, rteRef, setContent]);
 
+  const onSubmit = async (data: DynamicPageFormData) => {
     if (item) {
-      const payload: PagePayload = {
+      const content = await getContent();
+      const payload = {
         ...data,
-        description,
-        keywords: getKeyWordsArray(data.keywords),
-        meta_data: {
-          ...data.meta_data,
-          keywords: getKeyWordsArray(data.meta_data.keywords),
+        content,
+        metadata: {
+          ...data.metadata,
+          keywords: getKeyWordsArray(data.metadata?.keywords ?? ''),
         },
         faqs: getFaqsValues(),
       };
-
-      // toast.promise(updatePage(item.id, payload), {
-      //   loading: 'Updating...!',
-      //   success: (res) => {
-      //     if (res.success && res.data) {
-      //       const newPages = pages.map((s) =>
-      //         s.id === item?.id ? { ...s, ...res.data } : s,
-      //       );
-      //       setPages(newPages);
-      //       refreshCacheClient({
-      //         paths: [`/Pages/${res.data.slug}`],
-      //         tags: ['categories-data', 'menu-data', 'Pages-data'],
-      //       });
-      //       return 'Updated success';
-      //     }
-      //     throw res.message;
-      //   },
-      //   error: (err) => err || 'Something wrong',
-      // });
     }
   };
+
   const handleChangeContent = (value: string) => {
-    setValue('description', value);
+    setValue('content', value);
   };
 
+  if (!open) return null;
   return (
     <FormProvider {...method}>
       <Form onSubmit={handleSubmit(onSubmit)}>
-        {/* Page Name */}
         <Box className="mb-3">
-          <Form.Label className="text-default">Page Name</Form.Label>
+          <Form.Label className="fw-bold text-default">Page type</Form.Label>
           <Form.Control
             type="text"
-            placeholder="Enter your Page name"
-            {...register('name')}
+            placeholder="Enter page type"
+            {...register('type')}
           />
-          {errors.name && (
-            <small className="text-danger">{errors.name.message}</small>
+          {errors.type && (
+            <small className="text-danger">{errors.type.message}</small>
           )}
         </Box>
-        {/* Description */}
         <Box className="mb-3">
-          <Form.Label className="text-default fw-bold">Description</Form.Label>
+          <Form.Label className="text-default fw-bold">Content</Form.Label>
           <CustomRichTextEditor
-            imageFolder="Pages"
+            imageFolder="pages"
             ref={rteRef}
             onBlur={handleChangeContent}
-            error={Boolean(errors.description)}
-            helpText={errors.description?.message}
-            // onChange={handleChangeContent}
-            // placeholder="Write blog content here"
+            error={Boolean(errors.content)}
+            helpText={errors.content?.message}
           />
         </Box>
-
-        {/* Image Upload */}
         <Box mb={2}>
-          <Form.Label className="text-default">Image</Form.Label>
+          <Form.Label className="fw-bold text-default">Thumbnail</Form.Label>
           <Box display="flex" alignItems="flex-start" flexDirection={'column'}>
             <Box position="relative" flex={1} width={'100%'}>
               <Controller
                 control={control}
-                name="image"
+                name="thumbnail"
                 render={({ field }) => (
                   <UploadFile
-                    folder="Pages"
+                    folder="pages"
                     newFile={field.value}
                     onUploadFile={(data: ImageType[]) =>
                       field.onChange(data[0])
                     }
-                    id="update-Page"
+                    id="update-page-thumbnail"
                   />
                 )}
               />
             </Box>
           </Box>
+          {errors.thumbnail && (
+            <small className="text-danger">{errors.thumbnail.message}</small>
+          )}
         </Box>
-
+        <Box mb={2}>
+          <Form.Label className="fw-bold text-default">Images</Form.Label>
+          <Box display="flex" alignItems="flex-start" flexDirection={'column'}>
+            <Box position="relative" flex={1} width={'100%'}>
+              <Controller
+                control={control}
+                name="images"
+                render={({ field }) => (
+                  <UploadFile
+                    folder="pages"
+                    newFile={field.value}
+                    onUploadFile={(data: ImageType[]) => {
+                      if (data.length <= 10) {
+                        field.onChange(data);
+                      } else {
+                        toast.error('Maximum 10 images allowed');
+                      }
+                    }}
+                    id="update-page-images"
+                    multiple
+                  />
+                )}
+              />
+            </Box>
+          </Box>
+          {errors.images && (
+            <small className="text-danger">{errors.images.message}</small>
+          )}
+        </Box>
         <Faqs
           onAdd={onCreateAccordion}
           values={faqList}
           onChange={handleAddFaq}
           onRemove={handleRemoveAccordion}
         />
-
         <SeoForm />
-        {/* Submit */}
         <Box display="flex" justifyContent="end" mt={4} gap={1}>
           <SpkButton Buttonvariant="primary" Buttontype="submit">
-            Update Page
+            Update
+          </SpkButton>
+          <SpkButton Buttonvariant="primary-light" Buttontype="button">
+            Cancel
           </SpkButton>
         </Box>
       </Form>

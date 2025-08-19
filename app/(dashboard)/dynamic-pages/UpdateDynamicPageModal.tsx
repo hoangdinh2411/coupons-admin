@@ -9,10 +9,8 @@ import { Box, Paper } from '@mui/material';
 import UploadFile, {
   ImageType,
 } from '@/shared/layouts-components/uploadFile/UploadFile';
-import { CategoryData } from '@/types/category.type';
 import UseAppStore from '@/store/useAppStore';
 import toast from 'react-hot-toast';
-import { updateCategory } from '@/services/category.service';
 import SeoForm from '@/shared/layouts-components/seo-form/SeoForm';
 import { getKeyWordsArray, getKeyWordsString } from '@/helper/keywords';
 import Faqs from '@/shared/layouts-components/faqs/Faqs';
@@ -20,7 +18,8 @@ import useFaqs from '@/hooks/useFaqs';
 import useRickTextEditor from '@/hooks/useRickTextEditor';
 import dynamic from 'next/dynamic';
 import { refreshCacheClient } from '@/services/share.service';
-import { DynamicPageFormData, schema } from './CreatePageModal';
+import { DynamicPageFormData, schema } from './ validation.schema';
+
 const CustomRichTextEditor = dynamic(
   () => import('../../../shared/layouts-components/richtext-editor'),
   {
@@ -29,12 +28,12 @@ const CustomRichTextEditor = dynamic(
 );
 
 interface UpdateDynamicPageModalProps {
-  item: CategoryData | null;
+  item: DynamicPageFormData | null;
   open: boolean;
   onClose: () => void;
 }
 
-function UpdateCategoryModal({
+function UpdateDynamicPageModal({
   item,
   open,
   onClose,
@@ -47,7 +46,7 @@ function UpdateCategoryModal({
     onCreateAccordion,
     setFaqList,
   } = useFaqs();
-  const { setCategory, categories } = UseAppStore((state) => state);
+  const { setPages, pages } = UseAppStore((state) => state);
   const method = useForm<DynamicPageFormData>({
     resolver: zodResolver(schema),
   });
@@ -61,13 +60,14 @@ function UpdateCategoryModal({
     reset,
     formState: { errors },
   } = method;
+
   useEffect(() => {
     if (item) {
       reset({
         ...item,
-        meta_data: {
-          ...item.meta_data,
-          keywords: getKeyWordsString(item.meta_data?.keywords || []),
+        metadata: {
+          ...item.metadata,
+          keywords: getKeyWordsString(item?.metadata?.keywords || ['']),
         },
       });
       setFaqList(
@@ -80,62 +80,46 @@ function UpdateCategoryModal({
           : [],
       );
     }
-  }, [item]);
+  }, [item, reset, setFaqList]);
 
   useEffect(() => {
     if (item && rteRef.current) {
-      setContent(item.description);
+      setContent(item.content);
     }
-  }, [rteRef.current]);
+  }, [item, rteRef, setContent]);
+
   const onSubmit = async (data: DynamicPageFormData) => {
     if (item) {
-      const description = await getContent();
+      const content = await getContent();
       const payload = {
         ...data,
-        description,
-        meta_data: {
-          ...data.meta_data,
-          keywords: getKeyWordsArray(data.meta_data?.keywords),
+        content,
+        metadata: {
+          ...data.metadata,
+          keywords: getKeyWordsArray(data.metadata?.keywords ?? ''),
         },
         faqs: getFaqsValues(),
       };
-      toast.promise(updateCategory(item?.id, payload), {
-        loading: 'Updating...!',
-        success: (res) => {
-          if (res.success && res.data) {
-            setCategory(
-              categories.map((cat) =>
-                cat.id === item?.id ? { ...cat, ...res.data } : cat,
-              ),
-            );
-            refreshCacheClient({
-              paths: [`/coupons/${res.data.slug}`],
-              tags: ['categories-data', 'menu-data'],
-            });
-            return 'Updated success';
-          }
-          throw res.message;
-        },
-        error: (err) => err || 'Something wrong',
-      });
     }
   };
+
   const handleChangeContent = (value: string) => {
-    setValue('description', value);
+    setValue('content', value);
   };
 
   if (!open) return null;
+
   return (
     <Modal
       show={open}
       onHide={onClose}
       centered
       fullscreen
-      aria-labelledby="update-category-modal"
-      aria-describedby="modal-to-update-category"
+      aria-labelledby="update-page-modal"
+      aria-describedby="modal-to-update-page"
     >
       <Modal.Header className="d-flex justify-content-between align-items-center">
-        <Modal.Title as="h6">Update Category</Modal.Title>
+        <Modal.Title as="h6">Update page</Modal.Title>
         <CloseButton onClick={onClose} aria-label="close" />
       </Modal.Header>
       <Modal.Body className="px-4">
@@ -143,31 +127,31 @@ function UpdateCategoryModal({
           <Form onSubmit={handleSubmit(onSubmit)}>
             <Box className="mb-3">
               <Form.Label className="fw-bold text-default">
-                Category Name
+                Page type
               </Form.Label>
               <Form.Control
                 type="text"
-                placeholder="Enter category name"
-                {...register('name')}
+                placeholder="Enter page type"
+                {...register('type')}
               />
-              {errors.name && (
-                <small className="text-danger">{errors.name.message}</small>
+              {errors.type && (
+                <small className="text-danger">{errors.type.message}</small>
               )}
             </Box>
             <Box className="mb-3">
-              <Form.Label className="text-default fw-bold">
-                Description
-              </Form.Label>
+              <Form.Label className="text-default fw-bold">Content</Form.Label>
               <CustomRichTextEditor
                 imageFolder="categories"
                 ref={rteRef}
                 onBlur={handleChangeContent}
-                error={Boolean(errors.description)}
-                helpText={errors.description?.message}
+                error={Boolean(errors.content)}
+                helpText={errors.content?.message}
               />
             </Box>
             <Box mb={2}>
-              <Form.Label className="fw-bold text-default">Image</Form.Label>
+              <Form.Label className="fw-bold text-default">
+                Thumbnail
+              </Form.Label>
               <Box
                 display="flex"
                 alignItems="flex-start"
@@ -176,7 +160,7 @@ function UpdateCategoryModal({
                 <Box position="relative" flex={1} width={'100%'}>
                   <Controller
                     control={control}
-                    name="image"
+                    name="thumbnail"
                     render={({ field }) => (
                       <UploadFile
                         folder="categories"
@@ -184,12 +168,50 @@ function UpdateCategoryModal({
                         onUploadFile={(data: ImageType[]) =>
                           field.onChange(data[0])
                         }
-                        id="update-category"
+                        id="update-page-thumbnail"
                       />
                     )}
                   />
                 </Box>
               </Box>
+              {errors.thumbnail && (
+                <small className="text-danger">
+                  {errors.thumbnail.message}
+                </small>
+              )}
+            </Box>
+            <Box mb={2}>
+              <Form.Label className="fw-bold text-default">Images</Form.Label>
+              <Box
+                display="flex"
+                alignItems="flex-start"
+                flexDirection={'column'}
+              >
+                <Box position="relative" flex={1} width={'100%'}>
+                  <Controller
+                    control={control}
+                    name="images"
+                    render={({ field }) => (
+                      <UploadFile
+                        folder="categories"
+                        newFile={field.value}
+                        onUploadFile={(data: ImageType[]) => {
+                          if (data.length <= 10) {
+                            field.onChange(data);
+                          } else {
+                            toast.error('Maximum 10 images allowed');
+                          }
+                        }}
+                        id="update-page-images"
+                        multiple
+                      />
+                    )}
+                  />
+                </Box>
+              </Box>
+              {errors.images && (
+                <small className="text-danger">{errors.images.message}</small>
+              )}
             </Box>
             <Faqs
               onAdd={onCreateAccordion}
@@ -197,18 +219,6 @@ function UpdateCategoryModal({
               onChange={handleAddFaq}
               onRemove={handleRemoveAccordion}
             />
-            <Box className="mb-3">
-              <Form.Label className="fw-bold text-default">About</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={3}
-                placeholder="Enter about"
-                {...register('about')}
-              />
-              {errors.about && (
-                <small className="text-danger">{errors.about.message}</small>
-              )}
-            </Box>
             <SeoForm />
             <Box display="flex" justifyContent="end" mt={4} gap={1}>
               <SpkButton Buttonvariant="primary" Buttontype="submit">
@@ -229,4 +239,4 @@ function UpdateCategoryModal({
   );
 }
 
-export default memo(UpdateCategoryModal);
+export default memo(UpdateDynamicPageModal);

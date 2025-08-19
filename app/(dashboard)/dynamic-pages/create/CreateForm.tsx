@@ -13,9 +13,7 @@ import UploadFile, {
 import toast from 'react-hot-toast';
 import { StorePayload } from '@/types/store.type';
 import UseAppStore from '@/store/useAppStore';
-// import CustomRichTextEditor from '../../../../shared/layouts-components/richtext-editor';
 import useRickTextEditor from '@/hooks/useRickTextEditor';
-import { generateSlug } from '@/helper/generateSlug';
 import SeoForm, {
   seoDataSchema,
   seoDefaultValues,
@@ -25,6 +23,8 @@ import Faqs from '@/shared/layouts-components/faqs/Faqs';
 import useFaqs from '@/hooks/useFaqs';
 import dynamic from 'next/dynamic';
 import { refreshCacheClient } from '@/services/share.service';
+import { schema } from '../ validation.schema';
+
 const CustomRichTextEditor = dynamic(
   () => import('../../../../shared/layouts-components/richtext-editor'),
   {
@@ -32,42 +32,19 @@ const CustomRichTextEditor = dynamic(
   },
 );
 
-export const schema = z.object({
-  ...seoDataSchema.shape,
-  name: z.string().min(1, 'Store name is required').trim(),
-  description: z.string().min(1, 'Description is required').trim(),
-  max_discount_pct: z
-    .number({ invalid_type_error: 'Must be a number' })
-    .min(1, 'Min discount is 1')
-    .max(100, 'Max discount is 100'),
-  keywords: z.string().trim(),
-  url: z.string().url('Invalid URL').trim(),
-  categories: z
-    .array(z.number())
-    .min(1, 'Need to select at least one category'),
-  image: z.object({
-    file_name: z.string().trim(),
-    url: z.string().trim(),
-    public_id: z.string().trim(),
-  }),
-  slug: z.string().min(1, 'Slug is required'),
-});
-
 export const defaultValues: StoreFormData = {
   ...seoDefaultValues,
-  name: '',
-  description: '',
-  max_discount_pct: 0,
-  keywords: '',
-  url: '',
-  categories: [],
-  image: {
+  type: '',
+  content: '',
+  thumbnail: {
     file_name: '',
     url: '',
     public_id: '',
   },
-  slug: '',
+  images: [],
+  about: '',
 };
+
 export type StoreFormData = z.infer<typeof schema>;
 
 export default function CreateForm() {
@@ -98,23 +75,18 @@ export default function CreateForm() {
     setFaqList,
   } = useFaqs();
 
-  const watchName = watch('name');
-
-  useEffect(() => {
-    setValue('slug', generateSlug(watchName));
-  }, [watchName]);
   const handleChangeContent = (value: string) => {
-    setValue('description', value);
+    setValue('content', value);
   };
+
   const onSubmit = async (data: StoreFormData) => {
-    const description = await getContent();
+    const content = await getContent();
     const payload: StorePayload = {
       ...data,
-      description,
-      keywords: getKeyWordsArray(data.keywords),
-      meta_data: {
-        ...data.meta_data,
-        keywords: getKeyWordsArray(data.meta_data.keywords),
+      content,
+      metadata: {
+        ...data.metadata,
+        keywords: getKeyWordsArray(data?.metadata?.keywords ?? []),
       },
       faqs: getFaqsValues(),
     };
@@ -142,118 +114,101 @@ export default function CreateForm() {
   return (
     <FormProvider {...method}>
       <Form onSubmit={handleSubmit(onSubmit)}>
-        {/* Store Name */}
+        {/* Page Type */}
         <Box className="mb-3">
-          <Form.Label className="text-default">Store Name</Form.Label>
+          <Form.Label className="fw-bold text-default">Page type</Form.Label>
           <Form.Control
             type="text"
-            placeholder="Enter your Store name"
-            {...register('name')}
+            placeholder="Enter page type"
+            {...register('type')}
           />
-          {errors.name && (
-            <small className="text-danger">{errors.name.message}</small>
-          )}
-        </Box>
-        <Box className="mb-3">
-          <Form.Label className="text-default">Store Slug</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Slug for store"
-            {...register('slug')}
-          />
-          {errors.slug && (
-            <small className="text-danger">{errors.slug.message}</small>
+          {errors.type && (
+            <small className="text-danger">{errors.type.message}</small>
           )}
         </Box>
 
-        {/* Description */}
+        {/* Content */}
         <Box className="mb-3">
-          <Form.Label className="text-default fw-bold">Description</Form.Label>
+          <Form.Label className="text-default fw-bold">Content</Form.Label>
           <CustomRichTextEditor
-            imageFolder="stores"
+            imageFolder="categories"
             ref={rteRef}
             onBlur={handleChangeContent}
-            error={Boolean(errors.description)}
-            helpText={errors.description?.message}
+            error={Boolean(errors.content)}
+            helpText={errors.content?.message}
           />
         </Box>
 
-        {/* Max Discount */}
-        <Box className="mb-3">
-          <Form.Label className="text-default">Max Discount (%)</Form.Label>
-          <Form.Control
-            type="number"
-            step="0.01"
-            {...register('max_discount_pct', { valueAsNumber: true })}
-          />
-          {errors.max_discount_pct && (
-            <small className="text-danger">
-              {errors.max_discount_pct.message}
-            </small>
-          )}
-        </Box>
-
-        {/* Keywords */}
-        <Box className="mb-3">
-          <Form.Label className="text-default">
-            Keywords (comma separated)
-          </Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="e.g., AI, programming"
-            {...register('keywords')}
-          />
-          {errors.keywords && (
-            <small className="text-danger">{errors.keywords.message}</small>
-          )}
-        </Box>
-
-        {/* URL */}
-        <Box className="mb-3">
-          <Form.Label className="text-default">Website URL</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="https://example.com"
-            {...register('url')}
-          />
-          {errors.url && (
-            <small className="text-danger">{errors.url.message}</small>
-          )}
-        </Box>
-
-        {/* Image Upload */}
+        {/* Thumbnail Upload */}
         <Box mb={2}>
-          <Form.Label className="fw-bold text-default">Image</Form.Label>
+          <Form.Label className="fw-bold text-default">Thumbnail</Form.Label>
           <Box display="flex" alignItems="flex-start" flexDirection={'column'}>
             <Box position="relative" flex={1} width={'100%'}>
               <Controller
                 control={control}
-                name="image"
+                name="thumbnail"
                 render={({ field }) => (
                   <UploadFile
-                    folder="stores"
+                    folder="pages"
                     newFile={field.value}
                     onUploadFile={(data: ImageType[]) =>
                       field.onChange(data[0])
                     }
-                    id="create-store"
+                    id="create-page-thumbnail"
                   />
                 )}
               />
             </Box>
           </Box>
+          {errors.thumbnail && (
+            <small className="text-danger">{errors.thumbnail.message}</small>
+          )}
         </Box>
+
+        {/* Images Upload */}
+        <Box mb={2}>
+          <Form.Label className="fw-bold text-default">Images</Form.Label>
+          <Box display="flex" alignItems="flex-start" flexDirection={'column'}>
+            <Box position="relative" flex={1} width={'100%'}>
+              <Controller
+                control={control}
+                name="images"
+                render={({ field }) => (
+                  <UploadFile
+                    folder="pages"
+                    newFile={field.value}
+                    onUploadFile={(data: ImageType[]) => {
+                      if (data.length <= 10) {
+                        field.onChange(data);
+                      } else {
+                        toast.error('Maximum 10 images allowed');
+                      }
+                    }}
+                    id="create-page-images"
+                    multiple
+                  />
+                )}
+              />
+            </Box>
+          </Box>
+          {errors.images && (
+            <small className="text-danger">{errors.images.message}</small>
+          )}
+        </Box>
+
+        {/* FAQs */}
         <Faqs
           onAdd={onCreateAccordion}
           values={faqList}
           onChange={handleAddFaq}
           onRemove={handleRemoveAccordion}
         />
+        {/* SEO Form */}
         <SeoForm />
         {/* Submit */}
         <Box display="flex" justifyContent="end" mt={4} gap={1}>
           <SpkButton Buttonvariant="primary" Buttontype="submit">
-            Create Store
+            Create Page
           </SpkButton>
         </Box>
       </Form>

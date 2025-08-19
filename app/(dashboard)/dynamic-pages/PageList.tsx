@@ -7,20 +7,27 @@ import { PageData } from '@/types/page.type';
 import SearchBar from '@/shared/layouts-components/searchbar/SearchBar';
 import CustomPagination from '@/shared/layouts-components/pagination/CustomPagination';
 import UseAppStore from '@/store/useAppStore';
-import CreatePageModal from './CreatePageModal';
-import UpdatePageModal from './UpdatePageModal';
+import UpdateDynamicPageModal from './UpdateDynamicPageModal';
+import { useRouter } from 'next/navigation';
+
+const HEADER = [
+  { title: 'Type' },
+  { title: 'Content' },
+  { title: 'Images' },
+  { title: 'Thumbnail' },
+  { title: 'FAQs' },
+  { title: 'Metadata' },
+  { title: 'Actions' },
+];
 
 type Props = {
   data: PageData[];
   total: number;
   currentPage: number;
 };
-const HEADER = [{ title: 'Page' }, { title: 'Type' }, { title: 'Actions' }];
-export default function PageList({
-  data = [],
-  total = 1,
-  currentPage = 1,
-}: Props) {
+
+export default function PageList({ data, total = 1, currentPage = 1 }: Props) {
+  const router = useRouter();
   const [PageModal, setPageModal] = useState<{
     isOpen: boolean;
     item: PageData | null;
@@ -44,29 +51,28 @@ export default function PageList({
       isOpen: false,
     }));
   };
-  const handleRemove = (cat: PageData) => {
-    // toast.promise(deleteById(cat.id), {
-    //   loading: 'Deleting...!',
-    //   success: (res) => {
-    //     if (res.success) {
-    //       setPage(categories.filter((c) => c.id !== cat.id));
-    //       refreshCacheClient({
-    //         paths: [`/coupons/${cat.slug}`],
-    //         tags: ['categories-data', 'menu-data'],
-    //       });
-    //       return 'Deleted success';
-    //     }
-    //     throw res.message;
-    //   },
-    //   error: (err) => err ?? 'Cannot remove',
-    // });
+
+  const handleRemove = (page: PageData) => {
+    alert('Are you sure you want to delete this page?');
   };
 
-  const handleOpenCreatePageModal = () => {
-    setPageModal({
-      item: null,
-      isOpen: true,
-    });
+  const renderFieldStatus = (value: any) => {
+    if (
+      value &&
+      (typeof value === 'string'
+        ? value.trim() !== ''
+        : Array.isArray(value)
+          ? value.length > 0
+          : Object.keys(value).length > 0)
+    ) {
+      return (
+        <i
+          className="ri-checkbox-circle-fill w-25 text-success"
+          title="Has value"
+        ></i>
+      );
+    }
+    return <span>N/A</span>;
   };
 
   return (
@@ -76,13 +82,15 @@ export default function PageList({
           <Card.Title>All Pages List</Card.Title>
         </Card.Header>
 
-        <Card.Body>                   
+        <Card.Body>
           <Row className="align-items-center g-2 flex-wrap">
             <Col xs="12" md>
               <div className="d-flex justify-content-between align-items-center gap-2 flex-wrap">
                 <SearchBar placeholder="Search Page by name" />
                 <SpkButton
-                  onClickfunc={handleOpenCreatePageModal}
+                  onClickfunc={() =>
+                    router.push('/dynamic-pages/create')
+                  }
                   Buttonvariant="primary"
                   Customclass="w-auto"
                 >
@@ -96,17 +104,20 @@ export default function PageList({
           <div className="table-responsive mt-3">
             <SpkTables tableClass="table-hover text-nowrap" header={HEADER}>
               {data &&
-                data?.map((cat) => (
-                  <tr key={cat.id}>
-                    <td>{cat.id}</td>
-                    <td>{cat.name}</td>
-
+                data?.map((page) => (
+                  <tr key={page.id}>
+                    <td>{page.type}</td>
+                    <td>{renderFieldStatus(page.content)}</td>
+                    <td>{renderFieldStatus(page.images)}</td>
+                    <td>{renderFieldStatus(page.thumbnail)}</td>
+                    <td>{renderFieldStatus(page.faqs)}</td>
+                    <td>{renderFieldStatus(page.metadata)}</td>
                     <td className="">
                       <Button
                         variant="success-light"
                         size="sm"
                         className="btn btn-sm btn-primary-light"
-                        onClick={() => handleOpenUpdatePage(cat)}
+                        onClick={() => handleOpenUpdatePage(page)}
                       >
                         <i className="ri-edit-line me-1"></i> Edit
                       </Button>
@@ -114,7 +125,7 @@ export default function PageList({
                         variant="danger-light"
                         size="sm"
                         className="btn btn-sm btn-primary-light mx-2"
-                        onClick={() => handleRemove(cat)}
+                        onClick={() => handleRemove(page)}
                       >
                         <i className="ri-delete-bin-line"></i>Delete
                       </Button>
@@ -132,11 +143,8 @@ export default function PageList({
           <CustomPagination currentPage={currentPage} total={total} />
         </Card.Footer>
       </Card>
-      <CreatePageModal
-        open={PageModal.item === null && PageModal.isOpen}
-        onClose={handelCloseModal}
-      />
-      <UpdatePageModal
+
+      <UpdateDynamicPageModal
         item={PageModal.item}
         open={PageModal.isOpen && PageModal.item !== null}
         onClose={handelCloseModal}

@@ -27,7 +27,7 @@ export default async function PageForm({
       >
         <Breadcrumb />
         <Box display={'flex'} mb={1} justifyContent={'space-between'}>
-          <h6>Update store</h6>
+          <h6>Update page</h6>
         </Box>
         <UpdateForm item={res?.data ?? null} />
       </Paper>

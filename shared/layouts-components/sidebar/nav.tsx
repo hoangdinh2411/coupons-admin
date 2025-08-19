@@ -203,7 +203,7 @@ export const MENUITEMS: any = [
     active: false,
     dirchange: false,
     path: APP_ROUTE.DYNAMIC_PAGES,
-    Children: [
+    children: [
       {
         title: 'List',
         type: 'link',
