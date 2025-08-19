@@ -1,12 +1,10 @@
 'use client';
-import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { useForm, Controller, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Box, MenuItem, OutlinedInput, Select } from '@mui/material';
+import { Box } from '@mui/material';
 import { Form } from 'react-bootstrap';
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
-import { FAQItem } from '../../../../shared/layouts-components/faqs/AccordionFAQ';
 import UploadFile, {
   ImageType,
 } from '@/shared/layouts-components/uploadFile/UploadFile';
@@ -22,8 +20,7 @@ import { getKeyWordsArray } from '@/helper/keywords';
 import Faqs from '@/shared/layouts-components/faqs/Faqs';
 import useFaqs from '@/hooks/useFaqs';
 import dynamic from 'next/dynamic';
-import { refreshCacheClient } from '@/services/share.service';
-import { schema } from '../ validation.schema';
+import UploadMultiFiles from '@/shared/layouts-components/uploadFile/UploadMultiFile';
 
 const CustomRichTextEditor = dynamic(
   () => import('../../../../shared/layouts-components/richtext-editor'),
@@ -31,6 +28,25 @@ const CustomRichTextEditor = dynamic(
     ssr: false,
   },
 );
+
+export const schema = z.object({
+  ...seoDataSchema.shape,
+  type: z.string().min(1, 'Page type is required').trim(),
+  content: z.string().min(1, 'Content is required').trim(),
+  thumbnail: z.object({
+    file_name: z.string().trim(),
+    url: z.string().trim(),
+    public_id: z.string().trim(),
+  }),
+  images: z.array(
+    z.object({
+      file_name: z.string().trim(),
+      url: z.string().trim(),
+      public_id: z.string().trim(),
+    }),
+  ),
+  about: z.string().trim(),
+});
 
 export const defaultValues: StoreFormData = {
   ...seoDefaultValues,
@@ -86,7 +102,7 @@ export default function CreateForm() {
       content,
       metadata: {
         ...data.metadata,
-        keywords: getKeyWordsArray(data?.metadata?.keywords ?? []),
+        keywords: getKeyWordsArray(data.metadata?.keywords),
       },
       faqs: getFaqsValues(),
     };
@@ -131,7 +147,7 @@ export default function CreateForm() {
         <Box className="mb-3">
           <Form.Label className="text-default fw-bold">Content</Form.Label>
           <CustomRichTextEditor
-            imageFolder="categories"
+            imageFolder="pages"
             ref={rteRef}
             onBlur={handleChangeContent}
             error={Boolean(errors.content)}
@@ -174,18 +190,13 @@ export default function CreateForm() {
                 control={control}
                 name="images"
                 render={({ field }) => (
-                  <UploadFile
+                  <UploadMultiFiles
                     folder="pages"
-                    newFile={field.value}
-                    onUploadFile={(data: ImageType[]) => {
-                      if (data.length <= 10) {
-                        field.onChange(data);
-                      } else {
-                        toast.error('Maximum 10 images allowed');
-                      }
-                    }}
+                    files={field.value || []}
+                    onUploadFile={field.onChange}
                     id="create-page-images"
-                    multiple
+                    maxFiles={10}
+                    label="Choose images..."
                   />
                 )}
               />
@@ -203,8 +214,24 @@ export default function CreateForm() {
           onChange={handleAddFaq}
           onRemove={handleRemoveAccordion}
         />
+
+        {/* About */}
+        <Box className="mb-3">
+          <Form.Label className="fw-bold text-default">About</Form.Label>
+          <Form.Control
+            as="textarea"
+            rows={3}
+            placeholder="Enter about"
+            {...register('about')}
+          />
+          {errors.about && (
+            <small className="text-danger">{errors.about.message}</small>
+          )}
+        </Box>
+
         {/* SEO Form */}
         <SeoForm />
+
         {/* Submit */}
         <Box display="flex" justifyContent="end" mt={4} gap={1}>
           <SpkButton Buttonvariant="primary" Buttontype="submit">

@@ -88,9 +88,7 @@ export default function PageList({ data, total = 1, currentPage = 1 }: Props) {
               <div className="d-flex justify-content-between align-items-center gap-2 flex-wrap">
                 <SearchBar placeholder="Search Page by name" />
                 <SpkButton
-                  onClickfunc={() =>
-                    router.push('/dynamic-pages/create')
-                  }
+                  onClickfunc={() => router.push('/dynamic-pages/create')}
                   Buttonvariant="primary"
                   Customclass="w-auto"
                 >
@@ -117,7 +115,9 @@ export default function PageList({ data, total = 1, currentPage = 1 }: Props) {
                         variant="success-light"
                         size="sm"
                         className="btn btn-sm btn-primary-light"
-                        onClick={() => handleOpenUpdatePage(page)}
+                        onClick={() =>
+                          router.push(`/dynamic-pages/update/${page.id}`)
+                        }
                       >
                         <i className="ri-edit-line me-1"></i> Edit
                       </Button>

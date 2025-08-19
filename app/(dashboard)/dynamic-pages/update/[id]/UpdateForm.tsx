@@ -1,8 +1,8 @@
 'use client';
-import React, {  useEffect} from 'react';
+import React, { useEffect } from 'react';
 import { useForm, Controller, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Box} from '@mui/material';
+import { Box } from '@mui/material';
 import { Form } from 'react-bootstrap';
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
 
@@ -20,6 +20,7 @@ import dynamic from 'next/dynamic';
 import { PageData } from '@/types/page.type';
 import UseAppStore from '@/store/useAppStore';
 import { DynamicPageFormData, schema } from '../../ validation.schema';
+import UploadMultiFiles from '@/shared/layouts-components/uploadFile/UploadMultiFile';
 const CustomRichTextEditor = dynamic(
   () => import('../../../../../shared/layouts-components/richtext-editor'),
   {
@@ -99,7 +100,6 @@ export default function UpdateForm({ item }: Props) {
     setValue('content', value);
   };
 
-  if (!open) return null;
   return (
     <FormProvider {...method}>
       <Form onSubmit={handleSubmit(onSubmit)}>
@@ -156,18 +156,13 @@ export default function UpdateForm({ item }: Props) {
                 control={control}
                 name="images"
                 render={({ field }) => (
-                  <UploadFile
+                  <UploadMultiFiles
                     folder="pages"
-                    newFile={field.value}
-                    onUploadFile={(data: ImageType[]) => {
-                      if (data.length <= 10) {
-                        field.onChange(data);
-                      } else {
-                        toast.error('Maximum 10 images allowed');
-                      }
-                    }}
+                    files={field.value || []}
+                    onUploadFile={field.onChange}
                     id="update-page-images"
-                    multiple
+                    maxFiles={10}
+                    label="Choose images..."
                   />
                 )}
               />
