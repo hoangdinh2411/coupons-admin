@@ -5,7 +5,6 @@ import { useForm, Controller, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Modal, Form, CloseButton } from 'react-bootstrap';
 import SpkButton from '@/shared/@spk-reusable-components/reusable-uiElements/spk-buttons';
-import { CategoryFormData, schema } from './CreatePageModal';
 import { Box, Paper } from '@mui/material';
 import UploadFile, {
   ImageType,
@@ -21,11 +20,15 @@ import useFaqs from '@/hooks/useFaqs';
 import useRickTextEditor from '@/hooks/useRickTextEditor';
 import dynamic from 'next/dynamic';
 import { refreshCacheClient } from '@/services/share.service';
-const CustomRichTextEditor = dynamic(() => import('../../../shared/layouts-components/richtext-editor'), {
-  ssr: false
-})
+import { DynamicPageFormData, schema } from './CreatePageModal';
+const CustomRichTextEditor = dynamic(
+  () => import('../../../shared/layouts-components/richtext-editor'),
+  {
+    ssr: false,
+  },
+);
 
-interface UpdateCategoryModalProps {
+interface UpdateDynamicPageModalProps {
   item: CategoryData | null;
   open: boolean;
   onClose: () => void;
@@ -35,10 +38,17 @@ function UpdateCategoryModal({
   item,
   open,
   onClose,
-}: UpdateCategoryModalProps) {
-  const { getFaqsValues, faqList, handleAddFaq, handleRemoveAccordion, onCreateAccordion, setFaqList } = useFaqs()
+}: UpdateDynamicPageModalProps) {
+  const {
+    getFaqsValues,
+    faqList,
+    handleAddFaq,
+    handleRemoveAccordion,
+    onCreateAccordion,
+    setFaqList,
+  } = useFaqs();
   const { setCategory, categories } = UseAppStore((state) => state);
-  const method = useForm<CategoryFormData>({
+  const method = useForm<DynamicPageFormData>({
     resolver: zodResolver(schema),
   });
   const { getContent, rteRef, setContent } = useRickTextEditor();
@@ -60,20 +70,24 @@ function UpdateCategoryModal({
           keywords: getKeyWordsString(item.meta_data?.keywords || []),
         },
       });
-      setFaqList(item.faqs ? item.faqs.map(({ question, answer }, index) => ({
-        id: index,
-        question,
-        answer
-      })) : [])
+      setFaqList(
+        item.faqs
+          ? item.faqs.map(({ question, answer }, index) => ({
+              id: index,
+              question,
+              answer,
+            }))
+          : [],
+      );
     }
   }, [item]);
 
   useEffect(() => {
     if (item && rteRef.current) {
-      setContent(item.description)
+      setContent(item.description);
     }
-  }, [rteRef.current])
-  const onSubmit = async (data: CategoryFormData) => {
+  }, [rteRef.current]);
+  const onSubmit = async (data: DynamicPageFormData) => {
     if (item) {
       const description = await getContent();
       const payload = {
@@ -83,7 +97,7 @@ function UpdateCategoryModal({
           ...data.meta_data,
           keywords: getKeyWordsArray(data.meta_data?.keywords),
         },
-        faqs: getFaqsValues()
+        faqs: getFaqsValues(),
       };
       toast.promise(updateCategory(item?.id, payload), {
         loading: 'Updating...!',
@@ -96,8 +110,8 @@ function UpdateCategoryModal({
             );
             refreshCacheClient({
               paths: [`/coupons/${res.data.slug}`],
-              tags: ['categories-data', 'menu-data']
-            })
+              tags: ['categories-data', 'menu-data'],
+            });
             return 'Updated success';
           }
           throw res.message;
@@ -110,7 +124,7 @@ function UpdateCategoryModal({
     setValue('description', value);
   };
 
-  if (!open) return null
+  if (!open) return null;
   return (
     <Modal
       show={open}
@@ -124,7 +138,7 @@ function UpdateCategoryModal({
         <Modal.Title as="h6">Update Category</Modal.Title>
         <CloseButton onClick={onClose} aria-label="close" />
       </Modal.Header>
-      <Modal.Body className='px-4'>
+      <Modal.Body className="px-4">
         <FormProvider {...method}>
           <Form onSubmit={handleSubmit(onSubmit)}>
             <Box className="mb-3">
@@ -141,7 +155,9 @@ function UpdateCategoryModal({
               )}
             </Box>
             <Box className="mb-3">
-              <Form.Label className="text-default fw-bold">Description</Form.Label>
+              <Form.Label className="text-default fw-bold">
+                Description
+              </Form.Label>
               <CustomRichTextEditor
                 imageFolder="categories"
                 ref={rteRef}
@@ -175,13 +191,17 @@ function UpdateCategoryModal({
                 </Box>
               </Box>
             </Box>
-            <Faqs onAdd={onCreateAccordion} values={faqList} onChange={handleAddFaq} onRemove={handleRemoveAccordion} />
+            <Faqs
+              onAdd={onCreateAccordion}
+              values={faqList}
+              onChange={handleAddFaq}
+              onRemove={handleRemoveAccordion}
+            />
             <Box className="mb-3">
-              <Form.Label className="fw-bold text-default">
-                About
-              </Form.Label>
+              <Form.Label className="fw-bold text-default">About</Form.Label>
               <Form.Control
-                as="textarea" rows={3}
+                as="textarea"
+                rows={3}
                 placeholder="Enter about"
                 {...register('about')}
               />

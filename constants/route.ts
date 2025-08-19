@@ -14,5 +14,6 @@ export const APP_ROUTE = {
   ADD_COUPON: '/coupons/create',
   SUBMIT_COUPON: '/coupons/submit',
   SIGN_OUT: '/auth/sign-out',
-  PAGES: '/pages',
+  DYNAMIC_PAGES: '/dynamic-pages',
+  CREATE_DYNAMIC_PAGE: '/dynamic-pages/create',
 };
