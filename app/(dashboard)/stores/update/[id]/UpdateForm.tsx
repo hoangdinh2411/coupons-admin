@@ -99,7 +99,7 @@ export default function UpdateForm({ item }: Props) {
             setStores(newStores);
             refreshCacheClient({
               paths: [`/stores/${res.data.slug}`],
-              tags: ['categories-data', 'menu-data','stores-data']
+              tags: ['categories-data', 'menu-data', 'stores-data']
             })
             return 'Updated success';
           }
