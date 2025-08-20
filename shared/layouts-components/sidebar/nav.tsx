@@ -219,6 +219,6 @@ export const MENUITEMS: any = [
         path: APP_ROUTE.CREATE_DYNAMIC_PAGE,
       },
     ],
-    roles: [ROLES.ADMIN, ROLES.PARTNER],
+    roles: [ROLES.ADMIN],
   },
 ];
