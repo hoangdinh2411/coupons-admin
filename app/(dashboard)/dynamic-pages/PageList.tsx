@@ -7,8 +7,10 @@ import { PageData } from '@/types/page.type';
 import SearchBar from '@/shared/layouts-components/searchbar/SearchBar';
 import CustomPagination from '@/shared/layouts-components/pagination/CustomPagination';
 import UseAppStore from '@/store/useAppStore';
-import UpdateDynamicPageModal from './UpdateDynamicPageModal';
 import { useRouter } from 'next/navigation';
+import { deletePageById } from '@/services/page.service';
+import toast from 'react-hot-toast';
+import { refreshCacheClient } from '@/services/share.service';
 
 const HEADER = [
   { title: 'Type' },
@@ -53,7 +55,20 @@ export default function PageList({ data, total = 1, currentPage = 1 }: Props) {
   };
 
   const handleRemove = (page: PageData) => {
-    alert('Are you sure you want to delete this page?');
+    toast.promise(deletePageById(+page.id), {
+      loading: 'Deleting...!',
+      success: (res) => {
+        if (res.success) {
+          refreshCacheClient({
+            paths: [`/${page.slug}`],
+            tags: []
+          })
+          return 'Deleted success';
+        }
+        throw res.message;
+      },
+      error: (err) => err,
+    });
   };
 
   const renderFieldStatus = (value: any) => {
@@ -109,7 +124,7 @@ export default function PageList({ data, total = 1, currentPage = 1 }: Props) {
                     <td>{renderFieldStatus(page.images)}</td>
                     <td>{renderFieldStatus(page.thumbnail)}</td>
                     <td>{renderFieldStatus(page.faqs)}</td>
-                    <td>{renderFieldStatus(page.metadata)}</td>
+                    <td>{renderFieldStatus(page.meta_data.title)}</td>
                     <td className="">
                       <Button
                         variant="success-light"
@@ -138,17 +153,13 @@ export default function PageList({ data, total = 1, currentPage = 1 }: Props) {
 
         <Card.Footer className="border-top-0 d-flex justify-content-between flex-wrap">
           <div>
-            Showing <b>{data.length}</b> of {total}
+            Showing <b>{data?.length}</b> of {total}
           </div>
           <CustomPagination currentPage={currentPage} total={total} />
         </Card.Footer>
       </Card>
 
-      <UpdateDynamicPageModal
-        item={PageModal.item}
-        open={PageModal.isOpen && PageModal.item !== null}
-        onClose={handelCloseModal}
-      />
+
     </Fragment>
   );
 }

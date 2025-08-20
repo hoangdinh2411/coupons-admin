@@ -21,6 +21,11 @@ import Faqs from '@/shared/layouts-components/faqs/Faqs';
 import useFaqs from '@/hooks/useFaqs';
 import dynamic from 'next/dynamic';
 import UploadMultiFiles from '@/shared/layouts-components/uploadFile/UploadMultiFile';
+import { PagePayload } from '@/types/page.type';
+import { createPage } from '@/services/page.service';
+import { refreshCacheClient } from '@/services/share.service';
+import { useEffect } from 'react';
+import { generateSlug } from '@/helper/generateSlug';
 
 const CustomRichTextEditor = dynamic(
   () => import('../../../../shared/layouts-components/richtext-editor'),
@@ -32,7 +37,8 @@ const CustomRichTextEditor = dynamic(
 export const schema = z.object({
   ...seoDataSchema.shape,
   type: z.string().min(1, 'Page type is required').trim(),
-  content: z.string().min(1, 'Content is required').trim(),
+  slug: z.string().min(1, 'Slug is required'),
+  content: z.string().trim(),
   thumbnail: z.object({
     file_name: z.string().trim(),
     url: z.string().trim(),
@@ -45,12 +51,12 @@ export const schema = z.object({
       public_id: z.string().trim(),
     }),
   ),
-  about: z.string().trim(),
 });
 
-export const defaultValues: StoreFormData = {
+export const defaultValues: DynamicPageFormData = {
   ...seoDefaultValues,
   type: '',
+  slug: '',
   content: '',
   thumbnail: {
     file_name: '',
@@ -58,13 +64,12 @@ export const defaultValues: StoreFormData = {
     public_id: '',
   },
   images: [],
-  about: '',
 };
 
-export type StoreFormData = z.infer<typeof schema>;
+export type DynamicPageFormData = z.infer<typeof schema>;
 
 export default function CreateForm() {
-  const method = useForm<StoreFormData>({
+  const method = useForm<DynamicPageFormData>({
     resolver: zodResolver(schema),
     mode: 'onChange',
     defaultValues,
@@ -95,38 +100,36 @@ export default function CreateForm() {
     setValue('content', value);
   };
 
-  const onSubmit = async (data: StoreFormData) => {
+  const onSubmit = async (data: DynamicPageFormData) => {
     const content = await getContent();
-    const payload: StorePayload = {
+    const payload: PagePayload = {
       ...data,
       content,
-      metadata: {
-        ...data.metadata,
-        keywords: getKeyWordsArray(data.metadata?.keywords),
+      meta_data: {
+        ...data.meta_data,
+        keywords: getKeyWordsArray(data.meta_data?.keywords),
       },
       faqs: getFaqsValues(),
     };
-    // toast.promise(createStore(payload), {
-    //   loading: 'Pending...!',
-    //   success: (res) => {
-    //     if (res.success && res.data) {
-    //       setStores([...stores, res.data]);
-    //       reset(defaultValues);
-    //       clearAll();
-    //       setFaqList([])
-    //       refreshCacheClient({
-    //         paths: [],
-    //         tags: ['categories-data', 'menu-data','stores-data']
-    //       })
-    //       return 'Created success';
-    //     }
+    toast.promise(createPage(payload), {
+      loading: 'Pending...!',
+      success: (res) => {
+        if (res.success && res.data) {
+          reset(defaultValues);
+          clearAll();
+          setFaqList([])
+          return 'Created success';
+        }
 
-    //     throw res.message;
-    //   },
-    //   error: (err) => err || 'Something wrong',
-    // });
+        throw res.message;
+      },
+      error: (err) => err || 'Something wrong',
+    });
   };
-
+  const watchType = watch('type')
+  useEffect(() => {
+    setValue('slug', generateSlug(watchType));
+  }, [watchType]);
   return (
     <FormProvider {...method}>
       <Form onSubmit={handleSubmit(onSubmit)}>
@@ -142,7 +145,17 @@ export default function CreateForm() {
             <small className="text-danger">{errors.type.message}</small>
           )}
         </Box>
-
+        <Box className="mb-3">
+          <Form.Label className="text-default">Store Slug</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Slug for store"
+            {...register('slug')}
+          />
+          {errors.slug && (
+            <small className="text-danger">{errors.slug.message}</small>
+          )}
+        </Box>
         {/* Content */}
         <Box className="mb-3">
           <Form.Label className="text-default fw-bold">Content</Form.Label>
@@ -214,20 +227,6 @@ export default function CreateForm() {
           onChange={handleAddFaq}
           onRemove={handleRemoveAccordion}
         />
-
-        {/* About */}
-        <Box className="mb-3">
-          <Form.Label className="fw-bold text-default">About</Form.Label>
-          <Form.Control
-            as="textarea"
-            rows={3}
-            placeholder="Enter about"
-            {...register('about')}
-          />
-          {errors.about && (
-            <small className="text-danger">{errors.about.message}</small>
-          )}
-        </Box>
 
         {/* SEO Form */}
         <SeoForm />

@@ -13,14 +13,15 @@ import toast from 'react-hot-toast';
 import { getKeyWordsArray, getKeyWordsString } from '@/helper/keywords';
 import SeoForm from '@/shared/layouts-components/seo-form/SeoForm';
 import useRickTextEditor from '@/hooks/useRickTextEditor';
-import { FAQItem } from '../../../../../shared/layouts-components/faqs/AccordionFAQ';
 import Faqs from '@/shared/layouts-components/faqs/Faqs';
 import useFaqs from '@/hooks/useFaqs';
 import dynamic from 'next/dynamic';
 import { PageData } from '@/types/page.type';
 import UseAppStore from '@/store/useAppStore';
-import { DynamicPageFormData, schema } from '../../ validation.schema';
 import UploadMultiFiles from '@/shared/layouts-components/uploadFile/UploadMultiFile';
+import { DynamicPageFormData, schema } from '../../create/CreateForm';
+import { updatePage } from '@/services/page.service';
+import { refreshCacheClient } from '@/services/share.service';
 const CustomRichTextEditor = dynamic(
   () => import('../../../../../shared/layouts-components/richtext-editor'),
   {
@@ -41,7 +42,6 @@ export default function UpdateForm({ item }: Props) {
     onCreateAccordion,
     setFaqList,
   } = useFaqs();
-  const { setPages, pages } = UseAppStore((state) => state);
   const method = useForm<DynamicPageFormData>({
     resolver: zodResolver(schema),
   });
@@ -58,18 +58,18 @@ export default function UpdateForm({ item }: Props) {
     if (item) {
       reset({
         ...item,
-        metadata: {
-          ...item.metadata,
-          keywords: getKeyWordsString(item?.metadata?.keywords || ['']),
+        meta_data: {
+          ...item.meta_data,
+          keywords: getKeyWordsString(item?.meta_data?.keywords || ['']),
         },
       });
       setFaqList(
         item.faqs
           ? item.faqs.map(({ question, answer }, index) => ({
-              id: index,
-              question,
-              answer,
-            }))
+            id: index,
+            question,
+            answer,
+          }))
           : [],
       );
     }
@@ -87,12 +87,26 @@ export default function UpdateForm({ item }: Props) {
       const payload = {
         ...data,
         content,
-        metadata: {
-          ...data.metadata,
-          keywords: getKeyWordsArray(data.metadata?.keywords ?? ''),
+        meta_data: {
+          ...data.meta_data,
+          keywords: getKeyWordsArray(data.meta_data?.keywords ?? ''),
         },
         faqs: getFaqsValues(),
       };
+      toast.promise(updatePage(+item.id, payload), {
+        loading: 'Updating...!',
+        success: (res) => {
+          if (res.success && res.data) {
+            refreshCacheClient({
+              paths: [`/${res.data.slug}`],
+              tags: []
+            })
+            return 'Updated success';
+          }
+          throw res.message;
+        },
+        error: (err) => err || 'Something wrong',
+      });
     }
   };
 
@@ -112,6 +126,17 @@ export default function UpdateForm({ item }: Props) {
           />
           {errors.type && (
             <small className="text-danger">{errors.type.message}</small>
+          )}
+        </Box>
+        <Box className="mb-3">
+          <Form.Label className="text-default">Store Slug</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Slug for store"
+            {...register('slug')}
+          />
+          {errors.slug && (
+            <small className="text-danger">{errors.slug.message}</small>
           )}
         </Box>
         <Box className="mb-3">

@@ -8,7 +8,8 @@ export interface PagePayload {
   images: ImageType[];
   thumbnail: ImageType;
   faqs?: FAQItem[];
-  metadata: MetaData;
+  meta_data: MetaData;
+  slug: string;
 }
 
 export interface PageData {
@@ -18,5 +19,6 @@ export interface PageData {
   images: ImageType[];
   thumbnail: ImageType;
   faqs?: FAQItem[];
-  metadata: MetaData;
+  meta_data: MetaData;
+  slug: string;
 }
