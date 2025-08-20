@@ -15,7 +15,23 @@ const Dashboardicon = (
     <path d="M7 10.19V18h2v-6h6v6h2v-7.81l-5-4.5z" opacity=".3"></path>
   </svg>
 );
-const Pagesicon = <svg xmlns="http://www.w3.org/2000/svg" className="side-menu__icon" height="24px" viewBox="0 0 24 24" width="24px" fill="#5f6368"><path d="M0 0h24v24H0V0z" fill="none"></path><path d="M13 4H6v16h12V9h-5V4zm3 14H8v-2h8v2zm0-6v2H8v-2h8z" opacity=".3"></path><path d="M8 16h8v2H8zm0-4h8v2H8zm6-10H6c-1.1 0-2 .9-2 2v16c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"></path></svg>
+const Pageicon = (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    className="side-menu__icon"
+    height="24px"
+    viewBox="0 0 24 24"
+    width="24px"
+    fill="#5f6368"
+  >
+    <path d="M0 0h24v24H0V0z" fill="none"></path>
+    <path
+      d="M13 4H6v16h12V9h-5V4zm3 14H8v-2h8v2zm0-6v2H8v-2h8z"
+      opacity=".3"
+    ></path>
+    <path d="M8 16h8v2H8zm0-4h8v2H8zm6-10H6c-1.1 0-2 .9-2 2v16c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"></path>
+  </svg>
+);
 
 const BlogIcon = (
   <svg
@@ -78,7 +94,7 @@ export const MENUITEMS: any = [
     dirchange: false,
     selected: true,
     path: APP_ROUTE.DASHBOARD,
-    roles: [ROLES.ADMIN, ROLES.PARTNER]
+    roles: [ROLES.ADMIN, ROLES.PARTNER],
   },
   {
     title: 'Category',
@@ -87,7 +103,7 @@ export const MENUITEMS: any = [
     dirchange: false,
     type: 'link',
     path: APP_ROUTE.CATEGORY,
-    roles: [ROLES.ADMIN]
+    roles: [ROLES.ADMIN],
   },
   {
     title: 'Store',
@@ -112,8 +128,7 @@ export const MENUITEMS: any = [
         path: APP_ROUTE.ADD_STORE,
       },
     ],
-    roles: [ROLES.ADMIN]
-
+    roles: [ROLES.ADMIN],
   },
   {
     title: 'Coupons',
@@ -146,8 +161,7 @@ export const MENUITEMS: any = [
         path: APP_ROUTE.ADD_COUPON,
       },
     ],
-    roles: [ROLES.ADMIN]
-
+    roles: [ROLES.ADMIN],
   },
 
   {
@@ -180,18 +194,31 @@ export const MENUITEMS: any = [
         path: APP_ROUTE.TOPIC,
       },
     ],
-    roles: [ROLES.ADMIN, ROLES.PARTNER]
-
+    roles: [ROLES.ADMIN, ROLES.PARTNER],
   },
   {
-    title: 'Pages',
-    icon: Pagesicon,
+    title: 'Dynamic Pages',
+    icon: Pageicon,
+    type: 'sub',
     active: false,
-    type: 'link',
     dirchange: false,
-    selected: true,
-    path: APP_ROUTE.PAGES,
-    roles: [ROLES.ADMIN, ROLES.PARTNER]
-
+    path: APP_ROUTE.DYNAMIC_PAGES,
+    children: [
+      {
+        title: 'List',
+        type: 'link',
+        active: false,
+        dirchange: false,
+        path: APP_ROUTE.DYNAMIC_PAGES,
+      },
+      {
+        title: 'Create page',
+        type: 'link',
+        active: false,
+        dirchange: false,
+        path: APP_ROUTE.CREATE_DYNAMIC_PAGE,
+      },
+    ],
+    roles: [ROLES.ADMIN, ROLES.PARTNER],
   },
 ];
