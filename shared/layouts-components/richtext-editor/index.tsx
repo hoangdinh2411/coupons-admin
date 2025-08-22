@@ -5,8 +5,40 @@ import EditorMenuController from './EditorMenuController';
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import useExtensions from './useExtensions';
 import { Button } from '@mui/material';
-import { Editor } from '@tiptap/core';
+function sanitizeTrustcouponAnchors(html: string): string {
+  // Parse HTML rồi loại target/rel/ref khỏi mọi <a href*="trustcoupon.com">
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  doc.querySelectorAll<HTMLAnchorElement>('a[href*="trustcoupon.com"]').forEach(a => {
+    a.removeAttribute('target');
+    a.removeAttribute('rel');
+    a.removeAttribute('ref');
+  });
+  return doc.body.innerHTML;
+}
 
+function isSemanticallyEmptyHTML(html: string): boolean {
+  if (!html) return true;
+
+  // Loại ký tự zero-width & khoảng trắng
+  const cleaned = html.replace(/[\u200B-\u200D\uFEFF]/g, "").trim();
+  if (!cleaned) return true;
+
+  // Một số pattern rỗng phổ biến
+  const emptyPatterns = new Set(["<p></p>", "<p><br></p>", "<p>&nbsp;</p>"]);
+  if (emptyPatterns.has(cleaned)) return true;
+
+  const doc = new DOMParser().parseFromString(cleaned, "text/html");
+  const text = (doc.body.textContent || "").replace(/\s|\u00A0/g, "");
+  const hasMeaningfulText = text.length > 0;
+
+  // Nếu có các node “nội dung thực” thì không rỗng
+  const hasNonTextContent =
+    doc.body.querySelector(
+      "img,video,audio,iframe,embed,table,hr,ul,ol,li,pre,code,blockquote,figure"
+    ) !== null;
+
+  return !hasMeaningfulText && !hasNonTextContent;
+}
 const CustomRichTextEditor = forwardRef(
   (
     {
@@ -25,15 +57,22 @@ const CustomRichTextEditor = forwardRef(
 
     const [mounted, setMounted] = useState(false);
     useEffect(() => setMounted(true), []);
-    console.log(mounted)
     const [editorReady, setEditorReady] = useState(false);
 
     const rteRef = useRef<RichTextEditorRef>(null);
     const handleBlur = () => {
-      const editor = rteRef.current?.editor;
-      if (!editor || editor.isDestroyed) return;
-      const value = rteRef.current?.editor?.getHTML() || '';
-      onBlur(value);
+      const editor = getEditor();
+      if (!editor) return;
+      const raw = editor.getHTML() || '';
+      const cleaned = sanitizeTrustcouponAnchors(raw);
+      // (tuỳ chọn) nếu muốn đồng bộ lại content đã sạch vào editor:
+      if (cleaned !== raw) {
+        // Không emit update để tránh side-effect khi blur
+        editor.commands.setContent(cleaned, false);
+      }
+      const isEmpty = (editor as any).isEmpty === true || isSemanticallyEmptyHTML(cleaned);
+      const result = isEmpty ? "" : cleaned;
+      onBlur(result);
     };
 
     const getEditor = () => {
@@ -71,8 +110,11 @@ const CustomRichTextEditor = forwardRef(
       getContent: async () => {
         const editor = getEditor()
         if (!editor) return;
-        console.log(editor.getHTML())
-        return editor.getHTML() ?? '';
+        const raw = editor.getHTML() ?? '';
+        const cleaned = sanitizeTrustcouponAnchors(raw);
+        const isEmpty = (editor as any).isEmpty === true || isSemanticallyEmptyHTML(cleaned);
+        const result = isEmpty ? "" : cleaned;
+        return result
       },
     }));
     useEffect(() => {
@@ -82,7 +124,6 @@ const CustomRichTextEditor = forwardRef(
     }, [rteRef.current?.editor]);
 
 
-    console.log(editorReady, rteRef.current?.editor)
     return (
       <Box
         marginBottom={2}
@@ -118,7 +159,7 @@ const CustomRichTextEditor = forwardRef(
           onBlur={handleBlur}
           // editable={true}
           extensions={useExtensions()} // Or any Tiptap extensions you wish!
-          content={'<p></p>'} // Initial content for the editor
+          content={''} // Initial content for the editor
           // Optionally include `renderControls` for a menu-bar atop the editor:
           renderControls={() =>
             editorReady && rteRef.current?.editor ? (
@@ -133,11 +174,17 @@ const CustomRichTextEditor = forwardRef(
 
 
         {error && <div className="text-danger">{helpText}</div>}
-        <Button onClick={() => console.log(rteRef.current?.editor?.getHTML())}>
+        <Button onClick={() => {
+          const raw = rteRef.current?.editor?.getHTML() || ''
+          const cleaned = sanitizeTrustcouponAnchors(raw)
+          const isEmpty = (rteRef.current?.editor)?.isEmpty === true || isSemanticallyEmptyHTML(cleaned);
+          const result = isEmpty ? "" : cleaned;
+          console.log(result)
+        }}>
           Log HTML
         </Button>
 
-      </Box>
+      </Box >
 
     );
   },
