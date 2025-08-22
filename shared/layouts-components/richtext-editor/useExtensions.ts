@@ -19,6 +19,7 @@ import { EditorOptions } from '@tiptap/core';
 import History from '@tiptap/extension-history';
 import Placeholder from '@tiptap/extension-placeholder';
 import { CustomResizableImage } from './CustomerImageExtension';
+import LinkTrustcouponSanitizer from './LinkTrustcouponSanitizer';
 export default function useExtensions(): EditorOptions['extensions'] {
   return useMemo(() => {
     return [
@@ -32,6 +33,10 @@ export default function useExtensions(): EditorOptions['extensions'] {
       Placeholder.configure({
         // Use a placeholder:
         placeholder: 'Write something here …',
+      }),
+      LinkTrustcouponSanitizer.configure({
+        openOnClick: false, // tuỳ bạn
+        HTMLAttributes: {},
       }),
       TextStyle,
       FontSize,
