@@ -74,12 +74,12 @@ export default function BlogList({
     });
   };
   const handleUpdateSwitch = (
-    id: number,
+    blog: BlogData,
     field: 'is_published' | 'is_indexed',
     value: boolean,
   ) => {
     toast.promise(
-      updateBlog(id, {
+      updateBlog(blog.id, {
         [field]: value,
       }),
       {
@@ -88,7 +88,7 @@ export default function BlogList({
           if (res.success) {
             if (value === true) {
               refreshCacheClient({
-                paths: [],
+                paths: [`/blogs/${blog.slug}`],
                 tags: ['blogs-page']
               })
               return 'On success';
@@ -151,7 +151,7 @@ export default function BlogList({
                     color="info"
                     onChange={() => {
                       handleUpdateSwitch(
-                        blog.id,
+                        blog,
                         'is_published',
                         !blog.is_published,
                       );
@@ -165,7 +165,7 @@ export default function BlogList({
                     color="warning"
                     onChange={() => {
                       handleUpdateSwitch(
-                        blog.id,
+                        blog,
                         'is_indexed',
                         !blog.is_indexed,
                       );
