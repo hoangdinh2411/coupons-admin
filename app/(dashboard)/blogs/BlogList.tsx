@@ -115,7 +115,7 @@ export default function BlogList({
           </Col>
           <Col xs="12" md>
             <div className="d-flex justify-content-between align-items-center gap-2 flex-wrap">
-              <SearchBar placeholder="Search coupon..." />
+              <SearchBar placeholder="Search blog..." />
               <Link href={APP_ROUTE.CREATE_BLOG}>
                 <SpkButton Buttonvariant="primary" Customclass="w-auto">
                   Add New Blog
