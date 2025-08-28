@@ -99,7 +99,7 @@ export default function UpdateForm({ item }: Props) {
           if (res.success && res.data) {
             refreshCacheClient({
               paths: [`/${res.data.slug}`],
-              tags: []
+              tags: ['page-data']
             })
             return 'Updated success';
           }

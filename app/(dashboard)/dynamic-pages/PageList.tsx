@@ -6,7 +6,6 @@ import SpkTables from '@/shared/@spk-reusable-components/reusable-tables/spk-tab
 import { PageData } from '@/types/page.type';
 import SearchBar from '@/shared/layouts-components/searchbar/SearchBar';
 import CustomPagination from '@/shared/layouts-components/pagination/CustomPagination';
-import UseAppStore from '@/store/useAppStore';
 import { useRouter } from 'next/navigation';
 import { deletePageById } from '@/services/page.service';
 import toast from 'react-hot-toast';
@@ -30,30 +29,6 @@ type Props = {
 
 export default function PageList({ data, total = 1, currentPage = 1 }: Props) {
   const router = useRouter();
-  const [PageModal, setPageModal] = useState<{
-    isOpen: boolean;
-    item: PageData | null;
-  }>({
-    isOpen: false,
-    item: null,
-  });
-  const { pages, setPages } = UseAppStore((state) => state);
-
-  const handleOpenUpdatePage = (Page: PageData) => {
-    setPageModal({
-      item: Page,
-      isOpen: true,
-    });
-  };
-
-  const handelCloseModal = () => {
-    setPageModal((pre) => ({
-      ...pre,
-      item: null,
-      isOpen: false,
-    }));
-  };
-
   const handleRemove = (page: PageData) => {
     toast.promise(deletePageById(+page.id), {
       loading: 'Deleting...!',
@@ -61,7 +36,7 @@ export default function PageList({ data, total = 1, currentPage = 1 }: Props) {
         if (res.success) {
           refreshCacheClient({
             paths: [`/${page.slug}`],
-            tags: []
+            tags: ['page-data']
           })
           return 'Deleted success';
         }
