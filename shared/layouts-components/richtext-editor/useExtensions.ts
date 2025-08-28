@@ -31,22 +31,34 @@ export default function useExtensions(): EditorOptions['extensions'] {
         listItem: false,
       }),
       Placeholder.configure({
-        // Use a placeholder:
         placeholder: 'Write something here …',
       }),
       LinkTrustcouponSanitizer.configure({
-        openOnClick: false, // tuỳ bạn
-        HTMLAttributes: {},
+        autolink: false,
+        linkOnPaste: false,
+        openOnClick: true,
+        validate: (href) => /^https?:\/\//.test(href),
+        HTMLAttributes: (attrs: any) => {
+          try {
+            const url = new URL(attrs.href ?? '');
+            if (url.hostname.includes('trustcoupon.com')) {
+              return {};
+            }
+          } catch {}
+
+          return {
+            rel: 'noopener noreferrer nofollow',
+            target: '_blank',
+          };
+        },
       }),
       TextStyle,
       FontSize,
       FontFamily,
       Underline,
       CodeBlock,
-      Link,
       CustomResizableImage.configure({
         HTMLAttributes: (attrs: any) => {
-          console.log('Image HTMLAttributes:', attrs);
           return { ...attrs, class: 'editor-image' };
         },
       }),
