@@ -118,6 +118,10 @@ export default function CreateForm() {
           reset(defaultValues);
           clearAll();
           setFaqList([])
+          refreshCacheClient({
+            paths: [],
+            tags: ['page-data']
+          })
           return 'Created success';
         }
 
