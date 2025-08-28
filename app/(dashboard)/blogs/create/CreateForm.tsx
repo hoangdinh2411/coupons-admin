@@ -120,7 +120,6 @@ export default function CreateForm() {
       error: (err) => err || 'Something wrong',
     });
   };
-  console.log(errors)
 
   return (
     <FormProvider {...method}>

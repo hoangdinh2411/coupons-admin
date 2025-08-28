@@ -11,7 +11,6 @@ export default async function PostManagementPage(props: {
   const params = makeFilterData(
     searchParams || {},
   );
-  console.log(params)
   const res = await filterBlog(params);
   if (!res.success || (res.success && !res.data)) {
     return res.message;
