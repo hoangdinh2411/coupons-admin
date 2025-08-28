@@ -44,6 +44,7 @@ export default function EditorMenuController({
   };
 
   return (
+
     <MenuControlsContainer>
       <MenuButtonUndo />
       <MenuButtonRedo />

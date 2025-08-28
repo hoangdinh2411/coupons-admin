@@ -1,16 +1,31 @@
 export function sanitizeTrustcouponAnchors(html: string): string {
-  // Parse HTML rồi loại target/rel/ref khỏi mọi <a href*="trustcoupon.com">
-  const doc = new DOMParser().parseFromString(html, 'text/html');
-  doc
-    .querySelectorAll<HTMLAnchorElement>('a[href*="trustcoupon.com"]')
-    .forEach((a) => {
-      a.removeAttribute('target');
-      a.removeAttribute('rel');
-      a.removeAttribute('ref');
-    });
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, 'text/html');
+  const anchors = doc.querySelectorAll('a[href]');
+
+  anchors.forEach((a) => {
+    const href = a.getAttribute('href') ?? '';
+    try {
+      const url = new URL(href);
+      if (
+        url.protocol === 'https:' &&
+        url.hostname === 'trustcoupon.com' &&
+        !url.port &&
+        url.pathname === '/'
+      ) {
+        a.removeAttribute('target');
+        a.removeAttribute('rel');
+      } else {
+        a.setAttribute('target', '_blank');
+        a.setAttribute('rel', 'noopener noreferrer nofollow');
+      }
+    } catch {
+      // invalid URL, ignore
+    }
+  });
+
   return doc.body.innerHTML;
 }
-
 export function isSemanticallyEmptyHTML(html: string): boolean {
   if (!html) return true;
 

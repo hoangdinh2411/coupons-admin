@@ -17,17 +17,12 @@ import Faqs from '@/shared/layouts-components/faqs/Faqs';
 import useFaqs from '@/hooks/useFaqs';
 import dynamic from 'next/dynamic';
 import { PageData } from '@/types/page.type';
-import UseAppStore from '@/store/useAppStore';
 import UploadMultiFiles from '@/shared/layouts-components/uploadFile/UploadMultiFile';
 import { DynamicPageFormData, schema } from '../../create/CreateForm';
 import { updatePage } from '@/services/page.service';
 import { refreshCacheClient } from '@/services/share.service';
-const CustomRichTextEditor = dynamic(
-  () => import('../../../../../shared/layouts-components/richtext-editor'),
-  {
-    ssr: false,
-  },
-);
+import CustomRichTextEditor from '../../../../../shared/layouts-components/richtext-editor';
+
 type Props = {
   item: PageData | null;
 };
@@ -76,10 +71,11 @@ export default function UpdateForm({ item }: Props) {
   }, [item, reset, setFaqList]);
 
   useEffect(() => {
-    if (item && rteRef.current) {
+    if (!item) return
+    if (rteRef.current) {
       setContent(item.content);
     }
-  }, [item, rteRef, setContent]);
+  }, [rteRef.current]);
 
   const onSubmit = async (data: DynamicPageFormData) => {
     if (item) {
