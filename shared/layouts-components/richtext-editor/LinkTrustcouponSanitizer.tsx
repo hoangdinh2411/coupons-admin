@@ -31,12 +31,7 @@ const LinkTrustcouponSanitizer = Link.extend({
 
                         if (!markType) return false
 
-                        if (empty) {
-                            // 👉 Nếu không bôi đen text nào → chèn text href mới ở caret
-                            tr.insertText(attrs.href, from, to)
-                            tr.addMark(from, from + attrs.href.length, markType.create(attrs))
-                        } else {
-                            // 👉 Nếu có bôi đen → chỉ áp link trong selection, không extend ra ngoài
+                        if (!empty) {
                             tr.addMark(from, to, markType.create(attrs))
                         }
 
